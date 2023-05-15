@@ -131,6 +131,9 @@ func TestDBScan(t *testing.T) {
 
 		rows = All(IndexScan[User](tx, usersByEmail, ExactScan("bar2@example.com").Reversed()))
 		deepEqual(t, rows, []*User{u4})
+
+		rows = All(TableScan[User](tx, FullScan().Reversed()))
+		deepEqual(t, rows, []*User{u5, u4, u3, u2, u1})
 	})
 }
 

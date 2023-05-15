@@ -48,6 +48,10 @@ func (tx *Tx) TableScan(tbl *Table, opt ScanOptions) *RawTableCursor {
 	return tx.newTableCursor(tbl, opt)
 }
 
+func FullTableScan[Row any](txh Txish) Cursor[Row] {
+	return TableScan[Row](txh, FullScan())
+}
+
 func IndexScan[Row any](txh Txish, idx *Index, opt ScanOptions) Cursor[Row] {
 	tx := txh.DBTx()
 	tbl := tableOf[Row](tx)
@@ -105,6 +109,34 @@ func AllRawKeys(c RawCursor) [][]byte {
 	var result [][]byte
 	for c.Next() {
 		result = append(result, c.RawKey())
+	}
+	return result
+}
+
+func First[Row any](c Cursor[Row]) *Row {
+	if c.Next() {
+		return c.Row()
+	}
+	return nil
+}
+
+func Select[Row any](c Cursor[Row], f func(*Row) bool) *Row {
+	for c.Next() {
+		row := c.Row()
+		if f == nil || f(row) {
+			return row
+		}
+	}
+	return nil
+}
+
+func Filter[Row any](c Cursor[Row], f func(*Row) bool) []*Row {
+	var result []*Row
+	for c.Next() {
+		row := c.Row()
+		if f(row) {
+			result = append(result)
+		}
 	}
 	return result
 }
