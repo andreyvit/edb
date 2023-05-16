@@ -8,7 +8,7 @@ import (
 
 func Lookup[Row any](txh Txish, idx *Index, indexKey any) *Row {
 	tx := txh.DBTx()
-	if tbl := tx.tableByRowPtr((*Row)(nil)); idx.table != tbl {
+	if tbl := tx.Schema().TableByRow((*Row)(nil)); idx.table != tbl {
 		panic(fmt.Errorf("invalid index %v for table %v", idx.FullName(), tbl.Name()))
 	}
 

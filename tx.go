@@ -41,6 +41,14 @@ func (tx *Tx) DBTx() *Tx {
 	return tx
 }
 
+func (tx *Tx) DB() *DB {
+	return tx.db
+}
+
+func (tx *Tx) Schema() *Schema {
+	return tx.db.schema
+}
+
 // Tx currently implements Check-Mutate phases for writable transactions:
 //
 // Phase 1, Check: before any modifications are made. Runs inside bdb.Batch.

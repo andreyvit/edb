@@ -1,6 +1,7 @@
 package edb
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 )
@@ -34,6 +35,23 @@ func (scm *Schema) Tables() []*Table {
 
 func (scm *Schema) TableNamed(name string) *Table {
 	return scm.tablesByLowerName[strings.ToLower(name)]
+}
+
+func (scm *Schema) TableByRowType(rt reflect.Type) *Table {
+	tbl := scm.tablesByRowType[rt]
+	if tbl == nil {
+		panic(fmt.Errorf("no table defined for row type %v", rt))
+	}
+	return tbl
+}
+
+func (scm *Schema) TableByRow(row any) *Table {
+	rt := reflect.TypeOf(row)
+	if rt.Kind() == reflect.Ptr && rt.Elem().Kind() == reflect.Struct {
+		return scm.TableByRowType(rt)
+	} else {
+		panic(fmt.Errorf("expected pointer to a table row type, got %v", rt))
+	}
 }
 
 type bucketName []byte

@@ -46,20 +46,3 @@ func reflectTypeWithoutCache(typ reflect.Type) *structInfo {
 	}
 	return info
 }
-
-func (tx *Tx) tableByRowType(rt reflect.Type) *Table {
-	tbl := tx.db.schema.tablesByRowType[rt]
-	if tbl == nil {
-		panic(fmt.Errorf("no table defined for row type %v", rt))
-	}
-	return tbl
-}
-
-func (tx *Tx) tableByRowPtr(ptr any) *Table {
-	rt := reflect.TypeOf(ptr)
-	if rt.Kind() == reflect.Ptr && rt.Elem().Kind() == reflect.Struct {
-		return tx.tableByRowType(rt)
-	} else {
-		panic(fmt.Errorf("expected pointer to a table row type, got %v", rt))
-	}
-}

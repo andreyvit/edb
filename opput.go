@@ -10,7 +10,7 @@ import (
 
 func Put(txh Txish, row any) {
 	tx := txh.DBTx()
-	tbl := tx.tableByRowPtr(row)
+	tbl := tx.Schema().TableByRow(row)
 	tx.Put(tbl, row)
 }
 

@@ -4,7 +4,7 @@ import "reflect"
 
 func Reload[Row any](txh Txish, row *Row) *Row {
 	tx := txh.DBTx()
-	tbl := tx.tableByRowPtr((*Row)(nil))
+	tbl := tx.Schema().TableByRow((*Row)(nil))
 	rowVal := reflect.ValueOf(row)
 	keyVal := tbl.RowKeyVal(rowVal)
 	newRowVal, _ := tx.getRowValByKeyVal(tbl, keyVal, true)
@@ -16,7 +16,7 @@ func Reload[Row any](txh Txish, row *Row) *Row {
 
 func Get[Row any](txh Txish, key any) *Row {
 	tx := txh.DBTx()
-	tbl := tx.tableByRowPtr((*Row)(nil))
+	tbl := tx.Schema().TableByRow((*Row)(nil))
 	row, _ := tx.Get(tbl, key)
 	if row == nil {
 		return nil
@@ -26,7 +26,7 @@ func Get[Row any](txh Txish, key any) *Row {
 
 func Exists[Row any](txh Txish, key any) bool {
 	tx := txh.DBTx()
-	tbl := tx.tableByRowPtr((*Row)(nil))
+	tbl := tx.Schema().TableByRow((*Row)(nil))
 	return tx.Exists(tbl, key)
 }
 

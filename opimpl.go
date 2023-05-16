@@ -3,5 +3,5 @@ package edb
 import "reflect"
 
 func tableOf[T any](tx *Tx) *Table {
-	return tx.tableByRowType(reflect.TypeOf((*T)(nil)))
+	return tx.Schema().TableByRowType(reflect.TypeOf((*T)(nil)))
 }

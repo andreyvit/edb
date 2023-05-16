@@ -131,6 +131,15 @@ func (tbl *Table) encodeKeyVal(buf []byte, key reflect.Value, zeroOK bool) []byt
 	return buf
 }
 
+func (tbl *Table) RowHasZeroKey(row any) bool {
+	return tbl.RowValHasZeroKey(reflect.ValueOf(row))
+}
+
+func (tbl *Table) RowValHasZeroKey(rowVal reflect.Value) bool {
+	// TODO: better logic here!
+	return tbl.RowKeyVal(rowVal).IsZero()
+}
+
 func (tbl *Table) encodeRowVal(buf []byte, rowVal reflect.Value) []byte {
 	return tbl.valueEnc.EncodeValue(buf, rowVal)
 }
