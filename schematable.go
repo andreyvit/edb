@@ -62,7 +62,11 @@ func AddTable[Row any](scm *Schema, name string, latestSchemaVer uint64, indexer
 	tbl.keyType = tbl.rowInfo.keyField.Type
 	tbl.keyEnc = flatEncodingOf(tbl.keyType)
 	scm.tables = append(scm.tables, tbl)
-	scm.tablesByLowerName[strings.ToLower(tbl.name)] = tbl
+	lowerName := strings.ToLower(tbl.name)
+	if scm.tablesByLowerName[lowerName] != nil {
+		panic(fmt.Errorf("table %s is already defined", tbl.name))
+	}
+	scm.tablesByLowerName[lowerName] = tbl
 	scm.tablesByRowType[tbl.rowType] = tbl
 	scm.tablesByRowType[tbl.rowTypePtr] = tbl
 	tbl.zeroKey = tbl.keyEnc.encode(nil, reflect.Zero(tbl.keyType))
