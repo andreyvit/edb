@@ -448,7 +448,7 @@ func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx
 		ik, iv = boltSeek(c, prefix, reverse)
 	} else {
 		if debugLogScans {
-			log.Printf("prefix index scan step: ADNC: reverse = %v", reverse)
+			log.Printf("prefix index scan step: ADVC: reverse = %v", reverse)
 		}
 		ik, iv = boltAdvance(c, reverse)
 	}
@@ -457,7 +457,7 @@ func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx
 			if debugLogScans {
 				log.Printf("prefix index scan step: BAIL: ik = %x, prefix = %x", ik, prefix)
 			}
-			break
+			return nil, nil, nil
 		}
 		ikTup := decodeIndexKey(ik, idx)
 		if len(ikTup) < s.els {
@@ -474,6 +474,9 @@ func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx
 			log.Printf("prefix index scan step: SKIP: ik = %x, iv = %q", ik, iv)
 		}
 		ik, iv = boltAdvance(c, reverse)
+	}
+	if debugLogScans {
+		log.Printf("prefix index scan step: EOFd: prefix = %x", prefix)
 	}
 	return nil, nil, nil
 }

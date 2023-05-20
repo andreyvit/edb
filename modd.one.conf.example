@@ -1,0 +1,3 @@
+*.go modd.conf {
+    prep: go test . -run TestDBReverseScanBug
+}
