@@ -48,3 +48,6 @@ func (tx *Tx) TableStats(tbl *Table) TableStats {
 func loggableRowVal(rowVal reflect.Value) string {
 	return string(must(json.Marshal(rowVal.Interface())))
 }
+func loggableVal(rowVal reflect.Value) string {
+	return string(must(json.Marshal(rowVal.Interface())))
+}

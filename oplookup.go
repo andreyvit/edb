@@ -41,7 +41,15 @@ func (tx *Tx) LookupKey(idx *Index, indexKey any) any {
 }
 func (tx *Tx) LookupKeyVal(idx *Index, indexKeyVal reflect.Value) reflect.Value {
 	keyRaw := tx.lookupRawKeyByVal(idx, indexKeyVal)
-	return keyRawToVal(keyRaw, idx.table)
+	result := keyRawToVal(keyRaw, idx.table)
+	if tx.db.verbose {
+		if keyRaw != nil {
+			tx.db.logf("db: LOOKUP_KEY %s/%v => %v", idx.FullName(), loggableVal(indexKeyVal), loggableVal(result))
+		} else {
+			tx.db.logf("db: LOOKUP_KEY.NOTFOUND %s/%v", idx.FullName(), loggableVal(indexKeyVal))
+		}
+	}
+	return result
 }
 
 func (tx *Tx) LookupVal(idx *Index, indexKeyVal reflect.Value) (reflect.Value, ValueMeta) {
@@ -52,6 +60,13 @@ func (tx *Tx) LookupVal(idx *Index, indexKeyVal reflect.Value) (reflect.Value, V
 	row, rowMeta := tx.getRowValByRawKey(idx.table, keyRaw, true)
 	if rowMeta.IsMissing() && tx.db.strict {
 		panic(fmt.Errorf("data error in %s: index entry points to missing record %x", idx.FullName(), keyRaw))
+	}
+	if tx.db.verbose {
+		if keyRaw != nil {
+			tx.db.logf("db: LOOKUP %s/%v => %v", idx.FullName(), loggableVal(indexKeyVal), loggableRowVal(row))
+		} else {
+			tx.db.logf("db: LOOKUP.NOTFOUND %s/%v", idx.FullName(), loggableVal(indexKeyVal))
+		}
 	}
 	return row, rowMeta
 }

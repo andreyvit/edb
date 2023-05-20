@@ -165,6 +165,21 @@ func (so ScanOptions) Prefix(els int) ScanOptions {
 	return so
 }
 
+func (so ScanOptions) LogString() string {
+	var prefix string
+	if so.Reverse {
+		prefix = "reverse:"
+	}
+	switch so.Method {
+	case ScanMethodFull:
+		return prefix + "full"
+	case ScanMethodExact:
+		return prefix + "exact:" + loggableVal(so.Lower)
+	default:
+		return prefix + "unknown"
+	}
+}
+
 func FullScan() ScanOptions {
 	return ScanOptions{Method: ScanMethodFull}
 }
@@ -318,6 +333,9 @@ func (c *RawIndexCursor) Row() (any, ValueMeta) {
 
 func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 	idx.requireTable()
+	if tx.db.verbose {
+		tx.db.logf("db: INDEX_SCAN %s/%v", idx.FullName(), opt.LogString())
+	}
 	tableBuck := nonNil(tx.btx.Bucket(idx.table.buck.Raw()))
 	ibuck := nonNil(tableBuck.Bucket(idx.buck.Raw()))
 	dbuck := nonNil(tableBuck.Bucket(dataBucket.Raw()))
