@@ -210,6 +210,24 @@ func TestDBCompositeKey(t *testing.T) {
 	})
 }
 
+func TestDBReverseScanBug(t *testing.T) {
+	u3 := &User{ID: 3, Name: "bar", Email: "bar@example.com"}
+	u4 := &User{ID: 4, Name: "bar", Email: "bar2@example.com"}
+	u5 := &User{ID: 5, Name: "bar", Email: "bar3@example.com"}
+
+	db := setup(t, basicSchema)
+	db.Write(func(tx *Tx) {
+		Put(tx, u3)
+		Put(tx, u4)
+		Put(tx, u5)
+	})
+
+	db.Read(func(tx *Tx) {
+		rows := All(IndexScan[User](tx, usersByName, ExactScan("bar").Reversed()))
+		deepEqual(t, rows, []*User{u5, u4, u3})
+	})
+}
+
 func TestUpdateIndexValue(t *testing.T) {
 	u1 := &User{ID: 1, Name: "foo", Email: "foo@example.com"}
 

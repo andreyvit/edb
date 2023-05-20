@@ -61,7 +61,11 @@ func boltSeekLast(c *bbolt.Cursor, prefix []byte) ([]byte, []byte) {
 	for k != nil && bytes.HasPrefix(k, prefix) {
 		k, _ = c.Next()
 	}
-	return c.Prev()
+	if k == nil {
+		return c.Last()
+	} else {
+		return c.Prev()
+	}
 }
 
 func boltFirstLast(c *bbolt.Cursor, reverse bool) ([]byte, []byte) {
