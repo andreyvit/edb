@@ -12,21 +12,48 @@ var anyType = reflect.TypeOf((*any)(nil)).Elem()
 var dataBucket = makeBucketName("data")
 
 type Schema struct {
+	Name              string
 	tables            []*Table
 	tablesByLowerName map[string]*Table
 	tablesByRowType   map[reflect.Type]*Table
 	maps              []*KVMap
 }
 
-type SchemaOpts struct {
+func (scm *Schema) init() {
+	if scm.tablesByLowerName == nil {
+		scm.tablesByLowerName = make(map[string]*Table)
+		scm.tablesByRowType = make(map[reflect.Type]*Table)
+	}
 }
 
-func NewSchema(opt SchemaOpts) *Schema {
-	scm := &Schema{
-		tablesByLowerName: make(map[string]*Table),
-		tablesByRowType:   make(map[reflect.Type]*Table),
+func (scm *Schema) Include(peer *Schema) {
+	scm.init()
+	for _, tbl := range peer.tables {
+		if scm.tablesByLowerName[strings.ToLower(tbl.name)] != nil {
+			panic(fmt.Errorf("table %s is defined in multiple schemas", tbl.name))
+		}
+		if scm.tablesByRowType[tbl.rowType] != nil {
+			panic(fmt.Errorf("row type %v is used in multiple schemas", tbl.rowType))
+		}
+		scm.addTable(tbl)
 	}
-	return scm
+}
+
+func (scm *Schema) addTable(tbl *Table) {
+	lower := strings.ToLower(tbl.name)
+
+	if scm.tablesByLowerName[lower] != nil {
+		panic(fmt.Errorf("table %s is already defined", tbl.name))
+	}
+	if scm.tablesByRowType[tbl.rowType] != nil {
+		panic(fmt.Errorf("row type %v is already used", tbl.rowType))
+	}
+
+	tbl.pos = len(scm.tables)
+	scm.tables = append(scm.tables, tbl)
+	scm.tablesByLowerName[lower] = tbl
+	scm.tablesByRowType[tbl.rowType] = tbl
+	scm.tablesByRowType[tbl.rowTypePtr] = tbl
 }
 
 func (scm *Schema) Tables() []*Table {

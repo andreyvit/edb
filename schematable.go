@@ -34,6 +34,7 @@ func (tbl *Table) Name() string {
 }
 
 func AddTable[Row any](scm *Schema, name string, latestSchemaVer uint64, indexer func(row *Row, ib *IndexBuilder), migrator func(tx *Tx, row *Row, oldVer uint64), indices []*Index) *Table {
+	scm.init()
 	rowPtrType := reflect.TypeOf((*Row)(nil))
 	if rowPtrType.Kind() != reflect.Ptr || rowPtrType.Elem().Kind() != reflect.Struct {
 		panic(fmt.Sprintf("%s: second arg to AddTable must be (*YourStruct)(nil)", name))
@@ -58,17 +59,9 @@ func AddTable[Row any](scm *Schema, name string, latestSchemaVer uint64, indexer
 			migrator(tx, row.(*Row), oldVer)
 		}
 	}
-	tbl.pos = len(scm.tables)
 	tbl.keyType = tbl.rowInfo.keyField.Type
 	tbl.keyEnc = flatEncodingOf(tbl.keyType)
-	scm.tables = append(scm.tables, tbl)
-	lowerName := strings.ToLower(tbl.name)
-	if scm.tablesByLowerName[lowerName] != nil {
-		panic(fmt.Errorf("table %s is already defined", tbl.name))
-	}
-	scm.tablesByLowerName[lowerName] = tbl
-	scm.tablesByRowType[tbl.rowType] = tbl
-	scm.tablesByRowType[tbl.rowTypePtr] = tbl
+	scm.addTable(tbl)
 	tbl.zeroKey = tbl.keyEnc.encode(nil, reflect.Zero(tbl.keyType))
 
 	tbl.indices = indices
