@@ -64,13 +64,13 @@ func (tx *Tx) getRowValByKeyVal(tbl *Table, keyVal reflect.Value, includeRow boo
 	if tx.db.verbose {
 		if includeRow {
 			if val.IsValid() {
-				tx.db.logf("db: GET %s/%v => %v", tbl.name, keyVal.Interface(), loggableRowVal(val))
+				tx.db.logf("db: GET %s/%v => %v", tbl.name, keyVal.Interface(), loggableRowVal(tbl, val))
 			} else {
 				tx.db.logf("db: GET.NOTFOUND %s/%v", tbl.name, keyVal.Interface())
 			}
 		} else {
 			if val.IsValid() {
-				tx.db.logf("db: META %s/%v => %v", tbl.name, keyVal.Interface(), loggableRowVal(val))
+				tx.db.logf("db: META %s/%v => %v", tbl.name, keyVal.Interface(), loggableRowVal(tbl, val))
 			} else {
 				tx.db.logf("db: META.NOTFOUND %s/%v", tbl.name, keyVal.Interface())
 			}

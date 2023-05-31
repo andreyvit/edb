@@ -27,13 +27,20 @@ type Table struct {
 	keyStringSep    string
 	zeroKey         []byte
 	migrator        func(tx *Tx, row any, oldVer uint64)
+	suppressContent bool
 }
 
 func (tbl *Table) Name() string {
 	return tbl.name
 }
 
-func AddTable[Row any](scm *Schema, name string, latestSchemaVer uint64, indexer func(row *Row, ib *IndexBuilder), migrator func(tx *Tx, row *Row, oldVer uint64), indices []*Index) *Table {
+type tableOpt int
+
+const (
+	SuppressContentWhenLogging = tableOpt(1)
+)
+
+func AddTable[Row any](scm *Schema, name string, latestSchemaVer uint64, indexer func(row *Row, ib *IndexBuilder), migrator func(tx *Tx, row *Row, oldVer uint64), indices []*Index, opts ...any) *Table {
 	scm.init()
 	rowPtrType := reflect.TypeOf((*Row)(nil))
 	if rowPtrType.Kind() != reflect.Ptr || rowPtrType.Elem().Kind() != reflect.Struct {
@@ -73,6 +80,18 @@ func AddTable[Row any](scm *Schema, name string, latestSchemaVer uint64, indexer
 		tbl.indicesByName[idx.name] = idx
 		idx.table = tbl
 	}
+
+	for _, opt := range opts {
+		switch opt := opt.(type) {
+		case tableOpt:
+			if opt == SuppressContentWhenLogging {
+				tbl.suppressContent = true
+			}
+		default:
+			panic(fmt.Errorf("invalid option %T %v", opt, opt))
+		}
+	}
+
 	return tbl
 }
 

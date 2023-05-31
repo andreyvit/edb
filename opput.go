@@ -8,10 +8,12 @@ import (
 	"go.etcd.io/bbolt"
 )
 
-func Put(txh Txish, row any) {
-	tx := txh.DBTx()
-	tbl := tx.Schema().TableByRow(row)
-	tx.Put(tbl, row)
+func Put(txh Txish, rows ...any) {
+	for _, row := range rows {
+		tx := txh.DBTx()
+		tbl := tx.Schema().TableByRow(row)
+		tx.Put(tbl, row)
+	}
 }
 
 func (tx *Tx) Put(tbl *Table, row any) ValueMeta {
@@ -65,7 +67,7 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) ValueMeta {
 		// Likely nothing changed. Ignore possible index value changes; if data is
 		// unchanged, a no-op save is much more likely than a change to indexing algorithm.
 		if tx.db.verbose {
-			tx.db.logf("db: PUT.NOOP %s/%v => m=%d %s", tbl.name, keyVal, newModCount, loggableRowVal(rowVal))
+			tx.db.logf("db: PUT.NOOP %s/%v => m=%d %s", tbl.name, keyVal, newModCount, loggableRowVal(tbl, rowVal))
 		}
 		return ValueMeta{newSchemaVer, newModCount}
 	}
@@ -79,7 +81,7 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) ValueMeta {
 	ensure(dataBuck.Put(keyRaw, valueRaw))
 
 	if tx.db.verbose {
-		tx.db.logf("db: PUT %s/%v => m=%d %s", tbl.name, keyVal, newModCount, loggableRowVal(rowVal))
+		tx.db.logf("db: PUT %s/%v => m=%d %s", tbl.name, keyVal, newModCount, loggableRowVal(tbl, rowVal))
 	}
 
 	if oldValueRaw != nil && !isIndexKeySetUnchanged && !tx.reindexing {

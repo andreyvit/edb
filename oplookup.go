@@ -63,7 +63,7 @@ func (tx *Tx) LookupVal(idx *Index, indexKeyVal reflect.Value) (reflect.Value, V
 	}
 	if tx.db.verbose {
 		if keyRaw != nil {
-			tx.db.logf("db: LOOKUP %s/%v => %v", idx.FullName(), loggableVal(indexKeyVal), loggableRowVal(row))
+			tx.db.logf("db: LOOKUP %s/%v => %v", idx.FullName(), loggableVal(indexKeyVal), loggableRowVal(idx.table, row))
 		} else {
 			tx.db.logf("db: LOOKUP.NOTFOUND %s/%v", idx.FullName(), loggableVal(indexKeyVal))
 		}
