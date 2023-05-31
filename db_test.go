@@ -37,7 +37,7 @@ type (
 )
 
 var (
-	basicSchema = NewSchema(SchemaOpts{})
+	basicSchema = &Schema{}
 	usersTable  = AddTable(basicSchema, "Users", 1, func(row *User, ib *IndexBuilder) {
 		ib.Add(usersByEmail, row.Email)
 		if row.Name != "" {
