@@ -216,11 +216,13 @@ func (tx *Tx) addIndexKeyBuf(buf []byte) {
 }
 
 func (tx *Tx) Close() {
-	// The only error Rollback returns is ErrTxClosed, and it just signals that
-	// we've ran Commit (which is the normal flow).
-	err := tx.btx.Rollback()
-	if err != nil && err != bbolt.ErrTxClosed {
-		panic(err) // not expected to happen unless Bolt API changes
+	if !tx.managed {
+		// The only error Rollback returns is ErrTxClosed, and it just signals that
+		// we've ran Commit (which is the normal flow).
+		err := tx.btx.Rollback()
+		if err != nil && err != bbolt.ErrTxClosed {
+			panic(err) // not expected to happen unless Bolt API changes
+		}
 	}
 	tx.release()
 }
