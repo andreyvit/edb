@@ -98,6 +98,7 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 			// 	log.Printf("Tx.START")
 			// }
 			tx = db.newTx(btx, true, memo)
+			defer tx.Close()
 			funcErr = safelyCall(f, tx)
 			memo = tx.memo
 			// log.Printf("Tx.END: calls = %d, memo = %v, w = %v, cde = %v, err = %v", calls, memo, tx.written, tx.commitDespiteErr, funcErr)
@@ -116,6 +117,7 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 	} else {
 		return db.bdb.View(func(btx *bbolt.Tx) error {
 			tx := db.newTx(btx, true, nil)
+			defer tx.Close()
 			return f(tx)
 		})
 	}
@@ -230,6 +232,7 @@ func (tx *Tx) release() {
 			tx.valueBufs[i] = nil
 		}
 		arrayOfBytesPool.Put(tx.valueBufs[:0])
+		tx.valueBufs = nil
 	}
 	if tx.indexValueBufs != nil {
 		for i, buf := range tx.indexValueBufs {
@@ -237,6 +240,7 @@ func (tx *Tx) release() {
 			tx.indexValueBufs[i] = nil
 		}
 		arrayOfBytesPool.Put(tx.indexValueBufs[:0])
+		tx.indexValueBufs = nil
 	}
 	if tx.indexKeyBufs != nil {
 		for i, buf := range tx.indexKeyBufs {
@@ -244,6 +248,7 @@ func (tx *Tx) release() {
 			tx.indexKeyBufs[i] = nil
 		}
 		arrayOfBytesPool.Put(tx.indexKeyBufs[:0])
+		tx.indexKeyBufs = nil
 	}
 }
 
