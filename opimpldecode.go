@@ -2,6 +2,7 @@ package edb
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 )
 
@@ -73,7 +74,9 @@ func decodeTableValue(tbl *Table, keyRaw, valueRaw []byte) value {
 	var vle value
 	err := vle.decode(valueRaw)
 	if err != nil {
-		panic(tableErrf(tbl, nil, keyRaw, err, ""))
+		err := tableErrf(tbl, nil, keyRaw, err, "")
+		log.Printf("** ERROR: %v", err)
+		panic(err)
 	}
 	return vle
 }

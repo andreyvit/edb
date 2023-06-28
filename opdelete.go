@@ -94,3 +94,30 @@ func (tx *Tx) deleteByKeyRaw(tbl *Table, keyRaw []byte) bool {
 	ensure(c.Delete())
 	return true
 }
+
+func (tx *Tx) UnsafeDeleteByKeyRawSkippingIndex(tbl *Table, keyRaw []byte) bool {
+	ok := tx.unsafeDeleteByKeyRawSkippingIndex(tbl, keyRaw)
+	if tx.db.verbose {
+		if ok {
+			tx.db.logf("db: UNSAFE_DELETE_SKIPIDX %s/%x", tbl.name, keyRaw)
+		} else {
+			tx.db.logf("db: UNSAFE_DELETE_SKIPIDX.NOOP %s/%x", tbl.name, keyRaw)
+		}
+	}
+	return true
+}
+
+func (tx *Tx) unsafeDeleteByKeyRawSkippingIndex(tbl *Table, keyRaw []byte) bool {
+	tableBuck := nonNil(tx.btx.Bucket(tbl.buck.Raw()))
+	dataBuck := nonNil(tableBuck.Bucket(dataBucket.Raw()))
+
+	c := dataBuck.Cursor()
+	k, _ := c.Seek(keyRaw)
+	if !bytes.Equal(k, keyRaw) {
+		return false
+	}
+
+	tx.markWritten()
+	ensure(c.Delete())
+	return true
+}

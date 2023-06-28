@@ -2,6 +2,7 @@ package edb
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -65,7 +66,7 @@ func (e *TableError) Error() string {
 	}
 	if e.Key != nil {
 		buf.WriteByte('/')
-		buf.Write(e.Key)
+		buf.WriteString(strconv.Quote(string(e.Key)))
 	}
 	if e.Msg != "" {
 		buf.WriteString(": ")
