@@ -41,6 +41,9 @@ func (tx *Tx) DeleteByKeyVal(tbl *Table, keyVal reflect.Value) bool {
 	keyRaw := tbl.encodeKeyVal(keyBuf, keyVal, false)
 	defer keyBytesPool.Put(keyBuf[:0])
 	ok := tx.deleteByKeyRaw(tbl, keyRaw)
+	if ok && tx.changeHandler != nil {
+		tx.changeHandler(tbl, keyVal.Interface())
+	}
 	if tx.db.verbose {
 		if ok {
 			tx.db.logf("db: DELETE %s/%v", tbl.name, keyVal.Interface())
@@ -53,6 +56,9 @@ func (tx *Tx) DeleteByKeyVal(tbl *Table, keyVal reflect.Value) bool {
 
 func (tx *Tx) DeleteByKeyRaw(tbl *Table, keyRaw []byte) bool {
 	ok := tx.deleteByKeyRaw(tbl, keyRaw)
+	if ok && tx.changeHandler != nil {
+		// TODO! need to decode the key here.
+	}
 	if tx.db.verbose {
 		if ok {
 			tx.db.logf("db: DELETE %s/%x", tbl.name, keyRaw)

@@ -105,5 +105,9 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) ValueMeta {
 		ensure(idxBuck.Put(ir.KeyRaw, ir.ValueRaw))
 	}
 
+	if tx.changeHandler != nil {
+		tx.changeHandler(tbl, keyVal.Interface())
+	}
+
 	return ValueMeta{newSchemaVer, newModCount}
 }

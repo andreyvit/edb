@@ -25,6 +25,8 @@ type Tx struct {
 	indexKeyBufs   [][]byte
 	valueBufs      [][]byte
 	indexValueBufs [][]byte
+
+	changeHandler func(tbl *Table, key any)
 }
 
 func (db *DB) newTx(btx *bbolt.Tx, managed bool, memo map[string]any) *Tx {
@@ -47,6 +49,10 @@ func (tx *Tx) DB() *DB {
 
 func (tx *Tx) Schema() *Schema {
 	return tx.db.schema
+}
+
+func (tx *Tx) OnChange(f func(tbl *Table, key any)) {
+	tx.changeHandler = f
 }
 
 // Tx currently implements Check-Mutate phases for writable transactions:
