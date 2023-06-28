@@ -52,6 +52,10 @@ func FullTableScan[Row any](txh Txish) Cursor[Row] {
 	return TableScan[Row](txh, FullScan())
 }
 
+func FullReverseTableScan[Row any](txh Txish) Cursor[Row] {
+	return TableScan[Row](txh, FullScan().Reversed())
+}
+
 func IndexScan[Row any](txh Txish, idx *Index, opt ScanOptions) Cursor[Row] {
 	tx := txh.DBTx()
 	tbl := tableOf[Row](tx)
