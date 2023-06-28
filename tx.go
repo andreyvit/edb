@@ -226,6 +226,7 @@ func (tx *Tx) Close() {
 }
 
 func (tx *Tx) release() {
+	return
 	if tx.valueBufs != nil {
 		for i, buf := range tx.valueBufs {
 			valueBytesPool.Put(buf[:0])
