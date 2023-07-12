@@ -72,9 +72,15 @@ func FullIndexScan[Row any](txh Txish, idx *Index) Cursor[Row] {
 func ExactIndexScan[Row any](txh Txish, idx *Index, indexValue any) Cursor[Row] {
 	return IndexScan[Row](txh, idx, ExactScan(indexValue))
 }
+func ReverseExactIndexScan[Row any](txh Txish, idx *Index, indexValue any) Cursor[Row] {
+	return IndexScan[Row](txh, idx, ExactScan(indexValue).Reversed())
+}
 
 func PrefixIndexScan[Row any](txh Txish, idx *Index, els int, indexValue any) Cursor[Row] {
 	return IndexScan[Row](txh, idx, ExactScan(indexValue).Prefix(els))
+}
+func ReversePrefixIndexScan[Row any](txh Txish, idx *Index, els int, indexValue any) Cursor[Row] {
+	return IndexScan[Row](txh, idx, ExactScan(indexValue).Prefix(els).Reversed())
 }
 
 func (tx *Tx) IndexScan(idx *Index, opt ScanOptions) *RawIndexCursor {
