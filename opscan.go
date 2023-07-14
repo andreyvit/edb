@@ -60,7 +60,10 @@ func IndexScan[Row any](txh Txish, idx *Index, opt ScanOptions) Cursor[Row] {
 	tx := txh.DBTx()
 	tbl := tableOf[Row](tx)
 	if tbl != idx.table {
-		panic(fmt.Errorf("row referes to table %v, but index is on table %v", tbl.Name(), idx.table.Name()))
+		if idx.table == nil {
+			panic(fmt.Errorf("index %v has not been added to table %v", idx.ShortName(), tbl.Name()))
+		}
+		panic(fmt.Errorf("row refers to table %v, but index is on table %v", tbl.Name(), idx.table.Name()))
 	}
 	return Cursor[Row]{tx.IndexScan(idx, opt)}
 }
