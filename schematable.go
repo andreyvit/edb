@@ -141,7 +141,10 @@ func (tbl *Table) SetRowKeyVal(rowVal, keyVal reflect.Value) {
 }
 
 func (tbl *Table) EncodeKey(key any) []byte {
-	return tbl.keyEnc.encode(nil, reflect.ValueOf(key))
+	return tbl.EncodeKeyVal(reflect.ValueOf(key))
+}
+func (tbl *Table) EncodeKeyVal(keyVal reflect.Value) []byte {
+	return tbl.keyEnc.encode(nil, keyVal)
 }
 
 func (tbl *Table) encodeKeyVal(buf []byte, key reflect.Value, zeroOK bool) []byte {

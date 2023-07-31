@@ -134,6 +134,46 @@ func TestDBScan(t *testing.T) {
 
 		rows = All(TableScan[User](tx, FullScan().Reversed()))
 		deepEqual(t, rows, []*User{u5, u4, u3, u2, u1})
+
+		rows = All(TableScan[User](tx, RangeScan(u2.ID, u4.ID, true, true)))
+		deepEqual(t, rows, []*User{u2, u3, u4})
+
+		rows = All(TableScan[User](tx, RangeScan(u2.ID, u4.ID, true, false)))
+		deepEqual(t, rows, []*User{u2, u3})
+
+		rows = All(TableScan[User](tx, RangeScan(u2.ID, ID(8), true, true)))
+		deepEqual(t, rows, []*User{u2, u3, u4, u5})
+
+		rows = All(TableScan[User](tx, RangeScan(u2.ID, nil, true, true)))
+		deepEqual(t, rows, []*User{u2, u3, u4, u5})
+
+		rows = All(TableScan[User](tx, RangeScan(nil, u4.ID, true, false)))
+		deepEqual(t, rows, []*User{u1, u2, u3})
+
+		rows = All(IndexScan[User](tx, usersByName, RangeScan("ba", "bo", true, true)))
+		deepEqual(t, rows, []*User{u3, u4, u5})
+
+		rows = All(IndexScan[User](tx, usersByName, RangeScan("bar", "bar", true, true)))
+		deepEqual(t, rows, []*User{u3, u4, u5})
+
+		rows = All(IndexScan[User](tx, usersByName, RangeScan("foo", "foo", true, true)))
+		deepEqual(t, rows, []*User{u1})
+
+		rows = All(IndexScan[User](tx, usersByName, RangeScan("bubble", "bubble", true, true)))
+		deepEqual(t, rows, []*User{u2})
+
+		isempty(t, All(IndexScan[User](tx, usersByName, RangeScan("bubbl", "bubbl", true, true))))
+		isempty(t, All(IndexScan[User](tx, usersByName, RangeScan("a", "a", true, true))))
+		isempty(t, All(IndexScan[User](tx, usersByName, RangeScan("b", "b", true, true))))
+
+		rows = All(IndexScan[User](tx, usersByName, RangeScan("b", "bz", true, true)))
+		deepEqual(t, rows, []*User{u3, u4, u5, u2})
+
+		rows = All(IndexScan[User](tx, usersByName, RangeScan("ba", "zo", true, true)))
+		deepEqual(t, rows, []*User{u3, u4, u5, u2, u1})
+
+		// rows = All(IndexScan[User](tx, usersByName, RangeScan("ba", "zo", true, true)))
+		// deepEqual(t, rows, []*User{u3, u4, u5, u2, u1})
 	})
 }
 
