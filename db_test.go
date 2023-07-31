@@ -172,8 +172,26 @@ func TestDBScan(t *testing.T) {
 		rows = All(IndexScan[User](tx, usersByName, RangeScan("ba", "zo", true, true)))
 		deepEqual(t, rows, []*User{u3, u4, u5, u2, u1})
 
-		// rows = All(IndexScan[User](tx, usersByName, RangeScan("ba", "zo", true, true)))
-		// deepEqual(t, rows, []*User{u3, u4, u5, u2, u1})
+		rows = All(IndexScan[User](tx, usersByName, RangeScan("ba", "bubble", true, true)))
+		deepEqual(t, rows, []*User{u3, u4, u5, u2})
+
+		rows = All(IndexScan[User](tx, usersByName, RangeScan("ba", "bubble", true, true).Reversed()))
+		deepEqual(t, rows, []*User{u2, u5, u4, u3})
+
+		rows = All(IndexScan[User](tx, usersByName, RangeScan("ba", "bubble", true, false)))
+		deepEqual(t, rows, []*User{u3, u4, u5})
+
+		rows = All(IndexScan[User](tx, usersByName, RangeScan("bar", "bubble", false, true)))
+		deepEqual(t, rows, []*User{u2})
+
+		rows = All(IndexScan[User](tx, usersByName, RangeScan("bar", "bubble", false, true).Reversed()))
+		deepEqual(t, rows, []*User{u2})
+
+		rows = All(IndexScan[User](tx, usersByName, RangeScan(nil, "bubble", false, true).Reversed()))
+		deepEqual(t, rows, []*User{u2, u5, u4, u3})
+
+		rows = All(IndexScan[User](tx, usersByName, RangeScan(nil, "bubble", false, false).Reversed()))
+		deepEqual(t, rows, []*User{u5, u4, u3})
 	})
 }
 

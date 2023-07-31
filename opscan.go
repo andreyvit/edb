@@ -56,6 +56,17 @@ func FullReverseTableScan[Row any](txh Txish) Cursor[Row] {
 	return TableScan[Row](txh, FullScan().Reversed())
 }
 
+func RangeTableScan[Row any](txh Txish, lowerValue, upperValue any, lowerInc, upperInc bool) Cursor[Row] {
+	return TableScan[Row](txh, RangeScan(lowerValue, upperValue, lowerInc, upperInc))
+}
+func ReverseRangeTableScan[Row any](txh Txish, lowerValue, upperValue any, lowerInc, upperInc bool) Cursor[Row] {
+	return TableScan[Row](txh, RangeScan(lowerValue, upperValue, lowerInc, upperInc).Reversed())
+}
+
+func ExactTableScan[Row any](txh Txish, value any) Cursor[Row] {
+	return TableScan[Row](txh, RangeScan(value, value, true, true))
+}
+
 func IndexScan[Row any](txh Txish, idx *Index, opt ScanOptions) Cursor[Row] {
 	tx := txh.DBTx()
 	tbl := tableOf[Row](tx)
@@ -77,6 +88,13 @@ func ExactIndexScan[Row any](txh Txish, idx *Index, indexValue any) Cursor[Row] 
 }
 func ReverseExactIndexScan[Row any](txh Txish, idx *Index, indexValue any) Cursor[Row] {
 	return IndexScan[Row](txh, idx, ExactScan(indexValue).Reversed())
+}
+
+func RangeIndexScan[Row any](txh Txish, idx *Index, lowerValue, upperValue any, lowerInc, upperInc bool) Cursor[Row] {
+	return IndexScan[Row](txh, idx, RangeScan(lowerValue, upperValue, lowerInc, upperInc))
+}
+func ReverseRangeIndexScan[Row any](txh Txish, idx *Index, lowerValue, upperValue any, lowerInc, upperInc bool) Cursor[Row] {
+	return IndexScan[Row](txh, idx, RangeScan(lowerValue, upperValue, lowerInc, upperInc).Reversed())
 }
 
 func PrefixIndexScan[Row any](txh Txish, idx *Index, els int, indexValue any) Cursor[Row] {
@@ -454,19 +472,13 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 				if at, et := opt.Lower.Type(), idx.keyType(); at != et {
 					panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
 				}
-				if !opt.LowerInc {
-					panic("LowerInc=false not supported")
-				}
 
 				lower, els, _ = encodeIndexBoundaryKey(opt.Lower, idx, opt.Els, true)
 				tx.addIndexKeyBuf(lower)
 			}
 			if opt.Upper.IsValid() {
-				if at, et := opt.Lower.Type(), idx.keyType(); at != et {
+				if at, et := opt.Upper.Type(), idx.keyType(); at != et {
 					panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
-				}
-				if !opt.UpperInc {
-					panic("UpperInc=false not supported")
 				}
 
 				var upperEls int
@@ -617,6 +629,7 @@ type rangeIndexScanStrategy struct {
 
 func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, []byte) {
 	var ik, iv []byte
+	var skippingInitial bool
 	if reset {
 		if reverse {
 			if s.upper == nil {
@@ -629,6 +642,9 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 					log.Printf("range index scan step: SEEK_REV: upper = %x", s.upper)
 				}
 				ik, iv = boltSeekLast(c, s.upper)
+				if !s.upperInc {
+					skippingInitial = true
+				}
 			}
 		} else {
 			if s.lower == nil {
@@ -641,6 +657,9 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 					log.Printf("range index scan step: SEEK_FWD: lower = %x", s.lower)
 				}
 				ik, iv = c.Seek(s.lower)
+				if !s.lowerInc {
+					skippingInitial = true
+				}
 			}
 		}
 	} else {
@@ -659,8 +678,35 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 		relevantLen := ikTup.prefixLen(s.els)
 		relevant := ik[:relevantLen]
 
+		if skippingInitial {
+			if reverse {
+				if bytes.Equal(relevant, s.upper) {
+					if debugLogScans {
+						log.Printf("range index scan step: SKIP_INITIAL_EQ_UPPER: ik = %x, relevant = %x", ik, relevant)
+					}
+					ik, iv = c.Prev()
+					continue
+				} else {
+					skippingInitial = false
+				}
+			} else {
+				if bytes.Equal(relevant, s.lower) {
+					if debugLogScans {
+						log.Printf("range index scan step: SKIP_INITIAL_EQ_LOWER: ik = %x, relevant = %x", ik, relevant)
+					}
+					ik, iv = c.Next()
+					continue
+				} else {
+					skippingInitial = false
+				}
+			}
+		}
+
 		if reverse {
 			if s.lower != nil {
+				// if debugLogScans {
+				// 	log.Printf("range index scan step: cmp (reverse+lower): ik = %x, relevant = %x, lower = %x", ik, relevant, lower)
+				// }
 				cmp := bytes.Compare(relevant, s.lower)
 				if cmp < 0 || (cmp == 0 && !s.lowerInc) {
 					if debugLogScans {

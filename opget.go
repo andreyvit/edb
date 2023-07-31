@@ -35,6 +35,9 @@ func (tx *Tx) Get(tbl *Table, key any) (any, ValueMeta) {
 }
 
 func (tx *Tx) GetByKeyVal(tbl *Table, keyVal reflect.Value) (any, ValueMeta) {
+	if tbl == nil {
+		panic("tbl == nil")
+	}
 	rowVal, rowMeta := tx.getRowValByKeyVal(tbl, keyVal, true)
 	if !rowVal.IsValid() {
 		return nil, ValueMeta{}
