@@ -31,7 +31,7 @@ func Open(path string, schema *Schema, opt Options) (*DB, error) {
 	if opt.IsTesting {
 		bopt.NoSync = true
 		bopt.NoFreelistSync = true
-		bopt.InitialMmapSize = 1024 * 1024
+		bopt.InitialMmapSize = 1024 * 1024 * 5
 	} else {
 		bopt.InitialMmapSize = 1024 * 1024 * 1024
 		bopt.FreelistType = bbolt.FreelistMapType
