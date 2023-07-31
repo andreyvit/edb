@@ -71,14 +71,8 @@ func AddTable[Row any](scm *Schema, name string, latestSchemaVer uint64, indexer
 	scm.addTable(tbl)
 	tbl.zeroKey = tbl.keyEnc.encode(nil, reflect.Zero(tbl.keyType))
 
-	tbl.indices = indices
-	for i, idx := range indices {
-		if tbl.indicesByName[idx.name] != nil {
-			panic(fmt.Errorf("table %s already has index named %q", tbl.name, idx.name))
-		}
-		idx.pos = i
-		tbl.indicesByName[idx.name] = idx
-		idx.table = tbl
+	for _, idx := range indices {
+		tbl.AddIndex(idx)
 	}
 
 	for _, opt := range opts {
@@ -92,6 +86,17 @@ func AddTable[Row any](scm *Schema, name string, latestSchemaVer uint64, indexer
 		}
 	}
 
+	return tbl
+}
+
+func (tbl *Table) AddIndex(idx *Index) *Table {
+	if tbl.indicesByName[idx.name] != nil {
+		panic(fmt.Errorf("table %s already has index named %q", tbl.name, idx.name))
+	}
+	idx.pos = len(tbl.indices)
+	tbl.indices = append(tbl.indices, idx)
+	tbl.indicesByName[idx.name] = idx
+	idx.table = tbl
 	return tbl
 }
 
