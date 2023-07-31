@@ -35,6 +35,9 @@ func makeIndexBuilder(ts *tableState, keyRaw []byte) IndexBuilder {
 
 func (b *IndexBuilder) Add(idx *Index, value any) *IndexRow {
 	valueVal := reflect.ValueOf(value)
+	if idx.table != b.ts.table {
+		panic(fmt.Errorf("%s: attempted to add entry to another table's index %s", b.ts.table.Name(), idx.FullName()))
+	}
 	if at, et := valueVal.Type(), idx.keyType(); at != et {
 		panic(fmt.Errorf("%s: attempted to add index entry with incorrect type %v, expected %v", idx.FullName(), at, et))
 	}
