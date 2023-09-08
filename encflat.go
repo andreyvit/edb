@@ -161,18 +161,26 @@ func (enc *flatEncoding) encodeInto(fe *flatEncoder, val reflect.Value) {
 }
 
 func (enc *flatEncoding) decode(buf []byte, val reflect.Value) error {
-	if val.Kind() != reflect.Ptr {
-		panic(fmt.Errorf("flatEncoding must be decoding into a ptr, got %v", val.Type()))
-	}
-	val = val.Elem()
-
 	tup, err := decodeTuple(buf)
 	if err != nil {
 		return err
 	}
 
+	err = enc.decodeTup(tup, val)
+	if err != nil {
+		return dataErrf(buf, len(buf), nil, "%s", err.Error())
+	}
+	return nil
+}
+
+func (enc *flatEncoding) decodeTup(tup tuple, val reflect.Value) error {
+	if val.Kind() != reflect.Ptr {
+		panic(fmt.Errorf("flatEncoding must be decoding into a ptr, got %v", val.Type()))
+	}
+	val = val.Elem()
+
 	if len(tup) != len(enc.components) {
-		return dataErrf(buf, len(buf), nil, "wrong number of components: got %d, wanted at least %d", len(tup), len(enc.components))
+		return fmt.Errorf("wrong number of components: got %d, wanted at least %d", len(tup), len(enc.components))
 	}
 
 	for i, fc := range enc.components {

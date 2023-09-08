@@ -394,6 +394,7 @@ type RawIndexCursor struct {
 	resetDone  bool
 	reverse    bool
 	ik, iv, dk []byte
+	itup       tuple
 }
 
 func (c *RawIndexCursor) Table() *Table {
@@ -405,13 +406,17 @@ func (c *RawIndexCursor) Tx() *Tx {
 }
 
 func (c *RawIndexCursor) Next() bool {
-	c.ik, c.iv, c.dk = c.strat.Next(c.icur, !c.resetDone, c.reverse, c.index)
+	c.ik, c.iv, c.itup, c.dk = c.strat.Next(c.icur, !c.resetDone, c.reverse, c.index)
 	c.resetDone = true
 	return (c.ik != nil)
 }
 
 func (c *RawIndexCursor) RawKey() []byte {
 	return c.dk
+}
+
+func (c *RawIndexCursor) IndexKey() any {
+	return c.index.DecodeIndexKeyVal(c.itup).Interface()
 }
 
 func (c *RawIndexCursor) Key() any {
@@ -532,12 +537,12 @@ func encodeIndexBoundaryKey(keyVal reflect.Value, idx *Index, cutoffEls int, nev
 }
 
 type indexScanStrategy interface {
-	Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, []byte)
+	Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte)
 }
 
 type fullIndexScanStrategy struct{}
 
-func (_ fullIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, []byte) {
+func (_ fullIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
 	var ik, iv []byte
 	if reset {
 		ik, iv = boltFirstLast(c, reverse)
@@ -545,10 +550,11 @@ func (_ fullIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *I
 		ik, iv = boltAdvance(c, reverse)
 	}
 	if ik == nil {
-		return nil, nil, nil
+		return nil, nil, nil, nil
 	}
-	dk := decodeIndexTableKey(ik, nil, iv, idx)
-	return ik, iv, dk
+	iktup := decodeIndexKey(ik, idx)
+	dk, itup := decodeIndexTableKey(ik, iktup, iv, idx)
+	return ik, iv, itup, dk
 }
 
 type exactIndexScanStrategy struct {
@@ -556,7 +562,7 @@ type exactIndexScanStrategy struct {
 	els    int
 }
 
-func (s *exactIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, []byte) {
+func (s *exactIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
 	var ik, iv []byte
 	if reset {
 		ik, iv = boltSeek(c, s.prefix, reverse)
@@ -564,10 +570,10 @@ func (s *exactIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 		ik, iv = boltAdvance(c, reverse)
 	}
 	if ik != nil && bytes.HasPrefix(ik, s.prefix) {
-		dk := decodeIndexTableKey(ik, nil, iv, idx)
-		return ik, iv, dk
+		dk, itup := decodeIndexTableKey(ik, nil, iv, idx)
+		return ik, iv, itup, dk
 	} else {
-		return nil, nil, nil
+		return nil, nil, nil, nil
 	}
 }
 
@@ -576,7 +582,7 @@ type prefixIndexScanStrategy struct {
 	els    int
 }
 
-func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, []byte) {
+func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
 	prefix := s.prefix
 	var ik, iv []byte
 	if reset {
@@ -595,7 +601,7 @@ func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx
 			if debugLogScans {
 				log.Printf("prefix index scan step: BAIL: ik = %x, prefix = %x", ik, prefix)
 			}
-			return nil, nil, nil
+			return nil, nil, nil, nil
 		}
 		ikTup := decodeIndexKey(ik, idx)
 		if len(ikTup) < s.els {
@@ -605,8 +611,8 @@ func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx
 			if debugLogScans {
 				log.Printf("prefix index scan step: MTCH: ik = %x, iv = %q", ik, iv)
 			}
-			dk := decodeIndexTableKey(ik, ikTup, iv, idx)
-			return ik, iv, dk
+			dk, itup := decodeIndexTableKey(ik, ikTup, iv, idx)
+			return ik, iv, itup, dk
 		}
 		if debugLogScans {
 			log.Printf("prefix index scan step: SKIP: ik = %x, iv = %q", ik, iv)
@@ -616,7 +622,7 @@ func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx
 	if debugLogScans {
 		log.Printf("prefix index scan step: EOFd: prefix = %x", prefix)
 	}
-	return nil, nil, nil
+	return nil, nil, nil, nil
 }
 
 type rangeIndexScanStrategy struct {
@@ -627,7 +633,7 @@ type rangeIndexScanStrategy struct {
 	upperInc bool
 }
 
-func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, []byte) {
+func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
 	var ik, iv []byte
 	var skippingInitial bool
 	if reset {
@@ -712,7 +718,7 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 					if debugLogScans {
 						log.Printf("range index scan step: BAIL: below lower: ik = %x, lower = %x", ik, lower)
 					}
-					return nil, nil, nil
+					return nil, nil, nil, nil
 				}
 			}
 		} else {
@@ -722,7 +728,7 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 					if debugLogScans {
 						log.Printf("range index scan step: BAIL: above upper: ik = %x, upper = %x", ik, upper)
 					}
-					return nil, nil, nil
+					return nil, nil, nil, nil
 				}
 			}
 		}
@@ -730,11 +736,11 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 		if debugLogScans {
 			log.Printf("range index scan step: MTCH: ik = %x, iv = %q", ik, iv)
 		}
-		dk := decodeIndexTableKey(ik, ikTup, iv, idx)
-		return ik, iv, dk
+		dk, itup := decodeIndexTableKey(ik, ikTup, iv, idx)
+		return ik, iv, itup, dk
 	}
 	if debugLogScans {
 		log.Printf("range index scan step: EOFd")
 	}
-	return nil, nil, nil
+	return nil, nil, nil, nil
 }

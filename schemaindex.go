@@ -65,3 +65,12 @@ func (idx *Index) keyTupleToString(indexKeyTup tuple) string {
 func (idx *Index) keyType() reflect.Type {
 	return idx.keyEnc.typ
 }
+
+func (idx *Index) DecodeIndexKeyVal(tup tuple) reflect.Value {
+	keyPtr := reflect.New(idx.recType)
+	err := idx.keyEnc.decodeTup(tup, keyPtr)
+	if err != nil {
+		panic(fmt.Errorf("failed to decode %s key: %w", idx.FullName(), err))
+	}
+	return keyPtr.Elem()
+}

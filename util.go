@@ -2,6 +2,7 @@ package edb
 
 import (
 	"bytes"
+	"encoding/hex"
 	"strings"
 
 	"go.etcd.io/bbolt"
@@ -82,4 +83,10 @@ func boltAdvance(c *bbolt.Cursor, reverse bool) ([]byte, []byte) {
 	} else {
 		return c.Next()
 	}
+}
+
+type hexBytes []byte
+
+func (b hexBytes) String() string {
+	return hex.EncodeToString(b)
 }

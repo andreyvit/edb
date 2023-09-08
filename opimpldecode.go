@@ -85,13 +85,13 @@ func (vle *value) decodeRowInto(rowVal reflect.Value) error {
 	return vle.Flags.encoding().DecodeValue(vle.Data, rowVal)
 }
 
-func decodeIndexTableKey(indexKeyRaw []byte, indexKeyTup tuple, indexVal []byte, idx *Index) []byte {
+func decodeIndexTableKey(indexKeyRaw []byte, indexKeyTup tuple, indexVal []byte, idx *Index) ([]byte, tuple) {
+	if indexKeyTup == nil {
+		indexKeyTup = decodeIndexKey(indexKeyRaw, idx)
+	}
 	if idx.isUnique {
-		return decodeUniqueIndexTableKey(indexKeyRaw, indexVal, idx)
+		return decodeUniqueIndexTableKey(indexKeyRaw, indexVal, idx), indexKeyTup
 	} else {
-		if indexKeyTup == nil {
-			indexKeyTup = decodeIndexKey(indexKeyRaw, idx)
-		}
 		return extractUniqueIndexKey(indexKeyTup)
 	}
 }
@@ -120,8 +120,9 @@ func decodeIndexKey(indexKeyRaw []byte, idx *Index) tuple {
 	return indexKeyTup
 }
 
-func extractUniqueIndexKey(indexKeyTup tuple) []byte {
-	return indexKeyTup[len(indexKeyTup)-1]
+func extractUniqueIndexKey(indexKeyTup tuple) ([]byte, tuple) {
+	n := len(indexKeyTup)
+	return indexKeyTup[n-1], indexKeyTup[:n-1]
 }
 
 func decodeIndexRow(idx *Index, indexKeyRaw, indexValRaw []byte) (indexKey tuple, keyRaw []byte) {

@@ -24,6 +24,16 @@ func Get[Row any](txh Txish, key any) *Row {
 	return row.(*Row)
 }
 
+func GetByKeyRaw[Row any](txh Txish, keyRaw []byte) *Row {
+	tx := txh.DBTx()
+	tbl := tx.Schema().TableByRow((*Row)(nil))
+	row, _ := tx.GetByKeyRaw(tbl, keyRaw)
+	if row == nil {
+		return nil
+	}
+	return row.(*Row)
+}
+
 func Exists[Row any](txh Txish, key any) bool {
 	tx := txh.DBTx()
 	tbl := tx.Schema().TableByRow((*Row)(nil))
@@ -39,6 +49,17 @@ func (tx *Tx) GetByKeyVal(tbl *Table, keyVal reflect.Value) (any, ValueMeta) {
 		panic("tbl == nil")
 	}
 	rowVal, rowMeta := tx.getRowValByKeyVal(tbl, keyVal, true)
+	if !rowVal.IsValid() {
+		return nil, ValueMeta{}
+	}
+	return rowVal.Interface(), rowMeta
+}
+
+func (tx *Tx) GetByKeyRaw(tbl *Table, keyRaw []byte) (any, ValueMeta) {
+	if tbl == nil {
+		panic("tbl == nil")
+	}
+	rowVal, rowMeta := tx.getRowValByKeyRaw(tbl, keyRaw, true, hexBytes(keyRaw))
 	if !rowVal.IsValid() {
 		return nil, ValueMeta{}
 	}
@@ -63,19 +84,23 @@ func (tx *Tx) getRowValByKeyVal(tbl *Table, keyVal reflect.Value, includeRow boo
 	keyBuf := keyBytesPool.Get().([]byte)
 	keyRaw := tbl.encodeKeyVal(keyBuf, keyVal, true)
 	defer keyBytesPool.Put(keyBuf[:0])
+	return tx.getRowValByKeyRaw(tbl, keyRaw, includeRow, keyVal.Interface())
+}
+
+func (tx *Tx) getRowValByKeyRaw(tbl *Table, keyRaw []byte, includeRow bool, keyValueForLogging any) (reflect.Value, ValueMeta) {
 	val, valMeta := tx.getRowValByRawKey(tbl, keyRaw, includeRow)
 	if tx.db.verbose {
 		if includeRow {
 			if val.IsValid() {
-				tx.db.logf("db: GET %s/%v => %v", tbl.name, keyVal.Interface(), loggableRowVal(tbl, val))
+				tx.db.logf("db: GET %s/%v => %v", tbl.name, keyValueForLogging, loggableRowVal(tbl, val))
 			} else {
-				tx.db.logf("db: GET.NOTFOUND %s/%v", tbl.name, keyVal.Interface())
+				tx.db.logf("db: GET.NOTFOUND %s/%v", tbl.name, keyValueForLogging)
 			}
 		} else {
 			if val.IsValid() {
-				tx.db.logf("db: META %s/%v => %v", tbl.name, keyVal.Interface(), loggableRowVal(tbl, val))
+				tx.db.logf("db: META %s/%v => %v", tbl.name, keyValueForLogging, loggableRowVal(tbl, val))
 			} else {
-				tx.db.logf("db: META.NOTFOUND %s/%v", tbl.name, keyVal.Interface())
+				tx.db.logf("db: META.NOTFOUND %s/%v", tbl.name, keyValueForLogging)
 			}
 		}
 	}

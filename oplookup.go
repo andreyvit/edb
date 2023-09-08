@@ -110,7 +110,8 @@ func (tx *Tx) lookupRawKeyByVal(idx *Index, indexKeyVal reflect.Value) []byte {
 				continue
 			}
 
-			return extractUniqueIndexKey(indexKeyTup)
+			dk, _ := extractUniqueIndexKey(indexKeyTup)
+			return dk
 		}
 		return nil
 	}
