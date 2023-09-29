@@ -150,7 +150,8 @@ func (tbl *Table) EncodeKeyVal(keyVal reflect.Value) []byte {
 func (tbl *Table) encodeKeyVal(buf []byte, key reflect.Value, zeroOK bool) []byte {
 	buf = tbl.keyEnc.encode(buf, key)
 	if !zeroOK && bytes.Equal(buf, tbl.zeroKey) {
-		panic(fmt.Errorf("attempt to encode zero key for table"))
+		v := key.Interface()
+		panic(fmt.Errorf("attempt to encode zero key for table %s: %T %v", tbl.Name(), v, v))
 	}
 	return buf
 }
