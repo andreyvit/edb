@@ -41,6 +41,10 @@ func (idx *Index) requireTable() {
 	}
 }
 
+func (idx *Index) Table() *Table {
+	return idx.table
+}
+
 func (idx *Index) ShortName() string {
 	return idx.name
 }
