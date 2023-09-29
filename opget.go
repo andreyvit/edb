@@ -1,6 +1,8 @@
 package edb
 
-import "reflect"
+import (
+	"reflect"
+)
 
 func Reload[Row any](txh Txish, row *Row) *Row {
 	tx := txh.DBTx()
@@ -115,6 +117,14 @@ func (tx *Tx) existsByKeyVal(tbl *Table, keyVal reflect.Value) bool {
 	found := (tx.getRawByRawKey(tbl, keyRaw) != nil)
 	if tx.db.verbose {
 		tx.db.logf("db: EXISTS.%s %s/%v", map[bool]string{false: "NO", true: "YES"}[found], tbl.name, keyVal.Interface())
+	}
+	return found
+}
+
+func (tx *Tx) ExistsByKeyRaw(tbl *Table, keyRaw []byte) bool {
+	found := (tx.getRawByRawKey(tbl, keyRaw) != nil)
+	if tx.db.verbose {
+		tx.db.logf("db: EXISTS.%s %s/%x", map[bool]string{false: "NO", true: "YES"}[found], tbl.name, keyRaw)
 	}
 	return found
 }
