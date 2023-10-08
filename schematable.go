@@ -100,6 +100,10 @@ func (tbl *Table) AddIndex(idx *Index) *Table {
 	return tbl
 }
 
+func (tbl *Table) IndexNamed(name string) *Index {
+	return tbl.indicesByName[name]
+}
+
 func (tbl *Table) KeyType() reflect.Type {
 	return tbl.keyType
 }
