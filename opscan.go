@@ -358,7 +358,16 @@ func (tx *Tx) newTableCursor(tbl *Table, opt ScanOptions) *RawTableCursor {
 	case ScanMethodFull:
 		break
 	case ScanMethodExact:
-		panic("table cursor does not support ScanMethodExact")
+		if !opt.Lower.IsValid() {
+			panic(fmt.Errorf("Lower must be specified for ScanMethodExact"))
+		}
+		if at, et := opt.Lower.Type(), tbl.KeyType(); at != et {
+			panic(fmt.Errorf("%s: attempted to scan table using lower bound of incorrect type %v, expected %v", tbl.Name(), at, et))
+		}
+		c.lower = tbl.EncodeKeyVal(opt.Lower)
+		c.lowerInc = true
+		c.upper = c.lower
+		c.upperInc = true
 	case ScanMethodRange:
 		if opt.Lower.IsValid() {
 			if at, et := opt.Lower.Type(), tbl.KeyType(); at != et {
