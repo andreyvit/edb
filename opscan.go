@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"strconv"
+	"strings"
 
 	"go.etcd.io/bbolt"
 )
@@ -201,18 +203,39 @@ func (so ScanOptions) Prefix(els int) ScanOptions {
 }
 
 func (so ScanOptions) LogString() string {
-	var prefix string
+	var buf strings.Builder
 	if so.Reverse {
-		prefix = "reverse:"
+		buf.WriteString("reverse:")
 	}
 	switch so.Method {
 	case ScanMethodFull:
-		return prefix + "full"
+		buf.WriteString("full")
 	case ScanMethodExact:
-		return prefix + "exact:" + loggableVal(so.Lower)
+		buf.WriteString("exact:")
+		buf.WriteString(loggableVal(so.Lower))
+	case ScanMethodRange:
+		buf.WriteString("range")
+		if so.LowerInc {
+			buf.WriteByte('[')
+		} else {
+			buf.WriteByte('(')
+		}
+		buf.WriteString(loggableVal(so.Lower))
+		buf.WriteString(":")
+		buf.WriteString(loggableVal(so.Upper))
+		if so.UpperInc {
+			buf.WriteByte(']')
+		} else {
+			buf.WriteByte(')')
+		}
 	default:
-		return prefix + "unknown"
+		buf.WriteString("unknown")
 	}
+	if so.Els != 0 {
+		buf.WriteByte(':')
+		buf.WriteString(strconv.Itoa(so.Els))
+	}
+	return buf.String()
 }
 
 func FullScan() ScanOptions {
@@ -595,10 +618,10 @@ func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx
 	prefix := s.prefix
 	var ik, iv []byte
 	if reset {
-		if debugLogScans {
-			log.Printf("prefix index scan step: SEEK: prefix = %x, reverse = %v", prefix, reverse)
-		}
 		ik, iv = boltSeek(c, prefix, reverse)
+		if debugLogScans {
+			log.Printf("prefix index scan step: SEEK: prefix = %x, reverse = %v => ik = %x, iv = %x", prefix, reverse, ik, iv)
+		}
 	} else {
 		if debugLogScans {
 			log.Printf("prefix index scan step: ADVC: reverse = %v", reverse)
