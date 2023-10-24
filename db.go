@@ -21,6 +21,7 @@ type Options struct {
 	Logf      func(format string, args ...any)
 	Verbose   bool
 	IsTesting bool
+	MmapSize  int
 }
 
 func Open(path string, schema *Schema, opt Options) (*DB, error) {
@@ -35,6 +36,9 @@ func Open(path string, schema *Schema, opt Options) (*DB, error) {
 	} else {
 		bopt.InitialMmapSize = 1024 * 1024 * 1024
 		bopt.FreelistType = bbolt.FreelistMapType
+	}
+	if opt.MmapSize != 0 {
+		bopt.InitialMmapSize = opt.MmapSize
 	}
 
 	bdb, err := bbolt.Open(path, 0666, bopt)
