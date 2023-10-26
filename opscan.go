@@ -122,6 +122,17 @@ func All[Row any](c Cursor[Row]) []*Row {
 	return result
 }
 
+func AllLimited[Row any](c Cursor[Row], limit int) []*Row {
+	var result []*Row
+	for c.Next() {
+		result = append(result, c.Row())
+		if limit > 0 && len(result) >= limit {
+			break
+		}
+	}
+	return result
+}
+
 func AllKeys[Key any](c RawCursor) []Key {
 	var result []Key
 	for c.Next() {
