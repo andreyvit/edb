@@ -398,10 +398,19 @@ func (tx *Tx) newTableCursor(tbl *Table, opt ScanOptions) *RawTableCursor {
 		if at, et := opt.Lower.Type(), tbl.KeyType(); at != et {
 			panic(fmt.Errorf("%s: attempted to scan table using lower bound of incorrect type %v, expected %v", tbl.Name(), at, et))
 		}
-		c.lower = tbl.EncodeKeyVal(opt.Lower)
-		c.lowerInc = true
-		c.upper = c.lower
-		c.upperInc = true
+
+		keyPrefix, _, isFull := encodeTableBoundaryKey(opt.Lower, tbl, opt.Els)
+		tx.addIndexKeyBuf(keyPrefix)
+
+		if isFull {
+			c.lower = keyPrefix
+			c.lowerInc = true
+			c.upper = c.lower
+			c.upperInc = true
+		} else {
+			c.prefix = keyPrefix
+		}
+
 	case ScanMethodRange:
 		if opt.Lower.IsValid() {
 			if at, et := opt.Lower.Type(), tbl.KeyType(); at != et {
@@ -552,6 +561,24 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 		dbuck:   dbuck,
 		reverse: opt.Reverse,
 		strat:   strat,
+	}
+}
+
+func encodeTableBoundaryKey(keyVal reflect.Value, tbl *Table, cutoffEls int) ([]byte, int, bool) {
+	keyBuf := keyBytesPool.Get().([]byte)
+	fe := flatEncoder{buf: keyBuf}
+	tbl.keyEnc.encodeInto(&fe, keyVal)
+
+	keyEls, isFull := fe.count(), true
+	if cutoffEls != 0 && cutoffEls < keyEls {
+		keyEls, isFull = cutoffEls, false
+	}
+
+	if isFull {
+		return fe.finalize(), keyEls, true
+	} else {
+		n := fe.prefixLen(keyEls)
+		return fe.buf[:n], keyEls, false
 	}
 }
 
