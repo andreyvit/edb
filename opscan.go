@@ -19,6 +19,10 @@ type Cursor[Row any] struct {
 	RawCursor
 }
 
+func (c Cursor[Row]) Raw() RawCursor {
+	return c.RawCursor
+}
+
 func (c Cursor[Row]) Next() bool {
 	return c.RawCursor.Next()
 }
@@ -183,6 +187,14 @@ func Filter[Row any](c Cursor[Row], f func(*Row) bool) []*Row {
 		}
 	}
 	return result
+}
+
+func Count(c RawCursor) int {
+	var count int
+	for c.Next() {
+		count++
+	}
+	return count
 }
 
 type ScanMethod int
