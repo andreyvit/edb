@@ -3,8 +3,15 @@ package edb
 import (
 	"fmt"
 	"runtime/debug"
+	"sync/atomic"
+	"time"
 
 	"go.etcd.io/bbolt"
+)
+
+var (
+	ReaderCount atomic.Int64
+	WriterCount atomic.Int64
 )
 
 type Txish interface {
@@ -12,9 +19,12 @@ type Txish interface {
 }
 
 type Tx struct {
-	db      *DB
-	btx     *bbolt.Tx
-	managed bool
+	db        *DB
+	btx       *bbolt.Tx
+	managed   bool
+	closed    bool
+	startTime time.Time
+	stack     []byte
 
 	written          bool
 	commitDespiteErr bool
@@ -29,13 +39,28 @@ type Tx struct {
 	changeHandler func(tbl *Table, key any)
 }
 
-func (db *DB) newTx(btx *bbolt.Tx, managed bool, memo map[string]any) *Tx {
-	return &Tx{
-		db:      db,
-		btx:     btx,
-		managed: managed,
-		memo:    memo,
+func (db *DB) newTx(btx *bbolt.Tx, managed bool, memo map[string]any, stack []byte) *Tx {
+	db.lastSize.Store(btx.Size())
+	if btx.Writable() {
+		WriterCount.Add(1)
+	} else {
+		ReaderCount.Add(1)
 	}
+	if trackTxns && stack == nil {
+		stack = debug.Stack()
+	}
+	tx := &Tx{
+		db:        db,
+		btx:       btx,
+		managed:   managed,
+		memo:      memo,
+		startTime: time.Now(),
+		stack:     stack,
+	}
+	if trackTxns {
+		db.addTx(tx)
+	}
+	return tx
 }
 
 // DBTx implements Txish
@@ -85,7 +110,18 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 		var memo map[string]any
 		// debug.PrintStack()
 		// log.Printf("Tx.BATCH.BEGIN")
+		pending := true
+		db.PendingWriterCount.Add(1)
+		var stack []byte
+		if trackTxns {
+			stack = debug.Stack()
+		}
 		err := db.bdb.Batch(func(btx *bbolt.Tx) error {
+			if pending {
+				pending = false
+				db.PendingWriterCount.Add(-1)
+			}
+
 			if funcErr != nil {
 				// don't retry failed transactions
 				return funcErr
@@ -97,7 +133,7 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 			// } else {
 			// 	log.Printf("Tx.START")
 			// }
-			tx = db.newTx(btx, true, memo)
+			tx = db.newTx(btx, true, memo, stack)
 			defer tx.Close()
 			funcErr = safelyCall(f, tx)
 			memo = tx.memo
@@ -116,7 +152,7 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 		return err
 	} else {
 		return db.bdb.View(func(btx *bbolt.Tx) error {
-			tx := db.newTx(btx, true, nil)
+			tx := db.newTx(btx, true, nil, nil)
 			defer tx.Close()
 			return f(tx)
 		})
@@ -146,7 +182,7 @@ func (db *DB) BeginRead() *Tx {
 	if err != nil {
 		panic(fmt.Errorf("failed to start reading: %w", err))
 	}
-	return db.newTx(btx, false, nil)
+	return db.newTx(btx, false, nil, nil)
 }
 
 func (db *DB) Read(f func(tx *Tx)) {
@@ -175,7 +211,7 @@ func (db *DB) BeginUpdate() *Tx {
 	if err != nil {
 		panic(fmt.Errorf("db.Begin(true) failed: %w", err))
 	}
-	return db.newTx(btx, false, nil)
+	return db.newTx(btx, false, nil, nil)
 }
 
 func (tx *Tx) IsWritable() bool {
@@ -216,6 +252,20 @@ func (tx *Tx) addIndexKeyBuf(buf []byte) {
 }
 
 func (tx *Tx) Close() {
+	if tx.closed {
+		return
+	}
+	tx.closed = true
+	if trackTxns {
+		tx.db.removeTx(tx)
+	}
+	if tx.btx.Writable() {
+		WriterCount.Add(-1)
+		tx.db.WriteCount.Add(1)
+	} else {
+		ReaderCount.Add(-1)
+		tx.db.ReadCount.Add(1)
+	}
 	if !tx.managed {
 		// The only error Rollback returns is ErrTxClosed, and it just signals that
 		// we've ran Commit (which is the normal flow).
