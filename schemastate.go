@@ -103,13 +103,21 @@ func prepareTable(tx *Tx, tbl *Table, now time.Time) *tableState {
 func (ts *tableState) migrate(tx *Tx) {
 	tbl := ts.table
 	if ts.hasPendingIndices() {
+		log.Printf("Re-indexing table %s...", tbl.Name())
+		start := time.Now()
+		var rows int64
 		for c := tx.TableScan(tbl, FullScan()); c.Next(); {
 			rowVal, _ := c.RowVal()
 			tx.PutVal(tbl, rowVal)
+			rows++
+			if rows%100000 == 0 {
+				log.Printf("Still re-indexing %s, so far updated %d rows in %d ms", tbl.Name(), rows, time.Since(start).Milliseconds())
+			}
 		}
 		for _, is := range ts.Indices {
 			is.Built = true
 		}
+		log.Printf("Re-indexing of %d rows in %s took %d ms", rows, tbl.Name(), time.Since(start).Milliseconds())
 	}
 }
 
