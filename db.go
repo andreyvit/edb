@@ -38,6 +38,8 @@ type Options struct {
 	Verbose   bool
 	IsTesting bool
 	MmapSize  int
+
+	NoPersistentFreeList bool
 }
 
 func Open(path string, schema *Schema, opt Options) (*DB, error) {
@@ -56,10 +58,19 @@ func Open(path string, schema *Schema, opt Options) (*DB, error) {
 	if opt.MmapSize != 0 {
 		bopt.InitialMmapSize = opt.MmapSize
 	}
+	if opt.NoPersistentFreeList {
+		bopt.NoFreelistSync = true
+	}
 
+	start := time.Now()
 	bdb, err := bbolt.Open(path, 0666, bopt)
 	if err != nil {
 		return nil, fmt.Errorf("kvdb: %w", err)
+	}
+	if elapsed := time.Since(start); elapsed >= 5*time.Millisecond {
+		if opt.Logf != nil {
+			opt.Logf("db: bbolt open took %d ms", elapsed.Milliseconds())
+		}
 	}
 
 	db := &DB{
