@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"io"
 	"math"
+	"reflect"
 )
 
 func ensureCapacity(buf []byte, minCap int) []byte {
@@ -33,6 +34,13 @@ func appendRaw(buf []byte, chunk []byte) []byte {
 	n := len(chunk)
 	off, buf := grow(buf, n)
 	copy(buf[off:], chunk)
+	return buf
+}
+
+func appendRawVal(buf []byte, chunk reflect.Value) []byte {
+	n := chunk.Len()
+	off, buf := grow(buf, n)
+	reflect.Copy(reflect.ValueOf(buf[off:]), chunk)
 	return buf
 }
 

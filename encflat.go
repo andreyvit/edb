@@ -445,10 +445,14 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 			f(&flatComponent{
 				Type: typ,
 				Encode: func(fe *flatEncoder, v reflect.Value) {
-					if !v.CanAddr() {
-						panic(fmt.Errorf("non-addressable array %v %v", v.Type(), v))
+					fe.buf = appendRawVal(fe.buf, v)
+				},
+				Decode: func(b []byte, v reflect.Value) error {
+					if len(b) != v.Len() {
+						return fmt.Errorf("invalid data length for %v: got %d bytes, wanted %d", v.Type(), len(b), v.Len())
 					}
-					fe.buf = appendRaw(fe.buf, v.Slice(0, v.Len()).Convert(byteArrayType).Interface().([]byte))
+					reflect.Copy(v, reflect.ValueOf(b))
+					return nil
 				},
 			})
 			return
