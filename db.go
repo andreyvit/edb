@@ -11,7 +11,7 @@ import (
 	"go.etcd.io/bbolt"
 )
 
-const trackTxns = true
+const debugTrackTxns = false
 
 type DB struct {
 	bdb     *bbolt.DB
@@ -144,7 +144,7 @@ func (db *DB) removeTx(tx *Tx) {
 }
 
 func (db *DB) DescribeOpenTxns() string {
-	if !trackTxns {
+	if !debugTrackTxns {
 		return "OPEN TX TRACKING DISABLED"
 	}
 
