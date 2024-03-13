@@ -272,6 +272,12 @@ func ExactScanVal(val reflect.Value) ScanOptions {
 	return ScanOptions{Method: ScanMethodExact, Lower: val}
 }
 
+func LowerBoundScan(lower any, includeEqual bool) ScanOptions {
+	return RangeScan(lower, nil, includeEqual, false)
+}
+func UpperBoundScan(upper any, includeEqual bool) ScanOptions {
+	return RangeScan(nil, upper, false, includeEqual)
+}
 func RangeScan(lower, upper any, lowerInc, upperInc bool) ScanOptions {
 	var lowerVal, upperVal reflect.Value
 	if lower != nil {
