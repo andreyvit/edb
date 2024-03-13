@@ -31,6 +31,11 @@ func LookupKey[Key any](txh Txish, idx *Index, indexKey any) (Key, bool) {
 	}
 }
 
+func LookupExists(txh Txish, idx *Index, indexKey any) bool {
+	tx := txh.DBTx()
+	return tx.LookupExists(idx, reflect.ValueOf(indexKey))
+}
+
 func (tx *Tx) Lookup(idx *Index, indexKey any) any {
 	rowVal, _ := tx.LookupVal(idx, reflect.ValueOf(indexKey))
 	return valToAny(rowVal)
@@ -50,6 +55,17 @@ func (tx *Tx) LookupKeyVal(idx *Index, indexKeyVal reflect.Value) reflect.Value 
 		}
 	}
 	return result
+}
+func (tx *Tx) LookupExists(idx *Index, indexKeyVal reflect.Value) bool {
+	keyRaw := tx.lookupRawKeyByVal(idx, indexKeyVal)
+	if tx.db.verbose {
+		if keyRaw != nil {
+			tx.db.logf("db: LOOKUP_EXISTS.OK %s/%v", idx.FullName(), loggableVal(indexKeyVal))
+		} else {
+			tx.db.logf("db: LOOKUP_EXISTS.NOTFOUND %s/%v", idx.FullName(), loggableVal(indexKeyVal))
+		}
+	}
+	return keyRaw != nil
 }
 
 func (tx *Tx) LookupVal(idx *Index, indexKeyVal reflect.Value) (reflect.Value, ValueMeta) {
