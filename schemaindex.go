@@ -17,13 +17,21 @@ type Index struct {
 	keyEnc   *flatEncoding
 	isUnique bool
 	filler   func(row any, ib *IndexBuilder)
+
+	skipInitialFill bool
 }
 
 func makeIndexBucketName(name string) bucketName {
 	return makeBucketName("i_" + name)
 }
 
-func AddIndex[T any](name string) *Index {
+type IndexOpt int
+
+const (
+	IndexOptSkipInitialFill IndexOpt = iota
+)
+
+func AddIndex[T any](name string, opts ...any) *Index {
 	recType := reflect.TypeOf((*T)(nil)).Elem()
 
 	idx := &Index{
@@ -32,6 +40,21 @@ func AddIndex[T any](name string) *Index {
 		recType: recType,
 		keyEnc:  flatEncodingOf(recType),
 	}
+
+	for _, opt := range opts {
+		switch opt := opt.(type) {
+		case IndexOpt:
+			switch opt {
+			case IndexOptSkipInitialFill:
+				idx.skipInitialFill = true
+			default:
+				panic(fmt.Errorf("invalid option %T %v", opt, opt))
+			}
+		default:
+			panic(fmt.Errorf("invalid option %T %v", opt, opt))
+		}
+	}
+
 	return idx
 }
 

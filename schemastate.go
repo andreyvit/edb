@@ -102,6 +102,11 @@ func prepareTable(tx *Tx, tbl *Table, now time.Time) *tableState {
 
 func (ts *tableState) migrate(tx *Tx) {
 	tbl := ts.table
+	for _, is := range ts.Indices {
+		if !is.Built && is.index.skipInitialFill {
+			is.Built = true
+		}
+	}
 	if ts.hasPendingIndices() {
 		// log.Printf("Re-indexing table %s...", tbl.Name())
 		start := time.Now()
