@@ -342,8 +342,12 @@ func (c *RawTableCursor) Next() bool {
 				k, v = c.dcur.Last()
 			}
 		} else {
-			if c.lower != nil {
-				k, v = c.dcur.Seek(c.lower)
+			lower := c.lower
+			if lower == nil && len(c.prefix) > 0 {
+				lower = c.prefix
+			}
+			if lower != nil {
+				k, v = c.dcur.Seek(lower)
 			} else {
 				k, v = c.dcur.First()
 			}
