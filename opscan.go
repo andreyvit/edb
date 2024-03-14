@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	debugLogScans = false
+	debugLogIndexScans = false
+	debugLogTableScans = false
 )
 
 type Cursor[Row any] struct {
@@ -333,6 +334,9 @@ func (c *RawTableCursor) Next() bool {
 		} else {
 			k, v = c.dcur.Next()
 		}
+		if debugLogTableScans {
+			log.Printf("%s::TableScan: ADVC: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, c.prefix, c.reverse, k, v)
+		}
 	} else {
 		c.init = true
 		if c.reverse {
@@ -340,6 +344,9 @@ func (c *RawTableCursor) Next() bool {
 				panic("reverse range scan not supported yet")
 			} else {
 				k, v = c.dcur.Last()
+				if debugLogTableScans {
+					log.Printf("%s::TableScan: LAST: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, c.prefix, c.reverse, k, v)
+				}
 			}
 		} else {
 			lower := c.lower
@@ -348,16 +355,28 @@ func (c *RawTableCursor) Next() bool {
 			}
 			if lower != nil {
 				k, v = c.dcur.Seek(lower)
+				if debugLogTableScans {
+					log.Printf("%s::TableScan: SEEK to lower = %x: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, lower, c.prefix, c.reverse, k, v)
+				}
 			} else {
 				k, v = c.dcur.First()
+				if debugLogTableScans {
+					log.Printf("%s::TableScan: FIRST: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, c.prefix, c.reverse, k, v)
+				}
 			}
 		}
 	}
 	if k == nil {
+		if debugLogTableScans {
+			log.Printf("%s::TableScan: EOFd: prefix = %x, reverse = %v", c.table.name, c.prefix, c.reverse)
+		}
 		return false
 	}
 	if p := c.prefix; p != nil {
 		if len(k) < len(p) || !bytes.Equal(p, k[:len(p)]) {
+			if debugLogTableScans {
+				log.Printf("%s::TableScan: BAIL on prefix: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, c.prefix, c.reverse, k, v)
+			}
 			return false
 		}
 	}
@@ -365,6 +384,9 @@ func (c *RawTableCursor) Next() bool {
 		if b := c.lower; b != nil {
 			cmp := bytes.Compare(k, b)
 			if cmp == -1 || (cmp == 0 && !c.lowerInc) {
+				if debugLogTableScans {
+					log.Printf("%s::TableScan: BAIL on lower: lower = %x, reverse = %v => k = %x, v = %x", c.table.name, c.lower, c.reverse, k, v)
+				}
 				return false
 			}
 		}
@@ -372,9 +394,15 @@ func (c *RawTableCursor) Next() bool {
 		if b := c.upper; b != nil {
 			cmp := bytes.Compare(k, b)
 			if cmp == 1 || (cmp == 0 && !c.upperInc) {
+				if debugLogTableScans {
+					log.Printf("%s::TableScan: BAIL on upper: upper = %x, reverse = %v => k = %x, v = %x", c.table.name, c.upper, c.reverse, k, v)
+				}
 				return false
 			}
 		}
+	}
+	if debugLogTableScans {
+		log.Printf("%s::TableScan: MTCH: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, c.prefix, c.reverse, k, v)
 	}
 	c.k, c.v = k, v
 	return true
@@ -679,18 +707,18 @@ func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx
 	var ik, iv []byte
 	if reset {
 		ik, iv = boltSeek(c, prefix, reverse)
-		if debugLogScans {
+		if debugLogIndexScans {
 			log.Printf("prefix index scan step: SEEK: prefix = %x, reverse = %v => ik = %x, iv = %x", prefix, reverse, ik, iv)
 		}
 	} else {
-		if debugLogScans {
+		if debugLogIndexScans {
 			log.Printf("prefix index scan step: ADVC: reverse = %v", reverse)
 		}
 		ik, iv = boltAdvance(c, reverse)
 	}
 	for ik != nil {
 		if !bytes.HasPrefix(ik, prefix) {
-			if debugLogScans {
+			if debugLogIndexScans {
 				log.Printf("prefix index scan step: BAIL: ik = %x, prefix = %x", ik, prefix)
 			}
 			return nil, nil, nil, nil
@@ -700,18 +728,18 @@ func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx
 			panic(fmt.Errorf("%s: invalid index key %x: got %d els, wanted at least %d", idx.FullName(), ik, len(ikTup), s.els+1))
 		}
 		if ikTup.prefixLen(s.els) == len(prefix) {
-			if debugLogScans {
+			if debugLogIndexScans {
 				log.Printf("prefix index scan step: MTCH: ik = %x, iv = %q", ik, iv)
 			}
 			dk, itup := decodeIndexTableKey(ik, ikTup, iv, idx)
 			return ik, iv, itup, dk
 		}
-		if debugLogScans {
+		if debugLogIndexScans {
 			log.Printf("prefix index scan step: SKIP: ik = %x, iv = %q", ik, iv)
 		}
 		ik, iv = boltAdvance(c, reverse)
 	}
-	if debugLogScans {
+	if debugLogIndexScans {
 		log.Printf("prefix index scan step: EOFd: prefix = %x", prefix)
 	}
 	return nil, nil, nil, nil
@@ -731,12 +759,12 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 	if reset {
 		if reverse {
 			if s.upper == nil {
-				if debugLogScans {
+				if debugLogIndexScans {
 					log.Printf("range index scan step: SEEK_LAST")
 				}
 				ik, iv = c.Last()
 			} else {
-				if debugLogScans {
+				if debugLogIndexScans {
 					log.Printf("range index scan step: SEEK_REV: upper = %x", s.upper)
 				}
 				ik, iv = boltSeekLast(c, s.upper)
@@ -746,12 +774,12 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 			}
 		} else {
 			if s.lower == nil {
-				if debugLogScans {
+				if debugLogIndexScans {
 					log.Printf("range index scan step: SEEK_FIRST")
 				}
 				ik, iv = c.First()
 			} else {
-				if debugLogScans {
+				if debugLogIndexScans {
 					log.Printf("range index scan step: SEEK_FWD: lower = %x", s.lower)
 				}
 				ik, iv = c.Seek(s.lower)
@@ -761,7 +789,7 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 			}
 		}
 	} else {
-		if debugLogScans {
+		if debugLogIndexScans {
 			log.Printf("range index scan step: ADVC: reverse = %v", reverse)
 		}
 		ik, iv = boltAdvance(c, reverse)
@@ -779,7 +807,7 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 		if skippingInitial {
 			if reverse {
 				if bytes.Equal(relevant, s.upper) {
-					if debugLogScans {
+					if debugLogIndexScans {
 						log.Printf("range index scan step: SKIP_INITIAL_EQ_UPPER: ik = %x, relevant = %x", ik, relevant)
 					}
 					ik, iv = c.Prev()
@@ -789,7 +817,7 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 				}
 			} else {
 				if bytes.Equal(relevant, s.lower) {
-					if debugLogScans {
+					if debugLogIndexScans {
 						log.Printf("range index scan step: SKIP_INITIAL_EQ_LOWER: ik = %x, relevant = %x", ik, relevant)
 					}
 					ik, iv = c.Next()
@@ -807,7 +835,7 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 				// }
 				cmp := bytes.Compare(relevant, s.lower)
 				if cmp < 0 || (cmp == 0 && !s.lowerInc) {
-					if debugLogScans {
+					if debugLogIndexScans {
 						log.Printf("range index scan step: BAIL: below lower: ik = %x, lower = %x", ik, lower)
 					}
 					return nil, nil, nil, nil
@@ -817,7 +845,7 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 			if s.upper != nil {
 				cmp := bytes.Compare(relevant, s.upper)
 				if cmp > 0 || (cmp == 0 && !s.upperInc) {
-					if debugLogScans {
+					if debugLogIndexScans {
 						log.Printf("range index scan step: BAIL: above upper: ik = %x, upper = %x", ik, upper)
 					}
 					return nil, nil, nil, nil
@@ -825,13 +853,13 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 			}
 		}
 
-		if debugLogScans {
+		if debugLogIndexScans {
 			log.Printf("range index scan step: MTCH: ik = %x, iv = %q", ik, iv)
 		}
 		dk, itup := decodeIndexTableKey(ik, ikTup, iv, idx)
 		return ik, iv, itup, dk
 	}
-	if debugLogScans {
+	if debugLogIndexScans {
 		log.Printf("range index scan step: EOFd")
 	}
 	return nil, nil, nil, nil
