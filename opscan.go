@@ -184,7 +184,7 @@ func Filter[Row any](c Cursor[Row], f func(*Row) bool) []*Row {
 	for c.Next() {
 		row := c.Row()
 		if f(row) {
-			result = append(result)
+			result = append(result, row)
 		}
 	}
 	return result
