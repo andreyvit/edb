@@ -421,7 +421,9 @@ func (c *RawTableCursor) RowVal() (reflect.Value, ValueMeta) {
 }
 
 func (c *RawTableCursor) Meta() ValueMeta {
-	return decodeTableValue(c.table, c.k, c.v).ValueMeta()
+	var vle value
+	decodeTableValue(&vle, c.table, c.k, c.v)
+	return vle.ValueMeta()
 }
 
 func (c *RawTableCursor) Row() (any, ValueMeta) {
@@ -532,7 +534,9 @@ func (c *RawIndexCursor) RowVal() (reflect.Value, ValueMeta) {
 
 func (c *RawIndexCursor) Meta() ValueMeta {
 	dv := c.dbuck.Get(c.dk)
-	return decodeTableValue(c.table, c.dk, dv).ValueMeta()
+	var vle value
+	decodeTableValue(&vle, c.table, c.dk, dv)
+	return vle.ValueMeta()
 }
 
 func (c *RawIndexCursor) Row() (any, ValueMeta) {

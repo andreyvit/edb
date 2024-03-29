@@ -40,10 +40,7 @@ func (tx *Tx) DeleteByKeyVal(tbl *Table, keyVal reflect.Value) bool {
 	keyBuf := keyBytesPool.Get().([]byte)
 	keyRaw := tbl.encodeKeyVal(keyBuf, keyVal, false)
 	defer keyBytesPool.Put(keyBuf[:0])
-	ok := tx.deleteByKeyRaw(tbl, keyRaw)
-	if ok && tx.changeHandler != nil {
-		tx.changeHandler(tbl, keyVal.Interface())
-	}
+	ok := tx.deleteByKeyRaw(tbl, keyRaw, keyVal)
 	if tx.db.verbose {
 		if ok {
 			tx.db.logf("db: DELETE %s/%v", tbl.name, keyVal.Interface())
@@ -55,10 +52,7 @@ func (tx *Tx) DeleteByKeyVal(tbl *Table, keyVal reflect.Value) bool {
 }
 
 func (tx *Tx) DeleteByKeyRaw(tbl *Table, keyRaw []byte) bool {
-	ok := tx.deleteByKeyRaw(tbl, keyRaw)
-	if ok && tx.changeHandler != nil {
-		// TODO! need to decode the key here.
-	}
+	ok := tx.deleteByKeyRaw(tbl, keyRaw, reflect.Value{})
 	if tx.db.verbose {
 		if ok {
 			tx.db.logf("db: DELETE %s/%x", tbl.name, keyRaw)
@@ -69,7 +63,7 @@ func (tx *Tx) DeleteByKeyRaw(tbl *Table, keyRaw []byte) bool {
 	return true
 }
 
-func (tx *Tx) deleteByKeyRaw(tbl *Table, keyRaw []byte) bool {
+func (tx *Tx) deleteByKeyRaw(tbl *Table, keyRaw []byte, keyValIfKnown reflect.Value) bool {
 	tableBuck := nonNil(tx.btx.Bucket(tbl.buck.Raw()))
 	dataBuck := nonNil(tableBuck.Bucket(dataBucket.Raw()))
 	ts := tx.db.tableState(tbl)
@@ -81,15 +75,30 @@ func (tx *Tx) deleteByKeyRaw(tbl *Table, keyRaw []byte) bool {
 	}
 
 	var old value
-	err := old.decode(v)
-	if err != nil {
-		panic(tableErrf(tbl, nil, keyRaw, err, "decoding old value"))
-	}
+	decodeTableValue(&old, tbl, keyRaw, v)
 
 	tx.markWritten()
 
 	del := prepareToDeleteIndexEntries(tableBuck, ts)
 	decodeIndexKeys(old.Index, del)
+
+	if opts := tx.changeOptions[tbl]; opts.Contains(ChangeFlagNotify) && tx.changeHandler != nil {
+		chg := Change{
+			table:  tbl,
+			op:     OpDelete,
+			rawKey: keyRaw,
+		}
+		if opts.Contains(ChangeFlagIncludeRow) {
+			chg.rowVal, chg.keyVal, _ = decodeTableRowFromValue(&old, tbl, keyRaw, tx)
+		} else if opts.Contains(ChangeFlagIncludeKey) {
+			if keyValIfKnown.IsZero() {
+				chg.keyVal = tbl.DecodeKeyVal(keyRaw)
+			} else {
+				chg.keyVal = keyValIfKnown
+			}
+		}
+		tx.changeHandler(tx, &chg)
+	}
 
 	ensure(c.Delete())
 	return true

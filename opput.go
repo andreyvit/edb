@@ -105,8 +105,21 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) ValueMeta {
 		ensure(idxBuck.Put(ir.KeyRaw, ir.ValueRaw))
 	}
 
-	if tx.changeHandler != nil {
-		tx.changeHandler(tbl, keyVal.Interface())
+	if opts := tx.changeOptions[tbl]; opts.Contains(ChangeFlagNotify) && tx.changeHandler != nil {
+		chg := Change{
+			table:  tbl,
+			op:     OpPut,
+			rawKey: keyRaw,
+		}
+		if opts.Contains(ChangeFlagIncludeRow) {
+			chg.rowVal, chg.keyVal = rowVal, keyVal
+		} else if opts.Contains(ChangeFlagIncludeKey) {
+			chg.keyVal = keyVal
+		}
+		if opts.Contains(ChangeFlagIncludeOldRow) {
+			chg.oldRowVal, _, _ = decodeTableRowFromValue(&old, tbl, keyRaw, tx)
+		}
+		tx.changeHandler(tx, &chg)
 	}
 
 	return ValueMeta{newSchemaVer, newModCount}

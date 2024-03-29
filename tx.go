@@ -25,6 +25,7 @@ type Tx struct {
 	closed    bool
 	startTime time.Time
 	stack     []byte
+	verbose   bool
 
 	written          bool
 	commitDespiteErr bool
@@ -36,7 +37,8 @@ type Tx struct {
 	valueBufs      [][]byte
 	indexValueBufs [][]byte
 
-	changeHandler func(tbl *Table, key any)
+	changeHandler func(tx *Tx, chg *Change)
+	changeOptions map[*Table]ChangeFlags
 }
 
 func (db *DB) newTx(btx *bbolt.Tx, managed bool, memo map[string]any, stack []byte) *Tx {
@@ -72,11 +74,19 @@ func (tx *Tx) DB() *DB {
 	return tx.db
 }
 
+func (tx *Tx) BeginVerbose() {
+	tx.verbose = true
+}
+func (tx *Tx) EndVerbose() {
+	tx.verbose = false
+}
+
 func (tx *Tx) Schema() *Schema {
 	return tx.db.schema
 }
 
-func (tx *Tx) OnChange(f func(tbl *Table, key any)) {
+func (tx *Tx) OnChange(opts map[*Table]ChangeFlags, f func(tx *Tx, chg *Change)) {
+	tx.changeOptions = opts
 	tx.changeHandler = f
 }
 

@@ -49,11 +49,16 @@ func keyRawToVal(raw []byte, tbl *Table) reflect.Value {
 	}
 }
 
-func decodeTableRow(tbl *Table, keyRaw, valueRaw []byte, migrationTx *Tx) (reflect.Value, ValueMeta) {
-	vle := decodeTableValue(tbl, keyRaw, valueRaw)
+func decodeTableRow(tbl *Table, keyRaw, valueRaw []byte, migrationTx *Tx) (rowVal reflect.Value, rowMeta ValueMeta) {
+	var vle value
+	decodeTableValue(&vle, tbl, keyRaw, valueRaw)
+	rowVal, _, rowMeta = decodeTableRowFromValue(&vle, tbl, keyRaw, migrationTx)
+	return
+}
 
-	rowVal := tbl.newRow(vle.SchemaVer)
-	keyVal := tbl.DecodeKeyVal(keyRaw)
+func decodeTableRowFromValue(vle *value, tbl *Table, keyRaw []byte, migrationTx *Tx) (rowVal, keyVal reflect.Value, rowMeta ValueMeta) {
+	rowVal = tbl.newRow(vle.SchemaVer)
+	keyVal = tbl.DecodeKeyVal(keyRaw)
 
 	err := vle.decodeRowInto(rowVal)
 	if err != nil {
@@ -61,24 +66,21 @@ func decodeTableRow(tbl *Table, keyRaw, valueRaw []byte, migrationTx *Tx) (refle
 	}
 	tbl.rowInfo.keyValue(rowVal).Set(keyVal)
 
-	rowMeta := vle.ValueMeta()
+	rowMeta = vle.ValueMeta()
 
 	if rowMeta.SchemaVer < tbl.latestSchemaVer && tbl.migrator != nil {
 		tbl.migrator(migrationTx, rowVal.Interface(), rowMeta.SchemaVer)
 	}
-
-	return rowVal, rowMeta
+	return
 }
 
-func decodeTableValue(tbl *Table, keyRaw, valueRaw []byte) value {
-	var vle value
+func decodeTableValue(vle *value, tbl *Table, keyRaw, valueRaw []byte) {
 	err := vle.decode(valueRaw)
 	if err != nil {
 		err := tableErrf(tbl, nil, keyRaw, err, "")
 		log.Printf("** ERROR: %v", err)
 		panic(err)
 	}
-	return vle
 }
 
 func (vle *value) decodeRowInto(rowVal reflect.Value) error {
