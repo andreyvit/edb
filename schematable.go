@@ -41,52 +41,28 @@ const (
 )
 
 func AddTable[Row any](scm *Schema, name string, latestSchemaVer uint64, indexer func(row *Row, ib *IndexBuilder), migrator func(tx *Tx, row *Row, oldVer uint64), indices []*Index, opts ...any) *Table {
-	scm.init()
-	rowPtrType := reflect.TypeOf((*Row)(nil))
-	if rowPtrType.Kind() != reflect.Ptr || rowPtrType.Elem().Kind() != reflect.Struct {
-		panic(fmt.Sprintf("%s: second arg to AddTable must be (*YourStruct)(nil)", name))
-	}
-	tbl := &Table{
-		schema:          scm,
-		name:            name,
-		latestSchemaVer: latestSchemaVer,
-		buck:            makeBucketName(name),
-		rowTypePtr:      rowPtrType,
-		rowType:         rowPtrType.Elem(),
-		rowInfo:         reflectTypeWithoutCache(rowPtrType),
-		valueEnc:        defaultValueEncoding,
-		keyStringSep:    "|",
-		indicesByName:   make(map[string]*Index),
-		indexer: func(row any, ib *IndexBuilder) {
-			indexer(row.(*Row), ib)
-		},
-	}
-	if migrator != nil {
-		tbl.migrator = func(tx *Tx, row any, oldVer uint64) {
-			migrator(tx, row.(*Row), oldVer)
+	return DefineTable[Row, any](scm, name, func(b *TableBuilder[Row, any]) {
+		b.SetSchemaVersion(latestSchemaVer)
+		if indexer != nil {
+			b.Indexer(indexer)
 		}
-	}
-	tbl.keyType = tbl.rowInfo.keyField.Type
-	tbl.keyEnc = flatEncodingOf(tbl.keyType)
-	scm.addTable(tbl)
-	tbl.zeroKey = tbl.keyEnc.encode(nil, reflect.Zero(tbl.keyType))
-
-	for _, idx := range indices {
-		tbl.AddIndex(idx)
-	}
-
-	for _, opt := range opts {
-		switch opt := opt.(type) {
-		case tableOpt:
-			if opt == SuppressContentWhenLogging {
-				tbl.suppressContent = true
+		if migrator != nil {
+			b.Migrate(migrator)
+		}
+		for _, idx := range indices {
+			b.AddIndex(idx)
+		}
+		for _, opt := range opts {
+			switch opt := opt.(type) {
+			case tableOpt:
+				if opt == SuppressContentWhenLogging {
+					b.SuppressContentWhenLogging()
+				}
+			default:
+				panic(fmt.Errorf("invalid option %T %v", opt, opt))
 			}
-		default:
-			panic(fmt.Errorf("invalid option %T %v", opt, opt))
 		}
-	}
-
-	return tbl
+	})
 }
 
 func (tbl *Table) AddIndex(idx *Index) *Table {
