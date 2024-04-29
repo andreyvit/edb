@@ -110,11 +110,13 @@ func (ts *tableState) migrate(tx *Tx) {
 	if ts.hasPendingIndices() {
 		// log.Printf("Re-indexing table %s...", tbl.Name())
 		start := time.Now()
-		var rows int64
+		var rows, failed int64
 		for c := tx.TableScan(tbl, FullScan()); c.Next(); {
-			rowVal, _ := c.RowVal()
-			tx.PutVal(tbl, rowVal)
+			ok := upgradeRow(c, tx, tbl)
 			rows++
+			if !ok {
+				failed++
+			}
 			if rows%100000 == 0 {
 				log.Printf("Still re-indexing %s, so far updated %d rows in %d ms", tbl.Name(), rows, time.Since(start).Milliseconds())
 			}
@@ -126,7 +128,22 @@ func (ts *tableState) migrate(tx *Tx) {
 		if dur > 1 {
 			log.Printf("Re-indexing of %d rows in %s took %d ms", rows, tbl.Name(), dur)
 		}
+		if failed > 0 {
+			log.Printf("Re-indexing of %d rows in %s INCLUDED %d FAILURE(S)", rows, tbl.Name(), failed)
+		}
 	}
+}
+
+func upgradeRow(c *RawTableCursor, tx *Tx, tbl *Table) (ok bool) {
+	defer func() {
+		if e := recover(); e != nil {
+			log.Printf("Re-indexing error: %v", e)
+			ok = false
+		}
+	}()
+	rowVal, _ := c.RowVal()
+	tx.PutVal(tbl, rowVal)
+	return true
 }
 
 func (ts *tableState) save(tx *Tx) {
