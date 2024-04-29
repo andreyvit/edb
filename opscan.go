@@ -302,6 +302,7 @@ type RawCursor interface {
 	RowVal() (reflect.Value, ValueMeta)
 	Meta() ValueMeta
 	Row() (any, ValueMeta)
+	RawRow() []byte
 }
 
 type RawTableCursor struct {
@@ -420,6 +421,10 @@ func (c *RawTableCursor) RowVal() (reflect.Value, ValueMeta) {
 	return decodeTableRow(c.table, c.k, c.v, c.tx)
 }
 
+func (c *RawTableCursor) RawRow() []byte {
+	return c.v
+}
+
 func (c *RawTableCursor) Meta() ValueMeta {
 	var vle value
 	decodeTableValue(&vle, c.table, c.k, c.v)
@@ -530,6 +535,10 @@ func (c *RawIndexCursor) Key() any {
 func (c *RawIndexCursor) RowVal() (reflect.Value, ValueMeta) {
 	dv := c.dbuck.Get(c.dk)
 	return decodeTableRow(c.table, c.dk, dv, c.tx)
+}
+
+func (c *RawIndexCursor) RawRow() []byte {
+	return c.dbuck.Get(c.dk)
 }
 
 func (c *RawIndexCursor) Meta() ValueMeta {

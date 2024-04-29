@@ -149,13 +149,17 @@ func (tbl *Table) encodeRowVal(buf []byte, rowVal reflect.Value) []byte {
 	return tbl.valueEnc.EncodeValue(buf, rowVal)
 }
 
-func (tbl *Table) DecodeKeyVal(buf []byte) reflect.Value {
-	keyPtr := reflect.New(tbl.keyType)
-	err := tbl.keyEnc.decode(buf, keyPtr)
+func (tbl *Table) DecodeKeyVal(rawKey []byte) reflect.Value {
+	keyVal := reflect.New(tbl.keyType).Elem()
+	tbl.DecodeKeyValInto(keyVal, rawKey)
+	return keyVal
+}
+
+func (tbl *Table) DecodeKeyValInto(keyVal reflect.Value, rawKey []byte) {
+	err := tbl.keyEnc.decodeVal(rawKey, keyVal)
 	if err != nil {
-		panic(fmt.Errorf("failed to decode %s key %q: %w", tbl.name, buf, err))
+		panic(fmt.Errorf("failed to decode %s key %q: %w", tbl.name, rawKey, err))
 	}
-	return keyPtr.Elem()
 }
 
 func (tbl *Table) RawKeyString(keyRaw []byte) string {

@@ -94,10 +94,14 @@ func (idx *Index) keyType() reflect.Type {
 }
 
 func (idx *Index) DecodeIndexKeyVal(tup tuple) reflect.Value {
-	keyPtr := reflect.New(idx.recType)
-	err := idx.keyEnc.decodeTup(tup, keyPtr)
+	keyVal := reflect.New(idx.recType).Elem()
+	idx.DecodeIndexKeyValInto(keyVal, tup)
+	return keyVal
+}
+
+func (idx *Index) DecodeIndexKeyValInto(keyVal reflect.Value, tup tuple) {
+	err := idx.keyEnc.decodeTup(tup, keyVal)
 	if err != nil {
 		panic(fmt.Errorf("failed to decode %s key: %w", idx.FullName(), err))
 	}
-	return keyPtr.Elem()
 }
