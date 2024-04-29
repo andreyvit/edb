@@ -31,6 +31,7 @@ const (
 	ChangeFlagIncludeKey
 	ChangeFlagIncludeRow
 	ChangeFlagIncludeOldRow
+	ChangeFlagIncludeMutableRow
 )
 
 func (chg *Change) Table() *Table {

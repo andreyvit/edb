@@ -111,7 +111,14 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) ValueMeta {
 			op:     OpPut,
 			rawKey: keyRaw,
 		}
-		if opts.Contains(ChangeFlagIncludeRow) {
+		if opts.Contains(ChangeFlagIncludeMutableRow) {
+			var newVal value
+			err := newVal.decode(valueRaw)
+			if err != nil {
+				panic(tableErrf(tbl, nil, keyRaw, err, "decoding new value"))
+			}
+			chg.rowVal, chg.keyVal, _ = decodeTableRowFromValue(&newVal, tbl, keyRaw, tx)
+		} else if opts.Contains(ChangeFlagIncludeRow) {
 			chg.rowVal, chg.keyVal = rowVal, keyVal
 		} else if opts.Contains(ChangeFlagIncludeKey) {
 			chg.keyVal = keyVal
