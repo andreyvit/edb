@@ -66,7 +66,7 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) ValueMeta {
 	if oldValueRaw != nil && (old.SchemaVer == newSchemaVer) && isDataUnchanged && isIndexKeySetUnchanged && !tx.reindexing {
 		// Likely nothing changed. Ignore possible index value changes; if data is
 		// unchanged, a no-op save is much more likely than a change to indexing algorithm.
-		if tx.db.verbose {
+		if tx.isVerboseLoggingEnabled() {
 			tx.db.logf("db: PUT.NOOP %s/%v => m=%d %s", tbl.name, keyVal, newModCount, loggableRowVal(tbl, rowVal))
 		}
 		return ValueMeta{newSchemaVer, newModCount}
@@ -80,7 +80,7 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) ValueMeta {
 	// log.Printf("PUT into %s: %x => %x (%s)", tbl.Name(), keyRaw, valueRaw, valueRaw)
 	ensure(dataBuck.Put(keyRaw, valueRaw))
 
-	if tx.db.verbose {
+	if tx.isVerboseLoggingEnabled() {
 		tx.db.logf("db: PUT %s/%v => m=%d %s", tbl.name, keyVal, newModCount, loggableRowVal(tbl, rowVal))
 	}
 

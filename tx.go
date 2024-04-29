@@ -25,7 +25,7 @@ type Tx struct {
 	closed    bool
 	startTime time.Time
 	stack     []byte
-	verbose   bool
+	verbosity int
 
 	written          bool
 	commitDespiteErr bool
@@ -59,6 +59,9 @@ func (db *DB) newTx(btx *bbolt.Tx, managed bool, memo map[string]any, stack []by
 		startTime: time.Now(),
 		stack:     stack,
 	}
+	if db.verbose {
+		tx.verbosity = 1
+	}
 	if debugTrackTxns {
 		db.addTx(tx)
 	}
@@ -74,11 +77,15 @@ func (tx *Tx) DB() *DB {
 	return tx.db
 }
 
+func (tx *Tx) isVerboseLoggingEnabled() bool {
+	return tx.verbosity > 0
+}
+
 func (tx *Tx) BeginVerbose() {
-	tx.verbose = true
+	tx.verbosity++
 }
 func (tx *Tx) EndVerbose() {
-	tx.verbose = false
+	tx.verbosity--
 }
 
 func (tx *Tx) Schema() *Schema {

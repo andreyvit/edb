@@ -41,7 +41,7 @@ func (tx *Tx) DeleteByKeyVal(tbl *Table, keyVal reflect.Value) bool {
 	keyRaw := tbl.encodeKeyVal(keyBuf, keyVal, false)
 	defer keyBytesPool.Put(keyBuf[:0])
 	ok := tx.deleteByKeyRaw(tbl, keyRaw, keyVal)
-	if tx.db.verbose {
+	if tx.isVerboseLoggingEnabled() {
 		if ok {
 			tx.db.logf("db: DELETE %s/%v", tbl.name, keyVal.Interface())
 		} else {
@@ -53,7 +53,7 @@ func (tx *Tx) DeleteByKeyVal(tbl *Table, keyVal reflect.Value) bool {
 
 func (tx *Tx) DeleteByKeyRaw(tbl *Table, keyRaw []byte) bool {
 	ok := tx.deleteByKeyRaw(tbl, keyRaw, reflect.Value{})
-	if tx.db.verbose {
+	if tx.isVerboseLoggingEnabled() {
 		if ok {
 			tx.db.logf("db: DELETE %s/%x", tbl.name, keyRaw)
 		} else {
@@ -106,7 +106,7 @@ func (tx *Tx) deleteByKeyRaw(tbl *Table, keyRaw []byte, keyValIfKnown reflect.Va
 
 func (tx *Tx) UnsafeDeleteByKeyRawSkippingIndex(tbl *Table, keyRaw []byte) bool {
 	ok := tx.unsafeDeleteByKeyRawSkippingIndex(tbl, keyRaw)
-	if tx.db.verbose {
+	if tx.isVerboseLoggingEnabled() {
 		if ok {
 			tx.db.logf("db: UNSAFE_DELETE_SKIPIDX %s/%x", tbl.name, keyRaw)
 		} else {

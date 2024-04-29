@@ -47,7 +47,7 @@ func (tx *Tx) LookupKey(idx *Index, indexKey any) any {
 func (tx *Tx) LookupKeyVal(idx *Index, indexKeyVal reflect.Value) reflect.Value {
 	keyRaw := tx.lookupRawKeyByVal(idx, indexKeyVal)
 	result := keyRawToVal(keyRaw, idx.table)
-	if tx.db.verbose {
+	if tx.isVerboseLoggingEnabled() {
 		if keyRaw != nil {
 			tx.db.logf("db: LOOKUP_KEY %s/%v => %v", idx.FullName(), loggableVal(indexKeyVal), loggableVal(result))
 		} else {
@@ -58,7 +58,7 @@ func (tx *Tx) LookupKeyVal(idx *Index, indexKeyVal reflect.Value) reflect.Value 
 }
 func (tx *Tx) LookupExists(idx *Index, indexKeyVal reflect.Value) bool {
 	keyRaw := tx.lookupRawKeyByVal(idx, indexKeyVal)
-	if tx.db.verbose {
+	if tx.isVerboseLoggingEnabled() {
 		if keyRaw != nil {
 			tx.db.logf("db: LOOKUP_EXISTS.OK %s/%v", idx.FullName(), loggableVal(indexKeyVal))
 		} else {
@@ -77,7 +77,7 @@ func (tx *Tx) LookupVal(idx *Index, indexKeyVal reflect.Value) (reflect.Value, V
 	if rowMeta.IsMissing() && tx.db.strict {
 		panic(fmt.Errorf("data error in %s: index entry points to missing record %x", idx.FullName(), keyRaw))
 	}
-	if tx.db.verbose {
+	if tx.isVerboseLoggingEnabled() {
 		if keyRaw != nil {
 			tx.db.logf("db: LOOKUP %s/%v => %v", idx.FullName(), loggableVal(indexKeyVal), loggableRowVal(idx.table, row))
 		} else {

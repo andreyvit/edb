@@ -546,7 +546,7 @@ func (c *RawIndexCursor) Row() (any, ValueMeta) {
 
 func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 	idx.requireTable()
-	if tx.db.verbose {
+	if tx.isVerboseLoggingEnabled() {
 		tx.db.logf("db: INDEX_SCAN %s/%v", idx.FullName(), opt.LogString())
 	}
 	tableBuck := nonNil(tx.btx.Bucket(idx.table.buck.Raw()))
