@@ -300,8 +300,10 @@ type RawCursor interface {
 	Key() any
 	RawKey() []byte
 	RowVal() (reflect.Value, ValueMeta)
+	TryRowVal() (reflect.Value, ValueMeta, error)
 	Meta() ValueMeta
 	Row() (any, ValueMeta)
+	TryRow() (any, ValueMeta, error)
 	RawRow() []byte
 }
 
@@ -418,6 +420,10 @@ func (c *RawTableCursor) Key() any {
 }
 
 func (c *RawTableCursor) RowVal() (reflect.Value, ValueMeta) {
+	return must2(c.TryRowVal())
+}
+
+func (c *RawTableCursor) TryRowVal() (reflect.Value, ValueMeta, error) {
 	return decodeTableRow(c.table, c.k, c.v, c.tx)
 }
 
@@ -434,6 +440,14 @@ func (c *RawTableCursor) Meta() ValueMeta {
 func (c *RawTableCursor) Row() (any, ValueMeta) {
 	rowVal, rowMeta := c.RowVal()
 	return valToAny(rowVal), rowMeta
+}
+
+func (c *RawTableCursor) TryRow() (any, ValueMeta, error) {
+	rowVal, rowMeta, err := c.TryRowVal()
+	if err != nil {
+		return nil, rowMeta, err
+	}
+	return valToAny(rowVal), rowMeta, nil
 }
 
 func (tx *Tx) newTableCursor(tbl *Table, opt ScanOptions) *RawTableCursor {
@@ -533,6 +547,10 @@ func (c *RawIndexCursor) Key() any {
 }
 
 func (c *RawIndexCursor) RowVal() (reflect.Value, ValueMeta) {
+	return must2(c.TryRowVal())
+}
+
+func (c *RawIndexCursor) TryRowVal() (reflect.Value, ValueMeta, error) {
 	dv := c.dbuck.Get(c.dk)
 	return decodeTableRow(c.table, c.dk, dv, c.tx)
 }
@@ -551,6 +569,14 @@ func (c *RawIndexCursor) Meta() ValueMeta {
 func (c *RawIndexCursor) Row() (any, ValueMeta) {
 	rowVal, rowMeta := c.RowVal()
 	return valToAny(rowVal), rowMeta
+}
+
+func (c *RawIndexCursor) TryRow() (any, ValueMeta, error) {
+	rowVal, rowMeta, err := c.TryRowVal()
+	if err != nil {
+		return nil, rowMeta, err
+	}
+	return valToAny(rowVal), rowMeta, nil
 }
 
 func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {

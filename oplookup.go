@@ -73,7 +73,10 @@ func (tx *Tx) LookupVal(idx *Index, indexKeyVal reflect.Value) (reflect.Value, V
 	if keyRaw == nil {
 		return reflect.Value{}, ValueMeta{}
 	}
-	row, rowMeta := tx.getRowValByRawKey(idx.table, keyRaw, true)
+	row, rowMeta, err := tx.getRowValByRawKey(idx.table, keyRaw, true)
+	if err != nil {
+		panic(err)
+	}
 	if rowMeta.IsMissing() && tx.db.strict {
 		panic(fmt.Errorf("data error in %s: index entry points to missing record %x", idx.FullName(), keyRaw))
 	}

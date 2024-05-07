@@ -117,14 +117,22 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) ValueMeta {
 			if err != nil {
 				panic(tableErrf(tbl, nil, keyRaw, err, "decoding new value"))
 			}
-			chg.rowVal, chg.keyVal, _ = decodeTableRowFromValue(&newVal, tbl, keyRaw, tx)
+			chg.rowVal, chg.keyVal, _, err = decodeTableRowFromValue(&newVal, tbl, keyRaw, tx)
+			if err != nil {
+				panic(err)
+			}
 		} else if opts.Contains(ChangeFlagIncludeRow) {
 			chg.rowVal, chg.keyVal = rowVal, keyVal
 		} else if opts.Contains(ChangeFlagIncludeKey) {
 			chg.keyVal = keyVal
 		}
 		if opts.Contains(ChangeFlagIncludeOldRow) {
-			chg.oldRowVal, _, _ = decodeTableRowFromValue(&old, tbl, keyRaw, tx)
+			var err error
+			chg.oldRowVal, _, _, err = decodeTableRowFromValue(&old, tbl, keyRaw, tx)
+			if err != nil {
+				chg.oldRowVal = reflect.Value{}
+				tx.db.logf("db: PUT %s/%v: cannot decode old row value: %v", tbl.name, keyRaw, err)
+			}
 		}
 		tx.changeHandler(tx, &chg)
 	}

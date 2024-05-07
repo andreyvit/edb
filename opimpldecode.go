@@ -49,23 +49,24 @@ func keyRawToVal(raw []byte, tbl *Table) reflect.Value {
 	}
 }
 
-func decodeTableRow(tbl *Table, keyRaw, valueRaw []byte, migrationTx *Tx) (rowVal reflect.Value, rowMeta ValueMeta) {
+func decodeTableRow(tbl *Table, keyRaw, valueRaw []byte, migrationTx *Tx) (rowVal reflect.Value, rowMeta ValueMeta, err error) {
 	var vle value
 	decodeTableValue(&vle, tbl, keyRaw, valueRaw)
-	rowVal, _, rowMeta = decodeTableRowFromValue(&vle, tbl, keyRaw, migrationTx)
+	rowVal, _, rowMeta, err = decodeTableRowFromValue(&vle, tbl, keyRaw, migrationTx)
 	return
 }
 
-func decodeTableRowFromValue(vle *value, tbl *Table, keyRaw []byte, migrationTx *Tx) (rowVal, keyVal reflect.Value, rowMeta ValueMeta) {
+func decodeTableRowFromValue(vle *value, tbl *Table, keyRaw []byte, migrationTx *Tx) (rowVal, keyVal reflect.Value, rowMeta ValueMeta, err error) {
 	rowVal = tbl.newRow(vle.SchemaVer)
 	keyVal = tbl.RowKeyVal(rowVal)
 	tbl.DecodeKeyValInto(keyVal, keyRaw)
 
 	keyVal = tbl.DecodeKeyVal(keyRaw)
 
-	err := vle.decodeRowInto(rowVal)
+	err = vle.decodeRowInto(rowVal)
 	if err != nil {
-		panic(tableErrf(tbl, nil, keyRaw, err, "data"))
+		err = tableErrf(tbl, nil, keyRaw, err, "data")
+		return
 	}
 	tbl.rowInfo.keyValue(rowVal).Set(keyVal)
 

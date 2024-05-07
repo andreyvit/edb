@@ -9,7 +9,10 @@ func Reload[Row any](txh Txish, row *Row) *Row {
 	tbl := tx.Schema().TableByRow((*Row)(nil))
 	rowVal := reflect.ValueOf(row)
 	keyVal := tbl.RowKeyVal(rowVal)
-	newRowVal, _ := tx.getRowValByKeyVal(tbl, keyVal, true)
+	newRowVal, _, err := tx.getRowValByKeyVal(tbl, keyVal, true)
+	if err != nil {
+		panic(err)
+	}
 	if !newRowVal.IsValid() {
 		return nil
 	}
@@ -46,22 +49,46 @@ func (tx *Tx) Get(tbl *Table, key any) (any, ValueMeta) {
 	return tx.GetByKeyVal(tbl, reflect.ValueOf(key))
 }
 
+func (tx *Tx) TryGet(tbl *Table, key any) (any, ValueMeta, error) {
+	return tx.TryGetByKeyVal(tbl, reflect.ValueOf(key))
+}
+
 func (tx *Tx) GetByKeyVal(tbl *Table, keyVal reflect.Value) (any, ValueMeta) {
 	if tbl == nil {
 		panic("tbl == nil")
 	}
-	rowVal, rowMeta := tx.getRowValByKeyVal(tbl, keyVal, true)
+	rowVal, rowMeta, err := tx.getRowValByKeyVal(tbl, keyVal, true)
+	if err != nil {
+		panic(err)
+	}
 	if !rowVal.IsValid() {
 		return nil, ValueMeta{}
 	}
 	return rowVal.Interface(), rowMeta
 }
 
+func (tx *Tx) TryGetByKeyVal(tbl *Table, keyVal reflect.Value) (any, ValueMeta, error) {
+	if tbl == nil {
+		panic("tbl == nil")
+	}
+	rowVal, rowMeta, err := tx.getRowValByKeyVal(tbl, keyVal, true)
+	if err != nil {
+		return nil, rowMeta, err
+	}
+	if !rowVal.IsValid() {
+		return nil, ValueMeta{}, nil
+	}
+	return rowVal.Interface(), rowMeta, nil
+}
+
 func (tx *Tx) GetByKeyRaw(tbl *Table, keyRaw []byte) (any, ValueMeta) {
 	if tbl == nil {
 		panic("tbl == nil")
 	}
-	rowVal, rowMeta := tx.getRowValByKeyRaw(tbl, keyRaw, true, hexBytes(keyRaw))
+	rowVal, rowMeta, err := tx.getRowValByKeyRaw(tbl, keyRaw, true, hexBytes(keyRaw))
+	if err != nil {
+		panic(err)
+	}
 	if !rowVal.IsValid() {
 		return nil, ValueMeta{}
 	}
@@ -73,7 +100,10 @@ func (tx *Tx) GetMeta(tbl *Table, key any) ValueMeta {
 }
 
 func (tx *Tx) GetMetaByKeyVal(tbl *Table, keyVal reflect.Value) ValueMeta {
-	_, rowMeta := tx.getRowValByKeyVal(tbl, keyVal, false)
+	_, rowMeta, err := tx.getRowValByKeyVal(tbl, keyVal, false)
+	if err != nil {
+		panic(err)
+	}
 	return rowMeta
 }
 
@@ -81,7 +111,7 @@ func (tx *Tx) Exists(tbl *Table, key any) bool {
 	return tx.existsByKeyVal(tbl, reflect.ValueOf(key))
 }
 
-func (tx *Tx) getRowValByKeyVal(tbl *Table, keyVal reflect.Value, includeRow bool) (reflect.Value, ValueMeta) {
+func (tx *Tx) getRowValByKeyVal(tbl *Table, keyVal reflect.Value, includeRow bool) (reflect.Value, ValueMeta, error) {
 	keyVal = tbl.ensureCorrectKeyType(keyVal)
 	keyBuf := keyBytesPool.Get().([]byte)
 	keyRaw := tbl.encodeKeyVal(keyBuf, keyVal, true)
@@ -89,8 +119,8 @@ func (tx *Tx) getRowValByKeyVal(tbl *Table, keyVal reflect.Value, includeRow boo
 	return tx.getRowValByKeyRaw(tbl, keyRaw, includeRow, keyVal.Interface())
 }
 
-func (tx *Tx) getRowValByKeyRaw(tbl *Table, keyRaw []byte, includeRow bool, keyValueForLogging any) (reflect.Value, ValueMeta) {
-	val, valMeta := tx.getRowValByRawKey(tbl, keyRaw, includeRow)
+func (tx *Tx) getRowValByKeyRaw(tbl *Table, keyRaw []byte, includeRow bool, keyValueForLogging any) (reflect.Value, ValueMeta, error) {
+	val, valMeta, err := tx.getRowValByRawKey(tbl, keyRaw, includeRow)
 	if tx.db.verbose {
 		if includeRow {
 			if val.IsValid() {
@@ -106,7 +136,7 @@ func (tx *Tx) getRowValByKeyRaw(tbl *Table, keyRaw []byte, includeRow bool, keyV
 			}
 		}
 	}
-	return val, valMeta
+	return val, valMeta, err
 }
 
 func (tx *Tx) existsByKeyVal(tbl *Table, keyVal reflect.Value) bool {
@@ -129,10 +159,10 @@ func (tx *Tx) ExistsByKeyRaw(tbl *Table, keyRaw []byte) bool {
 	return found
 }
 
-func (tx *Tx) getRowValByRawKey(tbl *Table, keyRaw []byte, includeRow bool) (reflect.Value, ValueMeta) {
+func (tx *Tx) getRowValByRawKey(tbl *Table, keyRaw []byte, includeRow bool) (reflect.Value, ValueMeta, error) {
 	valueRaw := tx.getRawByRawKey(tbl, keyRaw)
 	if valueRaw == nil {
-		return reflect.Value{}, ValueMeta{}
+		return reflect.Value{}, ValueMeta{}, nil
 	}
 
 	if includeRow {
@@ -140,7 +170,7 @@ func (tx *Tx) getRowValByRawKey(tbl *Table, keyRaw []byte, includeRow bool) (ref
 	} else {
 		var vle value
 		decodeTableValue(&vle, tbl, keyRaw, valueRaw)
-		return reflect.Value{}, vle.ValueMeta()
+		return reflect.Value{}, vle.ValueMeta(), nil
 	}
 }
 
