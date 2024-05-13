@@ -176,12 +176,8 @@ func (tbl *Table) KeyString(key any) string {
 	return tbl.RawKeyString(tbl.EncodeKey(key))
 }
 
-func (tbl *Table) parseKeyComps(buf []byte, comps []string) ([]byte, error) {
-	return tbl.keyEnc.stringsToRawKey(buf, comps)
-}
-
 func (tbl *Table) parseRawKeyFrom(buf []byte, s string) ([]byte, error) {
-	return tbl.parseKeyComps(buf, strings.Split(s, tbl.keyStringSep))
+	return tbl.keyEnc.stringsToRawKey(buf, strings.Split(s, tbl.keyStringSep))
 }
 
 func (tbl *Table) ParseKeyVal(s string) (reflect.Value, error) {
@@ -193,9 +189,6 @@ func (tbl *Table) ParseKeyVal(s string) (reflect.Value, error) {
 	}
 	return tbl.DecodeKeyVal(raw), nil
 }
-
-// func (tbl *Table) IsGeneratableOnEmptyKey() bool {
-// }
 
 func (tbl *Table) ParseKey(s string) (any, error) {
 	val, err := tbl.ParseKeyVal(s)

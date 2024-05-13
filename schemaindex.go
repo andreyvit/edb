@@ -105,3 +105,30 @@ func (idx *Index) DecodeIndexKeyValInto(keyVal reflect.Value, tup tuple) {
 		panic(fmt.Errorf("failed to decode %s key: %w", idx.FullName(), err))
 	}
 }
+
+func (idx *Index) parseRawKeyFrom(buf []byte, s string) ([]byte, error) {
+	return idx.keyEnc.stringsToRawKey(buf, strings.Split(s, idx.table.keyStringSep))
+}
+
+func (idx *Index) ParseNakedIndexKeyVal(s string) (reflect.Value, error) {
+	buf := keyBytesPool.Get().([]byte)
+	defer releaseKeyBytes(buf)
+	raw, err := idx.parseRawKeyFrom(buf, s)
+	if err != nil {
+		return reflect.Value{}, err
+	}
+	keyVal := reflect.New(idx.recType).Elem()
+	err = idx.keyEnc.decodeVal(raw, keyVal)
+	if err != nil {
+		return reflect.Value{}, fmt.Errorf("failed to decode %s key %q: %w", idx.FullName(), raw, err)
+	}
+	return keyVal, nil
+}
+
+func (idx *Index) ParseNakedIndexKey(s string) (any, error) {
+	val, err := idx.ParseNakedIndexKeyVal(s)
+	if err != nil {
+		return nil, err
+	}
+	return val.Interface(), nil
+}
