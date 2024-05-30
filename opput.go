@@ -8,19 +8,24 @@ import (
 	"go.etcd.io/bbolt"
 )
 
-func Put(txh Txish, rows ...any) {
+func Put(txh Txish, rows ...any) bool {
+	var isModified bool
 	for _, row := range rows {
 		tx := txh.DBTx()
 		tbl := tx.Schema().TableByRow(row)
-		tx.Put(tbl, row)
+		oldMeta, newMeta := tx.Put(tbl, row)
+		if newMeta.IsModified(oldMeta) {
+			isModified = true
+		}
 	}
+	return isModified
 }
 
-func (tx *Tx) Put(tbl *Table, row any) ValueMeta {
+func (tx *Tx) Put(tbl *Table, row any) (oldMeta, newMeta ValueMeta) {
 	return tx.PutVal(tbl, reflect.ValueOf(row))
 }
 
-func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) ValueMeta {
+func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMeta) {
 	if tx == nil {
 		panic("nil tx")
 	}
@@ -47,8 +52,9 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) ValueMeta {
 		}
 	}
 
-	newSchemaVer := tbl.latestSchemaVer
-	newModCount := old.ModCount
+	oldSchemaVer := tbl.latestSchemaVer
+	oldModCount := old.ModCount
+	newSchemaVer, newModCount := oldSchemaVer, oldModCount
 
 	valueBuf := valueBytesPool.Get().([]byte)
 	tx.addValueBuf(valueBuf)
@@ -69,7 +75,7 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) ValueMeta {
 		if tx.isVerboseLoggingEnabled() {
 			tx.db.logf("db: PUT.NOOP %s/%v => m=%d %s", tbl.name, keyVal, newModCount, loggableRowVal(tbl, rowVal))
 		}
-		return ValueMeta{newSchemaVer, newModCount}
+		return ValueMeta{oldSchemaVer, oldModCount}, ValueMeta{newSchemaVer, newModCount}
 	}
 	if !isDataUnchanged {
 		newModCount++
@@ -137,5 +143,5 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) ValueMeta {
 		tx.changeHandler(tx, &chg)
 	}
 
-	return ValueMeta{newSchemaVer, newModCount}
+	return ValueMeta{oldSchemaVer, oldModCount}, ValueMeta{newSchemaVer, newModCount}
 }

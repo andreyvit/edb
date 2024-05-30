@@ -17,6 +17,9 @@ func (vm ValueMeta) Exists() bool {
 func (vm ValueMeta) IsMissing() bool {
 	return vm.ModCount == 0
 }
+func (vm ValueMeta) IsModified(oldMeta ValueMeta) bool {
+	return vm.ModCount > oldMeta.ModCount
+}
 
 func anyToRow[Row any](v any) *Row {
 	if v == nil {
