@@ -44,7 +44,7 @@ func (chg *Change) RawKey() []byte {
 	return chg.rawKey
 }
 func (chg *Change) HasKey() bool {
-	return !chg.keyVal.IsZero()
+	return chg.keyVal.IsValid()
 }
 func (chg *Change) KeyVal() reflect.Value {
 	return chg.keyVal
@@ -53,7 +53,7 @@ func (chg *Change) Key() any {
 	return chg.keyVal.Interface()
 }
 func (chg *Change) HasRow() bool {
-	return !chg.rowVal.IsZero()
+	return chg.rowVal.IsValid()
 }
 func (chg *Change) RowVal() reflect.Value {
 	return chg.rowVal
@@ -62,7 +62,7 @@ func (chg *Change) Row() any {
 	return chg.rowVal.Interface()
 }
 func (chg *Change) HasOldRow() bool {
-	return !chg.oldRowVal.IsZero()
+	return chg.oldRowVal.IsValid()
 }
 func (chg *Change) OldRowVal() reflect.Value {
 	return chg.oldRowVal
