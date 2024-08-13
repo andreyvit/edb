@@ -46,6 +46,9 @@ func (tx *Tx) TableStats(tbl *Table) TableStats {
 }
 
 func loggableRowVal(tbl *Table, rowVal reflect.Value) string {
+	if !rowVal.IsValid() {
+		return "<none>"
+	}
 	if tbl.suppressContent {
 		return "<suppressed>"
 	}
@@ -53,5 +56,8 @@ func loggableRowVal(tbl *Table, rowVal reflect.Value) string {
 }
 
 func loggableVal(rowVal reflect.Value) string {
+	if !rowVal.IsValid() {
+		return "<none>"
+	}
 	return string(must(json.Marshal(rowVal.Interface())))
 }
