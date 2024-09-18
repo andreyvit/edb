@@ -36,7 +36,7 @@ func TestMarshalFlat(t *testing.T) {
 			// t.Logf("✓ MarshalFlat(%v) = %q", test.input, a)
 
 			decodedVal := reflect.New(reflect.TypeOf(test.decodeBase))
-			err := enc.decode(a, decodedVal)
+			err := enc.decodePtr(a, decodedVal)
 			if err != nil {
 				t.Errorf("** UnmarshalFlat(%s) failed: %v", aStr, err)
 			} else {
