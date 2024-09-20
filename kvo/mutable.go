@@ -16,6 +16,7 @@ type MutableRecord struct {
 	rootModel *Model
 	original  ImmutableRecordData
 	objects   []*mutableObjectData
+	edits     uint64
 }
 
 // NewRecord sets up an empty mutable record with the given root model and
@@ -27,9 +28,21 @@ func NewRecord(model *Model) MutableMap {
 // UpdateRecord sets up a mutable variant of the given record and returns
 // its root map.
 func UpdateRecord(orig ImmutableRecord) MutableMap {
-	n := orig.data.ObjectCount()
-	rec := &MutableRecord{orig.root, orig.data, make([]*mutableObjectData, n, roundUpToPowerOf2(n))}
+	data := orig.data
+	if data == nil {
+		data = emptyImmutableRecordData
+	}
+	n := data.ObjectCount()
+	rec := &MutableRecord{orig.root, data, make([]*mutableObjectData, n, roundUpToPowerOf2(n)), 0}
 	return rec.Root()
+}
+
+func (rec *MutableRecord) IsDirty() bool {
+	return rec.edits > 0
+}
+
+func (rec *MutableRecord) markModified() {
+	rec.edits++
 }
 
 func (rec *MutableRecord) Original() ImmutableRecord {
@@ -48,6 +61,9 @@ func (rec *MutableRecord) addMap(model *Model) MutableMap {
 	i := len(rec.objects)
 	o := &mutableObjectData{nil, nil, 0, i, objectKindMap}
 	rec.objects = append(rec.objects, o)
+	// no markModified here because adding an object without reference does
+	// not change visible data of the record, and setting a reference will
+	// mark the record as modified
 	return MutableMap{rec, o, model}
 }
 
@@ -77,6 +93,10 @@ func (rec *MutableRecord) lookupObject(i int) (*mutableObjectData, bool) {
 	return o, true
 }
 
+func (rec *MutableRecord) PackedRoot() ImmutableMap {
+	return rec.Pack().Record(rec.rootModel).Root()
+}
+
 // Pack produces an on-disk binary encoding of the updated record, merging the
 // changes recorded in MutableRecord with the original record.
 func (rec *MutableRecord) Pack() ImmutableRecordData {
@@ -84,6 +104,9 @@ func (rec *MutableRecord) Pack() ImmutableRecordData {
 		return nil // for cases when a nil *MutableRecord ends up as AnyRecord
 	}
 	orig := rec.original
+	if !rec.IsDirty() {
+		return orig
+	}
 	origN := orig.ObjectCount()
 	n := len(rec.objects)
 	totalCount := 1 + n
@@ -201,8 +224,9 @@ func (m MutableMap) Set(key, value uint64) {
 	if m.model != nil {
 		m.model.MustPropByCode(key)
 	}
-
-	m.obj.MapSet(key, value)
+	if m.obj.MapSet(key, value) {
+		m.rec.markModified()
+	}
 }
 
 func (m MutableMap) GetAnyMap(key uint64) AnyMap {
@@ -238,7 +262,9 @@ func (m MutableMap) UpdateMap(key uint64) MutableMap {
 	} else {
 		child, isNew := m.rec.lookupObject(int(value))
 		if isNew {
-			m.obj.MapSet(key, child.Ref())
+			if m.obj.MapSet(key, child.Ref()) {
+				m.rec.markModified()
+			}
 		}
 		return MutableMap{m.rec, child, submodel}
 	}
@@ -264,15 +290,21 @@ func (o *mutableObjectData) MapGet(key uint64) uint64 {
 	return o.orig.MapGet(key)
 }
 
-func (o *mutableObjectData) MapSet(key uint64, value uint64) {
+func (o *mutableObjectData) MapSet(key uint64, value uint64) bool {
 	n := len(o.data) / 2
 	for i := range n {
 		if o.data[i*2] == key {
-			o.data[i*2+1] = value
-			return
+			old := o.data[i*2+1]
+			if old == value {
+				return false
+			} else {
+				o.data[i*2+1] = value
+				return true
+			}
 		}
 	}
 	o.data = append(o.data, key, value)
+	return true
 }
 
 func (o *mutableObjectData) Ref() uint64 {
