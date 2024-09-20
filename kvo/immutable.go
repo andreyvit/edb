@@ -49,10 +49,7 @@ func (r ImmutableRecord) Pack() ImmutableRecordData {
 }
 
 func (r ImmutableRecord) Root() ImmutableMap {
-	if r.data.ObjectCount() == 0 {
-		return ImmutableMap{r.root, r.data, nil}
-	}
-	return ImmutableMap{r.root, r.data, r.data.Object(0)}
+	return ImmutableMap{r.root, r.data, r.data.RootObject()}
 }
 func (r ImmutableRecord) AnyRoot() AnyMap {
 	return r.Root()
@@ -66,6 +63,14 @@ type ImmutableMap struct {
 
 func (m ImmutableMap) IsMissing() bool {
 	return m.obj == nil
+}
+
+func (m ImmutableMap) RecordWithThisRoot() ImmutableRecord {
+	return m.rec.Record(m.model)
+}
+
+func (m ImmutableMap) RecordData() ImmutableRecordData {
+	return m.rec
 }
 
 func (m ImmutableMap) Get(key uint64) uint64 {
@@ -164,6 +169,12 @@ func (r ImmutableRecordData) objectOffsetSizeUnchecked(i int) uint64 {
 func (r ImmutableRecordData) Object(i int) ImmutableObjectData {
 	o, _, _ := r.object(i)
 	return o
+}
+func (r ImmutableRecordData) RootObject() ImmutableObjectData {
+	if r.ObjectCount() == 0 {
+		return nil
+	}
+	return r.Object(0)
 }
 func (r ImmutableRecordData) object(i int) (ImmutableObjectData, byte, uint32) {
 	kind, off, size := unpackKindOffsetSize(r.objectOffsetSize(i))
