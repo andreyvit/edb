@@ -2,6 +2,7 @@ package edb
 
 import (
 	"fmt"
+	"log/slog"
 	"runtime/debug"
 	"sync/atomic"
 	"time"
@@ -26,6 +27,7 @@ type Tx struct {
 	startTime time.Time
 	stack     []byte
 	verbosity int
+	logger    *slog.Logger
 
 	written          bool
 	commitDespiteErr bool
@@ -58,6 +60,7 @@ func (db *DB) newTx(btx *bbolt.Tx, managed bool, memo map[string]any, stack []by
 		memo:      memo,
 		startTime: time.Now(),
 		stack:     stack,
+		logger:    slog.Default(),
 	}
 	if db.verbose {
 		tx.verbosity = 1
@@ -75,6 +78,10 @@ func (tx *Tx) DBTx() *Tx {
 
 func (tx *Tx) DB() *DB {
 	return tx.db
+}
+
+func (tx *Tx) SetLogger(logger *slog.Logger) {
+	tx.logger = logger
 }
 
 func (tx *Tx) isVerboseLoggingEnabled() bool {

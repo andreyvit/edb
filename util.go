@@ -3,6 +3,7 @@ package edb
 import (
 	"bytes"
 	"encoding/hex"
+	"log/slog"
 	"strings"
 
 	"go.etcd.io/bbolt"
@@ -96,4 +97,18 @@ type hexBytes []byte
 
 func (b hexBytes) String() string {
 	return hex.EncodeToString(b)
+}
+
+func hexstr(b []byte) string {
+	if b == nil {
+		return "<nil>"
+	}
+	if len(b) == 0 {
+		return "<empty>"
+	}
+	return hex.EncodeToString(b)
+}
+
+func hexAttr(key string, b []byte) slog.Attr {
+	return slog.String(key, hexstr(b))
 }
