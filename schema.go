@@ -12,17 +12,20 @@ var anyType = reflect.TypeOf((*any)(nil)).Elem()
 var dataBucket = makeBucketName("data")
 
 type Schema struct {
-	Name              string
-	tables            []*Table
-	tablesByLowerName map[string]*Table
-	tablesByRowType   map[reflect.Type]*Table
-	maps              []*KVMap
+	Name                string
+	tables              []*Table
+	tablesByLowerName   map[string]*Table
+	tablesByRowType     map[reflect.Type]*Table
+	maps                []*KVMap
+	kvtables            []*KVTable
+	kvtablesByLowerName map[string]*KVTable
 }
 
 func (scm *Schema) init() {
 	if scm.tablesByLowerName == nil {
 		scm.tablesByLowerName = make(map[string]*Table)
 		scm.tablesByRowType = make(map[reflect.Type]*Table)
+		scm.kvtablesByLowerName = make(map[string]*KVTable)
 	}
 }
 
@@ -45,6 +48,9 @@ func (scm *Schema) addTable(tbl *Table) {
 	if scm.tablesByLowerName[lower] != nil {
 		panic(fmt.Errorf("table %s is already defined", tbl.name))
 	}
+	if scm.kvtablesByLowerName[lower] != nil {
+		panic(fmt.Errorf("KV table %s is already defined, and the namespace is shared", tbl.name))
+	}
 	if scm.tablesByRowType[tbl.rowType] != nil {
 		panic(fmt.Errorf("row type %v is already used", tbl.rowType))
 	}
@@ -54,6 +60,20 @@ func (scm *Schema) addTable(tbl *Table) {
 	scm.tablesByLowerName[lower] = tbl
 	scm.tablesByRowType[tbl.rowType] = tbl
 	scm.tablesByRowType[tbl.rowTypePtr] = tbl
+}
+
+func (scm *Schema) addKVTable(tbl *KVTable) {
+	lower := strings.ToLower(tbl.name)
+
+	if scm.tablesByLowerName[lower] != nil {
+		panic(fmt.Errorf("non-KV table %s is already defined, and the namespace is shared", tbl.name))
+	}
+	if scm.kvtablesByLowerName[lower] != nil {
+		panic(fmt.Errorf("KV table %s is already defined", tbl.name))
+	}
+
+	scm.kvtables = append(scm.kvtables, tbl)
+	scm.kvtablesByLowerName[lower] = tbl
 }
 
 func (scm *Schema) Tables() []*Table {

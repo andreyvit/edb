@@ -1,6 +1,6 @@
 module github.com/andreyvit/edb
 
-go 1.20
+go 1.22
 
 require (
 	github.com/vmihailenco/msgpack/v5 v5.3.5

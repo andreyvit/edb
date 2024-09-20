@@ -87,6 +87,9 @@ func Open(path string, schema *Schema, opt Options) (*DB, error) {
 		for i, tbl := range schema.tables {
 			db.tableStates[i] = prepareTable(tx, tbl, now)
 		}
+		for _, tbl := range schema.kvtables {
+			prepareKVTable(tx, tbl)
+		}
 		for _, mp := range schema.maps {
 			prepareMap(tx, mp)
 		}

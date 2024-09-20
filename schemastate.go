@@ -165,3 +165,7 @@ func dropDeletedIndex(tbl *Table, tableRootB *bbolt.Bucket, name string) {
 func prepareMap(tx *Tx, mp *KVMap) {
 	must(tx.btx.CreateBucketIfNotExists(mp.buck.Raw()))
 }
+
+func prepareKVTable(tx *Tx, tbl *KVTable) {
+	_ = must(tx.btx.CreateBucketIfNotExists(tbl.dataBuck.Raw()))
+}

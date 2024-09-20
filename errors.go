@@ -42,15 +42,27 @@ func (e *DataError) Error() string {
 }
 
 type TableError struct {
-	Table *Table
-	Index *Index
+	Table string
+	Index string
 	Key   []byte
 	Msg   string
 	Err   error
 }
 
 func tableErrf(tbl *Table, idx *Index, key []byte, err error, format string, args ...any) error {
-	return &TableError{tbl, idx, key, fmt.Sprintf(format, args...), err}
+	var idxName string
+	if idx != nil {
+		idxName = idx.ShortName()
+	}
+	return &TableError{tbl.Name(), idxName, key, fmt.Sprintf(format, args...), err}
+}
+
+func kvtableErrf(tbl *KVTable, idx any, key []byte, err error, format string, args ...any) error {
+	var idxName string
+	// if idx != nil {
+	// 	idxName = idx.ShortName()
+	// }
+	return &TableError{tbl.Name(), idxName, key, fmt.Sprintf(format, args...), err}
 }
 
 func (e *TableError) Unwrap() error {
@@ -59,10 +71,10 @@ func (e *TableError) Unwrap() error {
 
 func (e *TableError) Error() string {
 	var buf strings.Builder
-	buf.WriteString(e.Table.Name())
-	if e.Index != nil {
+	buf.WriteString(e.Table)
+	if e.Index != "" {
 		buf.WriteByte('.')
-		buf.WriteString(e.Index.ShortName())
+		buf.WriteString(e.Index)
 	}
 	if e.Key != nil {
 		buf.WriteByte('/')
