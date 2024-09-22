@@ -61,21 +61,13 @@ type ImmutableMap struct {
 	obj   ImmutableObjectData // non-nil (even if empty) unless object missing
 }
 
-func (m ImmutableMap) IsMissing() bool {
-	return m.obj == nil
-}
-
-func (m ImmutableMap) RecordWithThisRoot() ImmutableRecord {
-	return m.rec.Record(m.model)
-}
-
-func (m ImmutableMap) RecordData() ImmutableRecordData {
-	return m.rec
-}
-
-func (m ImmutableMap) Get(key uint64) uint64 {
-	return m.obj.MapGet(key)
-}
+func (m ImmutableMap) IsMissing() bool                     { return m.obj == nil }
+func (m ImmutableMap) RecordWithThisRoot() ImmutableRecord { return m.rec.Record(m.model) }
+func (m ImmutableMap) RecordData() ImmutableRecordData     { return m.rec }
+func (m ImmutableMap) Model() *Model                       { return m.model }
+func (m ImmutableMap) Dump() string                        { return Dump(m) }
+func (m ImmutableMap) Get(key uint64) uint64               { return m.obj.MapGet(key) }
+func (m ImmutableMap) Keys() []uint64                      { return m.obj.MapKeys() }
 
 func (m ImmutableMap) KeyModel(key uint64) *Model {
 	if m.model == nil {
@@ -187,6 +179,10 @@ func (r ImmutableRecordData) object(i int) (ImmutableObjectData, byte, uint32) {
 // It can be a map, an array or a set. Could even be a string or a blob, but
 // we'd lack the exact size info, and those are better represented as []byte.
 type ImmutableObjectData []uint64
+
+func (m ImmutableObjectData) MapKeys() []uint64 {
+	return m[:len(m)/2]
+}
 
 func (m ImmutableObjectData) MapGet(key uint64) uint64 {
 	n := len(m) / 2

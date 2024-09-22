@@ -204,13 +204,14 @@ type MutableMap struct {
 	model *Model
 }
 
-func (m MutableMap) IsMissing() bool {
-	return m.rec == nil
+func (m MutableMap) IsEmpty() bool {
+	return len(m.obj.data) == 0 && len(m.obj.orig) == 0
 }
 
-func (m MutableMap) Record() *MutableRecord {
-	return m.rec
-}
+func (m MutableMap) IsMissing() bool        { return m.rec == nil }
+func (m MutableMap) Record() *MutableRecord { return m.rec }
+func (m MutableMap) Model() *Model          { return m.model }
+func (m MutableMap) Dump() string           { return Dump(m) }
 
 func (m MutableMap) Get(key uint64) uint64 {
 	if m.model != nil {
@@ -246,6 +247,10 @@ func (m MutableMap) GetAnyMap(key uint64) AnyMap {
 			return ImmutableMap{submodel, m.rec.original, orig}
 		}
 	}
+}
+
+func (m MutableMap) Keys() []uint64 {
+	panic("not implemented")
 }
 
 func (m MutableMap) UpdateMap(key uint64) MutableMap {

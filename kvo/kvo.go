@@ -29,7 +29,10 @@ type AnyRecord interface {
 }
 
 type AnyMap interface {
+	Model() *Model
 	IsMissing() bool
+	Keys() []uint64
 	Get(key uint64) uint64
 	GetAnyMap(key uint64) AnyMap
+	Dump() string
 }

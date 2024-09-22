@@ -77,6 +77,47 @@ func boltSeekLast(c *bbolt.Cursor, prefix []byte) ([]byte, []byte) {
 	}
 }
 
+func boltSeekLast2(c *bbolt.Cursor, prefix []byte) ([]byte, []byte) {
+	if inc(prefix) {
+		slog.Debug("actually seeking to", "prefix", prefix)
+		k, _ := c.Seek(prefix)
+		dec(prefix)
+		if k == nil {
+			return c.Last()
+		} else {
+			return c.Prev()
+		}
+	} else {
+		return boltSeekLast(c, prefix)
+	}
+}
+
+func inc(data []byte) bool {
+	n := len(data)
+	for i := n - 1; i >= 0; i-- {
+		if data[i] != 0xFF {
+			for j := i; j < n; j++ {
+				data[j]++
+			}
+			return true
+		}
+	}
+	return false
+}
+
+func dec(data []byte) bool {
+	n := len(data)
+	for i := n - 1; i >= 0; i-- {
+		if data[i] != 0 {
+			for j := i; j < n; j++ {
+				data[j]--
+			}
+			return true
+		}
+	}
+	return false
+}
+
 func boltFirstLast(c *bbolt.Cursor, reverse bool) ([]byte, []byte) {
 	if reverse {
 		return c.Last()

@@ -2,8 +2,10 @@ package edb
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"reflect"
 	"strconv"
 	"strings"
@@ -204,6 +206,7 @@ const (
 	ScanMethodFull = ScanMethod(iota)
 	ScanMethodExact
 	ScanMethodRange
+	ScanMethodExactIndexWithIDRange
 )
 
 type ScanOptions struct {
@@ -214,6 +217,7 @@ type ScanOptions struct {
 	LowerInc bool
 	UpperInc bool
 	Els      int
+	Extra    reflect.Value
 }
 
 func (so ScanOptions) Reversed() ScanOptions {
@@ -291,6 +295,20 @@ func RangeScan(lower, upper any, lowerInc, upperInc bool) ScanOptions {
 }
 func RangeScanVal(lower, upper reflect.Value, lowerInc, upperInc bool) ScanOptions {
 	return ScanOptions{Method: ScanMethodRange, Lower: lower, Upper: upper, LowerInc: lowerInc, UpperInc: upperInc}
+}
+
+func ExactIDRangeScan(exact, lower, upper any, lowerInc, upperInc bool) ScanOptions {
+	var lowerVal, upperVal reflect.Value
+	if lower != nil {
+		lowerVal = reflect.ValueOf(lower)
+	}
+	if upper != nil {
+		upperVal = reflect.ValueOf(upper)
+	}
+	return ExactIDRangeScanVal(reflect.ValueOf(exact), lowerVal, upperVal, lowerInc, upperInc)
+}
+func ExactIDRangeScanVal(exact, lower, upper reflect.Value, lowerInc, upperInc bool) ScanOptions {
+	return ScanOptions{Method: ScanMethodExactIndexWithIDRange, Lower: lower, Upper: upper, LowerInc: lowerInc, UpperInc: upperInc, Extra: exact}
 }
 
 type RawCursor interface {
@@ -500,6 +518,7 @@ func (tx *Tx) newTableCursor(tbl *Table, opt ScanOptions) *RawTableCursor {
 			c.upper = tbl.EncodeKeyVal(opt.Upper)
 			c.upperInc = opt.UpperInc
 		}
+
 	default:
 		panic(fmt.Errorf("unsupported scan method %v", opt.Method))
 	}
@@ -639,6 +658,33 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 
 			strat = &rangeIndexScanStrategy{els, lower, upper, opt.LowerInc, opt.UpperInc}
 		}
+
+	case ScanMethodExactIndexWithIDRange:
+		if idx.isUnique {
+			panic("exact-index-id-range method not supported for deprecated unique indices")
+		}
+		tbl := idx.Table()
+
+		var rang RawRange
+		rang.Prefix, _, _ = encodeIndexBoundaryKey(opt.Extra, idx, 0, true)
+
+		if opt.Lower.IsValid() {
+			if at, et := opt.Lower.Type(), tbl.KeyType(); at != et {
+				panic(fmt.Errorf("%s: attempted to scan table using lower bound of incorrect type %v, expected %v", tbl.Name(), at, et))
+			}
+			rang.Lower = encodeIndexFullKey(opt.Extra, opt.Lower, idx)
+			rang.LowerInc = opt.LowerInc
+		}
+		if opt.Upper.IsValid() {
+			if at, et := opt.Upper.Type(), tbl.KeyType(); at != et {
+				panic(fmt.Errorf("%s: attempted to scan table using upper bound of incorrect type %v, expected %v", tbl.Name(), at, et))
+			}
+			rang.Upper = encodeIndexFullKey(opt.Extra, opt.Upper, idx)
+			rang.UpperInc = opt.UpperInc
+		}
+
+		strat = &rawRangeIndexScanStrategy{rang, tx.logger}
+
 	default:
 		panic(fmt.Errorf("unsupported scan method %v", opt.Method))
 	}
@@ -669,6 +715,21 @@ func encodeTableBoundaryKey(keyVal reflect.Value, tbl *Table, cutoffEls int) ([]
 		n := fe.prefixLen(keyEls)
 		return fe.buf[:n], keyEls, false
 	}
+}
+
+func encodeIndexFullKey(indexKeyVal, tableKeyVal reflect.Value, idx *Index) []byte {
+	tableKeyBuf := keyBytesPool.Get().([]byte)
+	tbl := idx.Table()
+	tableKeyRaw := tbl.encodeKeyVal(tableKeyBuf, tableKeyVal, false)
+	defer keyBytesPool.Put(tableKeyBuf[:0])
+
+	indexKeyBuf := keyBytesPool.Get().([]byte)
+	keyEnc := flatEncoder{buf: indexKeyBuf}
+	idx.keyEnc.encodeInto(&keyEnc, indexKeyVal)
+	keyEnc.begin()
+	keyEnc.buf = appendRaw(keyEnc.buf, tableKeyRaw)
+
+	return keyEnc.finalize()
 }
 
 func encodeIndexBoundaryKey(keyVal reflect.Value, idx *Index, cutoffEls int, neverFinalize bool) ([]byte, int, bool) {
@@ -902,4 +963,25 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 		log.Printf("range index scan step: EOFd")
 	}
 	return nil, nil, nil, nil
+}
+
+type rawRangeIndexScanStrategy struct {
+	rang   RawRange
+	logger *slog.Logger
+}
+
+func (s *rawRangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
+	slog.LogAttrs(context.Background(), slog.LevelDebug, "rawRangeIndexScanStrategy.Next")
+	var ik, iv []byte
+	if reset {
+		ik, iv = s.rang.start(c, s.logger)
+	} else {
+		ik, iv = s.rang.next(c, s.logger)
+	}
+	if ik == nil {
+		return nil, nil, nil, nil
+	}
+	ikTup := decodeIndexKey(ik, idx)
+	dk, itup := decodeIndexTableKey(ik, ikTup, iv, idx)
+	return ik, iv, itup, dk
 }

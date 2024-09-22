@@ -41,13 +41,13 @@ type PropOptions struct {
 }
 
 func NewProp[T any](schema *Schema, code PropCode, name string, typ *Type[T], build func(b *PropBuilder)) PropCode {
-	if name == "" {
-		panic("invalid")
-	}
 	p := &ScalarProp[T]{
 		code: code,
 		name: name,
 		typ:  typ,
+	}
+	if p.name == "" {
+		panic("invalid")
 	}
 	if schema.propsByName[name] != nil {
 		panic(fmt.Sprintf("prop %s already exists", name))

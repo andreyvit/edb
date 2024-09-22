@@ -1,6 +1,8 @@
 package edb
 
 import (
+	"log/slog"
+
 	"github.com/andreyvit/edb/kvo"
 )
 
@@ -55,7 +57,14 @@ func (tx *Tx) KVTableScan(tbl *KVTable, rang RawRange) *KVCursor {
 		panic("nil tx")
 	}
 	dataBuck := nonNil(tx.btx.Bucket(tbl.dataBuck.Raw()))
-	return &KVCursor{tbl, (*kvTableCursorImpl)(rang.newCursor(dataBuck.Cursor()))}
+	logger := tx.logger
+	if logger == nil {
+		logger = slog.Default()
+	}
+	if debugLogRawScans {
+		logger = logger.With("tbl", tbl.Name())
+	}
+	return &KVCursor{tbl, (*kvTableCursorImpl)(rang.newCursor(dataBuck.Cursor(), logger))}
 }
 
 type KVCursor struct {

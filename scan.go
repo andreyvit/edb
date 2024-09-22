@@ -43,85 +43,113 @@ func RawPrefix(p []byte) RawRange                { return RawRange{Prefix: p} }
 func (rang RawRange) Prefixed(p []byte) RawRange { rang.Prefix = p; return rang }
 func (rang RawRange) Reversed() RawRange         { rang.Reverse = true; return rang }
 
-func (rang *RawRange) items(buck *bbolt.Bucket) func(yield func(k, v []byte) bool) {
-	return func(yield func(k, v []byte) bool) {
-		c := buck.Cursor()
-		for k, v := rang.start(c); k != nil; k, v = rang.next(c) {
-			if !yield(k, v) {
-				return
-			}
-		}
-	}
-}
+// func (rang *RawRange) items(buck *bbolt.Bucket) func(yield func(k, v []byte) bool) {
+// 	return func(yield func(k, v []byte) bool) {
+// 		c := buck.Cursor()
+// 		for k, v := rang.start(c); k != nil; k, v = rang.next(c) {
+// 			if !yield(k, v) {
+// 				return
+// 			}
+// 		}
+// 	}
+// }
 
-func (r *RawRange) start(bcur *bbolt.Cursor) ([]byte, []byte) {
+func (r *RawRange) start(bcur *bbolt.Cursor, logger *slog.Logger) ([]byte, []byte) {
 	var k, v []byte
+	var skipInitial bool
 	if r.Reverse {
 		upper := r.Upper
-		if r.Prefix != nil {
-			if upper == nil || bytes.Compare(r.Prefix, upper) < 0 {
-				upper = r.Prefix
+		if upper != nil {
+			skipInitial = !r.UpperInc
+			if r.Prefix != nil && !bytes.HasPrefix(upper, r.Prefix) {
+				panic("upper bound does not match prefix")
 			}
+		} else if r.Prefix != nil {
+			upper = r.Prefix
 		}
 		if upper != nil {
-			k, v = boltSeekLast(bcur, upper)
+			k, v = boltSeekLast2(bcur, upper)
 			if debugLogRawScans {
-				slog.LogAttrs(context.Background(), slog.LevelDebug, "SEEK to upper", hexAttr("upper", upper), hexAttr("key", k), hexAttr("val", v))
+				logger.LogAttrs(context.Background(), slog.LevelDebug, "SEEK to upper", hexAttr("upper", upper), hexAttr("key", k), hexAttr("val", v))
+			}
+			if skipInitial && !bytes.HasPrefix(k, upper) {
+				skipInitial = false
 			}
 		} else {
 			k, v = bcur.Last()
 			if debugLogRawScans {
-				slog.LogAttrs(context.Background(), slog.LevelDebug, "LAST", hexAttr("key", k), hexAttr("val", v))
+				logger.LogAttrs(context.Background(), slog.LevelDebug, "LAST", hexAttr("key", k), hexAttr("val", v))
 			}
 		}
 	} else {
 		lower := r.Lower
-		if r.Prefix != nil && (lower == nil || bytes.Compare(r.Prefix, lower) > 0) {
+		if lower != nil {
+			skipInitial = !r.LowerInc
+			if r.Prefix != nil && !bytes.HasPrefix(lower, r.Prefix) {
+				panic("lower bound does not match prefix")
+			}
+		} else if r.Prefix != nil {
 			lower = r.Prefix
 		}
 		if lower != nil {
+			if debugLogRawScans {
+				logger.LogAttrs(context.Background(), slog.LevelDebug, "ALL KEYS:")
+				var i int
+				for k2, _ := bcur.First(); k2 != nil; k2, _ = bcur.Next() {
+					i++
+					logger.LogAttrs(context.Background(), slog.LevelDebug, "found", hexAttr("key", k2), slog.Int("i", i))
+				}
+			}
 			k, v = bcur.Seek(lower)
 			if debugLogRawScans {
-				slog.LogAttrs(context.Background(), slog.LevelDebug, "SEEK to lower", hexAttr("lower", lower), hexAttr("key", k), hexAttr("val", v))
+				logger.LogAttrs(context.Background(), slog.LevelDebug, "SEEK to lower", hexAttr("lower", lower), hexAttr("key", k), hexAttr("val", v))
+			}
+			if skipInitial && !bytes.HasPrefix(k, lower) {
+				skipInitial = false
 			}
 		} else {
 			k, v = bcur.First()
 			if debugLogRawScans {
-				slog.LogAttrs(context.Background(), slog.LevelDebug, "FIRST", hexAttr("key", k), hexAttr("val", v))
+				logger.LogAttrs(context.Background(), slog.LevelDebug, "FIRST", hexAttr("key", k), hexAttr("val", v))
 			}
 		}
 	}
-	if k != nil && r.match(k, v) {
-		return k, v
+	if k != nil && r.match(k, v, logger) {
+		if skipInitial {
+			logger.LogAttrs(context.Background(), slog.LevelDebug, "SKIP_INITIAL")
+			return r.next(bcur, logger)
+		} else {
+			return k, v
+		}
 	} else {
 		return nil, nil
 	}
 }
 
-func (r *RawRange) next(bcur *bbolt.Cursor) ([]byte, []byte) {
+func (r *RawRange) next(bcur *bbolt.Cursor, logger *slog.Logger) ([]byte, []byte) {
 	var k, v []byte
 	if r.Reverse {
-		k, v := bcur.Prev()
+		k, v = bcur.Prev()
 		if debugLogRawScans {
-			slog.LogAttrs(context.Background(), slog.LevelDebug, "PREV", hexAttr("key", k), hexAttr("val", v))
+			logger.LogAttrs(context.Background(), slog.LevelDebug, "PREV", hexAttr("key", k), hexAttr("val", v))
 		}
 	} else {
 		k, v = bcur.Next()
 		if debugLogRawScans {
-			slog.LogAttrs(context.Background(), slog.LevelDebug, "NEXT", hexAttr("key", k), hexAttr("val", v))
+			logger.LogAttrs(context.Background(), slog.LevelDebug, "NEXT", hexAttr("key", k), hexAttr("val", v))
 		}
 	}
-	if k != nil && r.match(k, v) {
+	if k != nil && r.match(k, v, logger) {
 		return k, v
 	} else {
 		return nil, nil
 	}
 }
 
-func (r *RawRange) match(k, v []byte) bool {
+func (r *RawRange) match(k, v []byte, logger *slog.Logger) bool {
 	if r.Prefix != nil && !bytes.HasPrefix(k, r.Prefix) {
 		if debugLogRawScans {
-			slog.LogAttrs(context.Background(), slog.LevelDebug, "BAIL on prefix", hexAttr("prefix", r.Prefix), hexAttr("key", k), hexAttr("val", v))
+			logger.LogAttrs(context.Background(), slog.LevelDebug, "BAIL on prefix", hexAttr("prefix", r.Prefix), hexAttr("key", k), hexAttr("val", v))
 		}
 		return false
 	}
@@ -130,7 +158,7 @@ func (r *RawRange) match(k, v []byte) bool {
 			cmp := bytes.Compare(k, lower)
 			if cmp == -1 || (cmp == 0 && !r.LowerInc) {
 				if debugLogRawScans {
-					slog.LogAttrs(context.Background(), slog.LevelDebug, "BAIL on lower", hexAttr("lower", lower), hexAttr("key", k), hexAttr("val", v))
+					logger.LogAttrs(context.Background(), slog.LevelDebug, "BAIL on lower", hexAttr("lower", lower), hexAttr("key", k), hexAttr("val", v))
 				}
 				return false
 			}
@@ -140,35 +168,36 @@ func (r *RawRange) match(k, v []byte) bool {
 			cmp := bytes.Compare(k, upper)
 			if cmp == 1 || (cmp == 0 && !r.UpperInc) {
 				if debugLogRawScans {
-					slog.LogAttrs(context.Background(), slog.LevelDebug, "BAIL on upper", hexAttr("upper", upper), hexAttr("key", k), hexAttr("val", v))
+					logger.LogAttrs(context.Background(), slog.LevelDebug, "BAIL on upper", hexAttr("upper", upper), hexAttr("key", k), hexAttr("val", v))
 				}
 				return false
 			}
 		}
 	}
 	if debugLogRawScans {
-		slog.LogAttrs(context.Background(), slog.LevelDebug, "MATCH", hexAttr("key", k), hexAttr("val", v))
+		logger.LogAttrs(context.Background(), slog.LevelDebug, "MATCH", hexAttr("key", k), hexAttr("val", v))
 	}
 	return true
 }
 
-func (rang *RawRange) newCursor(bcur *bbolt.Cursor) *RawRangeCursor {
-	return &RawRangeCursor{rang: *rang, bcur: bcur}
+func (rang *RawRange) newCursor(bcur *bbolt.Cursor, logger *slog.Logger) *RawRangeCursor {
+	return &RawRangeCursor{rang: *rang, bcur: bcur, logger: logger}
 }
 
 type RawRangeCursor struct {
-	rang RawRange
-	bcur *bbolt.Cursor
-	k, v []byte
-	init bool
+	rang   RawRange
+	bcur   *bbolt.Cursor
+	logger *slog.Logger
+	k, v   []byte
+	init   bool
 }
 
 func (c *RawRangeCursor) Next() bool {
 	if c.init {
-		c.k, c.v = c.rang.next(c.bcur)
+		c.k, c.v = c.rang.next(c.bcur, c.logger)
 	} else {
 		c.init = true
-		c.k, c.v = c.rang.start(c.bcur)
+		c.k, c.v = c.rang.start(c.bcur, c.logger)
 	}
 	return c.k != nil
 }

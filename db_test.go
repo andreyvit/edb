@@ -1,8 +1,11 @@
 package edb
 
 import (
+	"encoding/hex"
+	"log/slog"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -53,7 +56,12 @@ var (
 	widgetsByCD = AddIndex[CD]("by_CD")
 	widgetsByAB = AddIndex[AB]("by_AB").Unique()
 	booTable    = AddTable[Post](basicSchema, "posts", 1, nil, nil, nil)
+	kubets      = DefineKVTable(basicSchema, "kubets", nil, nil)
 )
+
+func init() {
+	slog.SetLogLoggerLevel(slog.LevelDebug)
+}
 
 func TestDB(t *testing.T) {
 	u1 := &User{ID: 1, Name: "foo", Email: "foo@example.com"}
@@ -302,6 +310,67 @@ func TestUpdateIndexValue(t *testing.T) {
 	})
 }
 
+func TestRawScan(t *testing.T) {
+	var (
+		kb = x("10 12 14 40 44 47")
+		k1 = x("10 12 14 40 44 48")
+		k2 = x("10 12 14 40 44 49")
+		k3 = x("10 12 14 40 44 50")
+		k4 = x("10 12 14 40 44 51")
+		ke = x("10 12 14 40 44 52")
+		p  = x("10 12 14")
+	)
+	db := setup(t, basicSchema)
+	db.Write(func(tx *Tx) {
+		tx.KVPutRaw(kubets, k1, []byte{})
+		tx.KVPutRaw(kubets, k2, []byte{})
+		tx.KVPutRaw(kubets, k3, []byte{})
+		tx.KVPutRaw(kubets, k4, []byte{})
+	})
+
+	o := func(name string, rang RawRange, exp ...[]byte) {
+		t.Helper()
+		t.Run(name, func(t *testing.T) {
+			db.Read(func(tx *Tx) {
+				slog.Debug(t.Name())
+				rawScan(t, tx, kubets, rang, exp...)
+			})
+		})
+	}
+
+	o("prefix", RawRange{Prefix: p}, k1, k2, k3, k4)
+	o("prefix reverse", RawRange{Prefix: p, Reverse: true}, k4, k3, k2, k1)
+
+	o("prefix + lower inc", RawRange{Prefix: p, Lower: k2, LowerInc: true}, k2, k3, k4)
+	o("prefix + lower exc", RawRange{Prefix: p, Lower: k2, LowerInc: false}, k3, k4)
+	o("prefix + lower inc reverse", RawRange{Prefix: p, Lower: k2, LowerInc: true, Reverse: true}, k4, k3, k2)
+	o("prefix + lower exc reverse", RawRange{Prefix: p, Lower: k2, LowerInc: false, Reverse: true}, k4, k3)
+	o("prefix + upper inc", RawRange{Prefix: p, Upper: k3, UpperInc: true}, k1, k2, k3)
+	o("prefix + upper exc", RawRange{Prefix: p, Upper: k3, UpperInc: false}, k1, k2)
+	o("prefix + upper inc reverse", RawRange{Prefix: p, Upper: k3, UpperInc: true, Reverse: true}, k3, k2, k1)
+	o("prefix + upper exc reverse", RawRange{Prefix: p, Upper: k3, UpperInc: false, Reverse: true}, k2, k1)
+
+	o("lower inc", RawRange{Lower: k2, LowerInc: true}, k2, k3, k4)
+	o("lower exc", RawRange{Lower: k2, LowerInc: false}, k3, k4)
+	o("lower inc reverse", RawRange{Lower: k2, LowerInc: true, Reverse: true}, k4, k3, k2)
+	o("lower exc reverse", RawRange{Lower: k2, LowerInc: false, Reverse: true}, k4, k3)
+
+	o("upper inc", RawRange{Upper: k3, UpperInc: true}, k1, k2, k3)
+	o("upper exc", RawRange{Upper: k3, UpperInc: false}, k1, k2)
+	o("upper inc reverse", RawRange{Upper: k3, UpperInc: true, Reverse: true}, k3, k2, k1)
+	o("upper exc reverse", RawRange{Upper: k3, UpperInc: false, Reverse: true}, k2, k1)
+
+	o("first lower inc", RawRange{Lower: kb, LowerInc: true}, k1, k2, k3, k4)
+	o("first lower exc", RawRange{Lower: kb, LowerInc: false}, k1, k2, k3, k4)
+	o("first lower inc reverse", RawRange{Lower: kb, LowerInc: true, Reverse: true}, k4, k3, k2, k1)
+	o("first lower exc reverse", RawRange{Lower: kb, LowerInc: false, Reverse: true}, k4, k3, k2, k1)
+
+	o("last upper inc", RawRange{Upper: ke, UpperInc: true}, k1, k2, k3, k4)
+	o("last upper exc", RawRange{Upper: ke, UpperInc: false}, k1, k2, k3, k4)
+	o("last upper inc reverse", RawRange{Upper: ke, UpperInc: true, Reverse: true}, k4, k3, k2, k1)
+	o("last upper exc reverse", RawRange{Upper: ke, UpperInc: false, Reverse: true}, k4, k3, k2, k1)
+}
+
 func setup(t testing.TB, schema *Schema) *DB {
 	t.Helper()
 
@@ -342,4 +411,22 @@ func isnonnil[T any](t testing.TB, a *T) {
 		t.Helper()
 		t.Errorf("** got nil %T, wanted non-nil", a)
 	}
+}
+
+func x(data string) []byte {
+	data = strings.ReplaceAll(data, " ", "")
+	return must(hex.DecodeString(data))
+}
+
+func rawScan(t testing.TB, tx *Tx, tbl *KVTable, rang RawRange, exp ...[]byte) {
+	t.Helper()
+	var out []string
+	for k := range tx.KVTableScan(tbl, rang).Keys() {
+		out = append(out, hex.EncodeToString(k))
+	}
+	var expstr []string
+	for _, k := range exp {
+		expstr = append(expstr, hex.EncodeToString(k))
+	}
+	deepEqual(t, out, expstr)
 }

@@ -10,8 +10,9 @@ type KVTable struct {
 
 func DefineKVTable(scm *Schema, name string, rootModel *kvo.Model, build func(b *KVTableBuilder)) *KVTable {
 	tbl := &KVTable{
-		name:     name,
-		dataBuck: makeBucketName(name),
+		name:      name,
+		rootModel: rootModel,
+		dataBuck:  makeBucketName(name),
 	}
 	scm.addKVTable(tbl)
 
