@@ -9,9 +9,15 @@ import "time"
 const TimeOffsetMicros = 62_135_596_800_000_000
 
 func TimeToUint64(t time.Time) uint64 {
+	if t.IsZero() {
+		return 0
+	}
 	return uint64(t.UnixMicro()) + TimeOffsetMicros
 }
 
 func Uint64ToTime(u uint64) time.Time {
+	if u == 0 {
+		return time.Time{}
+	}
 	return time.UnixMicro(int64(u) - TimeOffsetMicros)
 }

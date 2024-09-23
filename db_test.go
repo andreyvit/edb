@@ -56,7 +56,7 @@ var (
 	widgetsByCD = AddIndex[CD]("by_CD")
 	widgetsByAB = AddIndex[AB]("by_AB").Unique()
 	booTable    = AddTable[Post](basicSchema, "posts", 1, nil, nil, nil)
-	kubets      = DefineKVTable(basicSchema, "kubets", nil, nil)
+	kubets      = DefineKVTable(basicSchema, "kubets", nil, nil, nil)
 )
 
 func init() {
@@ -333,7 +333,7 @@ func TestRawScan(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			db.Read(func(tx *Tx) {
 				slog.Debug(t.Name())
-				rawScan(t, tx, kubets, rang, exp...)
+				tableScan(t, tx, kubets, rang, exp...)
 			})
 		})
 	}
@@ -418,7 +418,7 @@ func x(data string) []byte {
 	return must(hex.DecodeString(data))
 }
 
-func rawScan(t testing.TB, tx *Tx, tbl *KVTable, rang RawRange, exp ...[]byte) {
+func tableScan(t testing.TB, tx *Tx, tbl *KVTable, rang RawRange, exp ...[]byte) {
 	t.Helper()
 	var out []string
 	for k := range tx.KVTableScan(tbl, rang).Keys() {

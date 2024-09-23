@@ -168,4 +168,7 @@ func prepareMap(tx *Tx, mp *KVMap) {
 
 func prepareKVTable(tx *Tx, tbl *KVTable) {
 	_ = must(tx.btx.CreateBucketIfNotExists(tbl.dataBuck.Raw()))
+	for _, idx := range tbl.indices {
+		_ = must(tx.btx.CreateBucketIfNotExists(idx.idxBuck.Raw()))
+	}
 }

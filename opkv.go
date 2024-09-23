@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/andreyvit/edb/kvo"
+	"go.etcd.io/bbolt"
 )
 
 func (tx *Tx) KVGet(tbl *KVTable, key []byte) kvo.ImmutableMap {
@@ -39,6 +40,36 @@ func (tx *Tx) KVPutRaw(tbl *KVTable, key, value []byte) {
 		panic("nil tx")
 	}
 	dataBuck := nonNil(tx.btx.Bucket(tbl.dataBuck.Raw()))
+	if len(tbl.indices) > 0 {
+		oldValue := dataBuck.Get(key)
+		for _, idx := range tbl.indices {
+			var oldEntries, newEntries [][]byte
+			if oldValue != nil {
+				oldEntries = idx.entries(key, oldValue)
+			}
+			if value != nil {
+				newEntries = idx.entries(key, value)
+			}
+
+			var idxBuck *bbolt.Bucket
+			for _, ik := range oldEntries {
+				if !containsBytes(newEntries, ik) {
+					if idxBuck == nil {
+						idxBuck = nonNil(tx.btx.Bucket(idx.idxBuck.Raw()))
+					}
+					idxBuck.Delete(ik)
+				}
+			}
+			for _, ik := range newEntries {
+				if !containsBytes(oldEntries, ik) {
+					if idxBuck == nil {
+						idxBuck = nonNil(tx.btx.Bucket(idx.idxBuck.Raw()))
+					}
+					idxBuck.Put(ik, emptyIndexValue)
+				}
+			}
+		}
+	}
 	if value == nil {
 		err := dataBuck.Delete(key)
 		if err != nil {
@@ -67,14 +98,39 @@ func (tx *Tx) KVTableScan(tbl *KVTable, rang RawRange) *KVCursor {
 	return &KVCursor{tbl, (*kvTableCursorImpl)(rang.newCursor(dataBuck.Cursor(), logger))}
 }
 
+func (tx *Tx) KVIndexScan(idx *KVIndex, rang RawRange) *KVCursor {
+	if tx == nil {
+		panic("nil tx")
+	}
+	dataBuck := nonNil(tx.btx.Bucket(idx.table.dataBuck.Raw()))
+	idxBuck := nonNil(tx.btx.Bucket(idx.idxBuck.Raw()))
+	logger := tx.logger
+	if logger == nil {
+		logger = slog.Default()
+	}
+	if debugLogRawScans {
+		logger = logger.With("tbl", idx.table.Name(), "idx", idx.ShortName())
+	}
+	return &KVCursor{idx.table, &kvIndexCursorImpl{
+		idxCur: RawRangeCursor{
+			rang:   rang,
+			bcur:   idxBuck.Cursor(),
+			logger: logger,
+		},
+		idx:      idx,
+		dataBuck: dataBuck,
+	}}
+}
+
 type KVCursor struct {
 	tbl  *KVTable
 	impl kvCursorImpl
 }
 
-func (c *KVCursor) Next() bool       { return c.impl.Next() }
-func (c *KVCursor) RawKey() []byte   { return c.impl.RawTableKey() }
-func (c *KVCursor) RawValue() []byte { return c.impl.RawTableValue() }
+func (c *KVCursor) Next() bool          { return c.impl.Next() }
+func (c *KVCursor) RawIndexKey() []byte { return c.impl.RawIndexKey() }
+func (c *KVCursor) RawKey() []byte      { return c.impl.RawTableKey() }
+func (c *KVCursor) RawValue() []byte    { return c.impl.RawTableValue() }
 
 func (c *KVCursor) Object() kvo.ImmutableMap {
 	return c.tbl.decodeValue(c.impl.RawTableValue())
@@ -110,8 +166,19 @@ func (c *KVCursor) Keys() func(yield func(k []byte) bool) {
 	}
 }
 
+func (c *KVCursor) IndexKeys() func(yield func(k []byte) bool) {
+	return func(yield func(k []byte) bool) {
+		for c.Next() {
+			if !yield(c.RawIndexKey()) {
+				break
+			}
+		}
+	}
+}
+
 type kvCursorImpl interface {
 	Next() bool
+	RawIndexKey() []byte
 	RawTableKey() []byte
 	RawTableValue() []byte
 }
@@ -119,5 +186,25 @@ type kvCursorImpl interface {
 type kvTableCursorImpl RawRangeCursor
 
 func (ci *kvTableCursorImpl) Next() bool            { return (*RawRangeCursor)(ci).Next() }
+func (ci *kvTableCursorImpl) RawIndexKey() []byte   { return nil }
 func (ci *kvTableCursorImpl) RawTableKey() []byte   { return ci.k }
 func (ci *kvTableCursorImpl) RawTableValue() []byte { return ci.v }
+
+type kvIndexCursorImpl struct {
+	idxCur   RawRangeCursor
+	idx      *KVIndex
+	dataBuck *bbolt.Bucket
+}
+
+func (ci *kvIndexCursorImpl) Next() bool          { return ci.idxCur.Next() }
+func (ci *kvIndexCursorImpl) RawIndexKey() []byte { return ci.idxCur.k }
+func (ci *kvIndexCursorImpl) RawTableKey() []byte {
+	return ci.idx.indexKeyToPrimaryKey(ci.idxCur.k)
+}
+func (ci *kvIndexCursorImpl) RawTableValue() []byte {
+	k := ci.RawTableKey()
+	if k == nil {
+		return nil
+	}
+	return ci.dataBuck.Get(k)
+}

@@ -84,6 +84,10 @@ func (scm *Schema) TableNamed(name string) *Table {
 	return scm.tablesByLowerName[strings.ToLower(name)]
 }
 
+func (scm *Schema) KVTableNamed(name string) *KVTable {
+	return scm.kvtablesByLowerName[strings.ToLower(name)]
+}
+
 func (scm *Schema) TableByRowType(rt reflect.Type) *Table {
 	tbl := scm.tablesByRowType[rt]
 	if tbl == nil {

@@ -153,3 +153,12 @@ func hexstr(b []byte) string {
 func hexAttr(key string, b []byte) slog.Attr {
 	return slog.String(key, hexstr(b))
 }
+
+func containsBytes(list [][]byte, item []byte) bool {
+	for _, b := range list {
+		if bytes.Equal(b, item) {
+			return true
+		}
+	}
+	return false
+}

@@ -94,7 +94,11 @@ func (rec *MutableRecord) lookupObject(i int) (*mutableObjectData, bool) {
 }
 
 func (rec *MutableRecord) PackedRoot() ImmutableMap {
-	return rec.Pack().Record(rec.rootModel).Root()
+	return rec.PackedRecord().Root()
+}
+
+func (rec *MutableRecord) PackedRecord() ImmutableRecord {
+	return rec.Pack().Record(rec.rootModel)
 }
 
 // Pack produces an on-disk binary encoding of the updated record, merging the

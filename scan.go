@@ -116,7 +116,9 @@ func (r *RawRange) start(bcur *bbolt.Cursor, logger *slog.Logger) ([]byte, []byt
 	}
 	if k != nil && r.match(k, v, logger) {
 		if skipInitial {
-			logger.LogAttrs(context.Background(), slog.LevelDebug, "SKIP_INITIAL")
+			if debugLogRawScans {
+				logger.LogAttrs(context.Background(), slog.LevelDebug, "SKIP_INITIAL")
+			}
 			return r.next(bcur, logger)
 		} else {
 			return k, v
