@@ -79,7 +79,7 @@ func boltSeekLast(c *bbolt.Cursor, prefix []byte) ([]byte, []byte) {
 
 func boltSeekLast2(c *bbolt.Cursor, prefix []byte) ([]byte, []byte) {
 	if inc(prefix) {
-		slog.Debug("actually seeking to", "prefix", prefix)
+		//slog.Debug("actually seeking to", "prefix", prefix)
 		k, _ := c.Seek(prefix)
 		dec(prefix)
 		if k == nil {
