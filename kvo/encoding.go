@@ -46,6 +46,10 @@ func HexString(data []uint64) string {
 	return buf.String()
 }
 
+func Hex(v uint64) string {
+	return strings.ToUpper(strconv.FormatUint(v, 16)) + "h"
+}
+
 func writeHex(buf *strings.Builder, v uint64) {
 	s := strconv.FormatUint(v, 16)
 	if len(s)%2 == 1 {

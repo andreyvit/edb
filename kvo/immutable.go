@@ -77,7 +77,7 @@ func (m ImmutableMap) KeyModel(key uint64) *Model {
 	}
 }
 
-func (m ImmutableMap) GetImmutableMap(key uint64) ImmutableMap {
+func (m ImmutableMap) GetMap(key uint64) ImmutableMap {
 	submodel := m.KeyModel(key)
 	raw := m.Get(key)
 	if raw == 0 {
@@ -87,7 +87,19 @@ func (m ImmutableMap) GetImmutableMap(key uint64) ImmutableMap {
 	}
 }
 func (m ImmutableMap) GetAnyMap(key uint64) AnyMap {
-	return m.GetImmutableMap(key)
+	return m.GetMap(key)
+}
+
+func (m ImmutableMap) Items() func(yield func(k, v uint64) bool) {
+	return m.items
+}
+func (m ImmutableMap) items(yield func(k, v uint64) bool) {
+	n := len(m.obj) / 2
+	for i := 0; i < n; i++ {
+		if !yield(m.obj[i], m.obj[i+n]) {
+			break
+		}
+	}
 }
 
 // TODO

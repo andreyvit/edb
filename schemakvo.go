@@ -12,6 +12,7 @@ type KVTable struct {
 	rootModel *kvo.Model
 	keySample KVKey
 	dataBuck  bucketName
+	isRaw     bool
 
 	indices       []*KVIndex
 	indicesByName map[string]*KVIndex
@@ -21,6 +22,12 @@ type KVKey interface {
 	Clone() KVKey
 	PutBytes(raw []byte) bool
 	String() string
+}
+
+func DefineRawTable(scm *Schema, name string) *KVTable {
+	tbl := DefineKVTable(scm, name, nil, nil, nil)
+	tbl.isRaw = true
+	return tbl
 }
 
 func DefineKVTable(scm *Schema, name string, rootModel *kvo.Model, keySample KVKey, build func(b *KVTableBuilder)) *KVTable {
