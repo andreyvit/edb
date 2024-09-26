@@ -2,7 +2,6 @@ package edb
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"log"
 	"log/slog"
@@ -971,7 +970,7 @@ type rawRangeIndexScanStrategy struct {
 }
 
 func (s *rawRangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
-	slog.LogAttrs(context.Background(), slog.LevelDebug, "rawRangeIndexScanStrategy.Next")
+	// slog.LogAttrs(context.Background(), slog.LevelDebug, "rawRangeIndexScanStrategy.Next")
 	var ik, iv []byte
 	if reset {
 		ik, iv = s.rang.start(c, s.logger)
