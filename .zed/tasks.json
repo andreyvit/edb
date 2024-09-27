@@ -1,0 +1,33 @@
+[
+  {
+    "label": "Run $ZED_SYMBOL",
+    "command": "go test . -v -parallel=1 -run '^$ZED_SYMBOL$'",
+    "cwd": "$ZED_DIRNAME",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success",
+    "shell": "system",
+    "tags": ["go-test"]
+  },
+  {
+    "label": "Run edb tests",
+    "command": "go test .",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success",
+    "shell": "system"
+  },
+  {
+    "label": "Run tests matching $ZED_SELECTED_TEXT",
+    "command": "go test . -v -parallel=1 -run '^$ZED_SELECTED_TEXT$'",
+    "cwd": "$ZED_DIRNAME",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "hide": "on_success",
+    "shell": "system"
+  }
+]
