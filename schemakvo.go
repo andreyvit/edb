@@ -56,6 +56,10 @@ func (tbl *KVTable) RootModel() *kvo.Model {
 	return tbl.rootModel
 }
 
+func (tbl *KVTable) RootType() kvo.AnyType {
+	return tbl.rootModel.Type()
+}
+
 func (tbl *KVTable) NewKey() KVKey {
 	return tbl.keySample.Clone()
 }
@@ -70,7 +74,7 @@ func (tbl *KVTable) KeyBytesToString(k []byte) string {
 }
 
 func (tbl *KVTable) decodeValue(raw []byte) kvo.ImmutableMap {
-	return kvo.LoadRecord(raw, tbl.rootModel).Root()
+	return kvo.LoadRecord(raw, tbl.rootModel.Type()).Root()
 }
 
 type KVTableBuilder struct {

@@ -4,7 +4,8 @@ type ValueKind int
 
 const (
 	ValueKindUnknown ValueKind = iota
-	ValueKindInteger
-	ValueKindSubobject
+	ValueKindWord
+	ValueKindMap
+	ValueKindScalarData
 	ValueKindPIIData
 )

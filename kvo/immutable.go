@@ -10,16 +10,16 @@ import (
 // an immutable a tree of objects in a binary format suitable for storing
 // on disk and optimized for random access.
 type ImmutableRecord struct {
-	root *Model
-	data ImmutableRecordData
+	rootType AnyType
+	data     ImmutableRecordData
 }
 
-func EmptyRecord(rootModel *Model) ImmutableRecord {
-	return ImmutableRecord{rootModel, emptyImmutableRecordData}
+func EmptyRecord(rootType AnyType) ImmutableRecord {
+	return ImmutableRecord{rootType, emptyImmutableRecordData}
 }
 
-func LoadRecord(data []byte, rootModel *Model) ImmutableRecord {
-	return ImmutableRecord{rootModel, LoadRecordData(data)}
+func LoadRecord(data []byte, rootType AnyType) ImmutableRecord {
+	return ImmutableRecord{rootType, LoadRecordData(data)}
 }
 
 func LoadRecordData(data []byte) ImmutableRecordData {
@@ -33,11 +33,11 @@ func LoadRecordData(data []byte) ImmutableRecordData {
 	}
 }
 
-func (data ImmutableRecordData) Record(rootModel *Model) ImmutableRecord {
+func (data ImmutableRecordData) Record(rootType AnyType) ImmutableRecord {
 	if len(data) == 0 {
 		data = emptyImmutableRecordData
 	}
-	return ImmutableRecord{rootModel, data}
+	return ImmutableRecord{rootType, data}
 }
 
 func (r ImmutableRecord) Data() ImmutableRecordData {
@@ -49,41 +49,42 @@ func (r ImmutableRecord) Pack() ImmutableRecordData {
 }
 
 func (r ImmutableRecord) Root() ImmutableMap {
-	return ImmutableMap{r.root, r.data, r.data.RootObject()}
+	return ImmutableMap{r.rootType, r.data, r.data.RootObject()}
 }
 func (r ImmutableRecord) AnyRoot() AnyMap {
 	return r.Root()
 }
 
 type ImmutableMap struct {
-	model *Model
-	rec   ImmutableRecordData
-	obj   ImmutableObjectData // non-nil (even if empty) unless object missing
+	typ AnyType
+	rec ImmutableRecordData
+	obj ImmutableObjectData // non-nil (even if empty) unless object missing
 }
 
 func (m ImmutableMap) IsMissing() bool                     { return m.obj == nil }
-func (m ImmutableMap) RecordWithThisRoot() ImmutableRecord { return m.rec.Record(m.model) }
+func (m ImmutableMap) RecordWithThisRoot() ImmutableRecord { return m.rec.Record(m.typ) }
 func (m ImmutableMap) RecordData() ImmutableRecordData     { return m.rec }
-func (m ImmutableMap) Model() *Model                       { return m.model }
+func (m ImmutableMap) Packable() Packable                  { return m.rec }
+func (m ImmutableMap) Type() AnyType                       { return m.typ }
 func (m ImmutableMap) Dump() string                        { return Dump(m) }
 func (m ImmutableMap) Get(key uint64) uint64               { return m.obj.MapGet(key) }
 func (m ImmutableMap) Keys() []uint64                      { return m.obj.MapKeys() }
 
-func (m ImmutableMap) KeyModel(key uint64) *Model {
-	if m.model == nil {
+func (m ImmutableMap) KeyModel(key uint64) AnyType {
+	if m.typ == nil {
 		return nil
 	} else {
-		return m.model.MustPropByCode(key).TypeModel()
+		return m.typ.MapValueType(key)
 	}
 }
 
 func (m ImmutableMap) GetMap(key uint64) ImmutableMap {
-	submodel := m.KeyModel(key)
+	valueType := m.KeyModel(key)
 	raw := m.Get(key)
 	if raw == 0 {
-		return ImmutableMap{submodel, m.rec, nil}
+		return ImmutableMap{valueType, m.rec, nil}
 	} else {
-		return ImmutableMap{submodel, m.rec, m.rec.Object(int(raw))}
+		return ImmutableMap{valueType, m.rec, m.rec.Object(int(raw))}
 	}
 }
 func (m ImmutableMap) GetAnyMap(key uint64) AnyMap {

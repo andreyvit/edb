@@ -7,43 +7,61 @@ import (
 
 func Dump(m AnyMap) string {
 	var buf strings.Builder
-	dump(&buf, m)
+	var fc FmtContext
+	dump(&buf, &fc, m)
+	buf.WriteString(" (")
+	buf.WriteString(strconv.Itoa(len(m.Packable().Pack().Bytes())))
+	buf.WriteString(" bytes)")
 	return buf.String()
 }
 
-func dump(buf *strings.Builder, m AnyMap) {
+func dump(buf *strings.Builder, fc *FmtContext, m AnyMap) {
 	if m.IsMissing() {
 		buf.WriteString("<missing>")
 		return
 	}
-	model := m.Model()
+	mapType := m.Type()
 	buf.WriteByte('{')
 	for i, k := range m.Keys() {
 		if i > 0 {
 			buf.WriteByte(',')
 			buf.WriteByte(' ')
 		}
-		var typ AnyType
-		if model != nil {
-			prop := model.MustPropByCode(k)
-			buf.WriteString(prop.Name())
-			typ = prop.AnyType()
+		var kt, vt AnyType
+		var prop PropImpl
+		if mapType != nil {
+			kt = mapType.MapKeyType()
+			prop = mapType.MapProp(k)
+			if prop != nil {
+				vt = prop.AnyType()
+			} else {
+				vt = mapType.MapValueType(k)
+			}
 		} else {
 			buf.WriteString("0x")
 			buf.WriteString(strconv.FormatUint(k, 16))
 		}
+		if prop != nil {
+			buf.WriteString(prop.Name())
+		} else {
+			if kt == nil {
+				kt = TUknownKey
+			}
+			buf.WriteString(kt.FormatValue(fc, k))
+		}
 		buf.WriteByte(':')
 		buf.WriteByte(' ')
-		if typ != nil {
-			if child := typ.Model(); child != nil {
-				dump(buf, m.GetAnyMap(k))
-				continue
-			} else if child := typ.ItemType(); child != nil {
-				// TODO
-			}
+
+		if vt == nil {
+			vt = TUnknownUint64
 		}
-		v := m.Get(k)
-		buf.WriteString(strconv.FormatUint(v, 10))
+		switch vt.ValueKind() {
+		case ValueKindWord:
+			v := m.Get(k)
+			buf.WriteString(vt.FormatValue(fc, v))
+		case ValueKindMap:
+			dump(buf, fc, m.GetAnyMap(k))
+		}
 	}
 	buf.WriteByte('}')
 }

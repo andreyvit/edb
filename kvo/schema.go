@@ -5,12 +5,20 @@ import (
 )
 
 type Schema struct {
+	TPropCode AnyType
+
 	modelsByName        map[string]*Model
 	modelsByTypeCodeSet map[typeCodeSet]*Model
 
 	propsByName map[string]PropImpl
 	propsByCode []PropImpl
 	maxPropCode PropCode
+}
+
+func NewSchema() *Schema {
+	sch := &Schema{}
+	sch.TPropCode = NewScalarSubtype[PropCode]("prop", TUint64)
+	return sch
 }
 
 func (schema *Schema) PropByCode(code PropCode) PropImpl {
@@ -106,10 +114,11 @@ type ModelDefinition struct {
 }
 
 type Model struct {
-	schema *Schema
-	code   uint64
-	name   string
-	props  []*PropInstance
+	schema     *Schema
+	code       uint64
+	name       string
+	props      []*PropInstance
+	entityType *EntityType
 
 	densePropCount int
 	flexPropCount  int
@@ -130,14 +139,15 @@ func (pi *PropInstance) PropInstance() *PropInstance {
 	return pi
 }
 
-func NewModel(schema *Schema, compositeType *EntityType, build func(b *ModelBuilder)) *Model {
-	name := compositeType.name
+func NewModel(schema *Schema, entityType *EntityType, build func(b *ModelBuilder)) *Model {
+	name := entityType.name
 	if name == "" {
 		panic("model name missing")
 	}
 	model := &Model{
-		schema: schema,
-		name:   name,
+		schema:     schema,
+		name:       name,
+		entityType: entityType,
 	}
 	// if model.Code == 0 {
 	// 	panic("model code missing")
@@ -151,6 +161,8 @@ func NewModel(schema *Schema, compositeType *EntityType, build func(b *ModelBuil
 
 	model.fixedWords = 1 + model.densePropCount
 
+	entityType.model = model
+
 	if schema.modelsByName == nil {
 		schema.modelsByName = make(map[string]*Model)
 	}
@@ -160,7 +172,7 @@ func NewModel(schema *Schema, compositeType *EntityType, build func(b *ModelBuil
 	if schema.modelsByName[model.name] != nil {
 		panic(fmt.Errorf("model %s already defined", model.name))
 	}
-	codeSet := compositeType.typeCodeSet()
+	codeSet := entityType.typeCodeSet()
 	if prior := schema.modelsByTypeCodeSet[codeSet]; prior != nil {
 		panic("unreachable")
 	}
@@ -172,6 +184,10 @@ func NewModel(schema *Schema, compositeType *EntityType, build func(b *ModelBuil
 
 func (model *Model) Name() string {
 	return model.name
+}
+
+func (model *Model) Type() AnyType {
+	return model.entityType
 }
 
 func (model *Model) mustPropInstanceByCode(key uint64) *PropInstance {
@@ -188,6 +204,13 @@ func (model *Model) mustPropInstanceByCode(key uint64) *PropInstance {
 
 func (model *Model) MustPropByCode(key uint64) PropImpl {
 	return model.mustPropInstanceByCode(key).Prop
+}
+
+func (model *Model) PropByCode(key uint64) PropImpl {
+	if pi := model.propsByCode[key]; pi != nil {
+		return pi.Prop
+	}
+	return nil
 }
 
 type ModelBuilder struct {

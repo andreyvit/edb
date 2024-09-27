@@ -2,8 +2,8 @@ package kvo
 
 import (
 	"fmt"
-	"reflect"
-	"sync"
+	"strconv"
+	"time"
 )
 
 type typeCodeSet [8]uint16
@@ -47,6 +47,10 @@ type (
 	FloatValue interface {
 		float32 | ~float64
 	}
+	IntegerStringer interface {
+		IntegerValue
+		fmt.Stringer
+	}
 )
 
 type AnyType interface {
@@ -54,6 +58,11 @@ type AnyType interface {
 	ValueKind() ValueKind
 	Model() *Model
 	ItemType() AnyType
+	MapKeyType() AnyType
+	MapProp(key uint64) PropImpl
+	MapValueType(key uint64) AnyType
+	Schema() *Schema // can return nil for generic types
+	FormatValue(fc *FmtContext, value uint64) string
 	// reflectType() reflect.Type
 	typeCodeSet() typeCodeSet
 }
@@ -62,48 +71,63 @@ type AnyScalarType interface {
 	AnyType
 }
 
-type IntegerType struct {
-	name    string
-	rtype   reflect.Type
-	codeSet typeCodeSet
+type WordFormatter = func(fc *FmtContext, v uint64) string
+
+type WordType struct {
+	name      string
+	codeSet   typeCodeSet
+	formatter func(fc *FmtContext, v uint64) string
 }
 
-func (typ *IntegerType) Name() string             { return typ.name }
-func (typ *IntegerType) ValueKind() ValueKind     { return ValueKindInteger }
-func (typ *IntegerType) ItemType() AnyType        { return nil }
-func (typ *IntegerType) typeCodeSet() typeCodeSet { return typ.codeSet }
-func (typ *IntegerType) Model() *Model            { return nil }
+func (typ *WordType) Name() string                                { return typ.name }
+func (typ *WordType) Schema() *Schema                             { return nil }
+func (typ *WordType) ValueKind() ValueKind                        { return ValueKindWord }
+func (typ *WordType) ItemType() AnyType                           { return nil }
+func (typ *WordType) typeCodeSet() typeCodeSet                    { return typ.codeSet }
+func (typ *WordType) Model() *Model                               { return nil }
+func (typ *WordType) MapKeyType() AnyType                         { return nil }
+func (typ *WordType) MapProp(key uint64) PropImpl                 { return nil }
+func (typ *WordType) MapValueType(key uint64) AnyType             { return nil }
+func (typ *WordType) FormatValue(fc *FmtContext, v uint64) string { return typ.formatter(fc, v) }
 
 // func (typ *Type) ScalarConverter() ScalarConverter[T] {
 // 	return typ.conv
 // }
 
-func (typ *IntegerType) reflectType() reflect.Type {
-	return typ.rtype
-}
-
-func NewScalarType[T any](name string, conv ScalarConverter[T]) *IntegerType {
-	return &IntegerType{
-		name:  name,
-		rtype: reflect.TypeFor[T](),
-		// conv:  conv,
-		codeSet: allocateTypeCode(),
+func NewScalarType[T any](name string, formatter func(fc *FmtContext, v uint64) string) *WordType {
+	return &WordType{
+		name:      name,
+		codeSet:   allocateTypeCode(),
+		formatter: formatter,
 	}
 }
 
-func NewIntType[T IntegerValue](name string) *IntegerType {
-	return NewScalarType(name, intScalarConverter[T]{})
+func NewIntType[T IntegerValue](name string, formatter func(fc *FmtContext, v T) string) *WordType {
+	conv := intScalarConverter[T]{}
+	return NewScalarType[T](name, func(fc *FmtContext, v uint64) string {
+		return formatter(fc, conv.ScalarToValue(v))
+	})
 }
 
-func NewFloatType[T FloatValue](name string) *IntegerType {
-	return NewScalarType(name, floatScalarConverter[T]{})
+func NewIntStringerType[T IntegerStringer](name string) *WordType {
+	conv := intScalarConverter[T]{}
+	return NewScalarType[T](name, func(fc *FmtContext, v uint64) string {
+		return conv.ScalarToValue(v).String()
+	})
 }
 
-func NewScalarSubtype[T any](name string, base *IntegerType) *IntegerType {
-	return &IntegerType{
-		name:  name,
-		rtype: reflect.TypeFor[T](),
-		// conv:  base.conv,
+func NewFloatType[T FloatValue](name string, formatter func(fc *FmtContext, v T) string) *WordType {
+	conv := floatScalarConverter[T]{}
+	return NewScalarType[T](name, func(fc *FmtContext, v uint64) string {
+		return formatter(fc, conv.ScalarToValue(v))
+	})
+}
+
+func NewScalarSubtype[T any](name string, base *WordType) *WordType {
+	return &WordType{
+		name:      name,
+		codeSet:   allocateTypeCode(),
+		formatter: base.formatter,
 	}
 }
 
@@ -112,7 +136,6 @@ type EntityType struct {
 	codeSet typeCodeSet
 	schema  *Schema
 	model   *Model
-	once    sync.Once
 }
 
 func NewEntityType(schema *Schema, name string) *EntityType {
@@ -123,45 +146,115 @@ func NewEntityType(schema *Schema, name string) *EntityType {
 	}
 }
 
-func (typ *EntityType) Name() string             { return typ.name }
-func (typ *EntityType) ValueKind() ValueKind     { return ValueKindSubobject }
-func (typ *EntityType) ItemType() AnyType        { return nil }
-func (typ *EntityType) typeCodeSet() typeCodeSet { return typ.codeSet }
+func (typ *EntityType) Name() string                                    { return typ.name }
+func (typ *EntityType) Schema() *Schema                                 { return typ.schema }
+func (typ *EntityType) ValueKind() ValueKind                            { return ValueKindMap }
+func (typ *EntityType) ItemType() AnyType                               { return nil }
+func (typ *EntityType) typeCodeSet() typeCodeSet                        { return typ.codeSet }
+func (typ *EntityType) MapKeyType() AnyType                             { return typ.schema.TPropCode }
+func (typ *EntityType) FormatValue(fc *FmtContext, value uint64) string { panic("unsupported") }
 
 func (typ *EntityType) Model() *Model {
-	// this delays until schema is finished initializing
-	typ.once.Do(func() {
-		typ.model = typ.schema.modelsByTypeCodeSet[typ.codeSet]
-	})
+	if typ.model == nil {
+		panic(fmt.Sprintf("no model defined for entity type %s", typ.name))
+	}
 	return typ.model
+}
+
+func (typ *EntityType) MapProp(key uint64) PropImpl {
+	return typ.model.PropByCode(key)
+}
+
+func (typ *EntityType) MapValueType(key uint64) AnyType {
+	return typ.model.MustPropByCode(key).AnyType()
 }
 
 type MapType struct {
 	name     string
 	keyType  AnyScalarType
 	itemType AnyType
+	schema   *Schema
 	codeSet  typeCodeSet
 }
 
-func (typ *MapType) Name() string             { return typ.name }
-func (typ *MapType) ValueKind() ValueKind     { return ValueKindSubobject }
-func (typ *MapType) ItemType() AnyType        { return typ.itemType }
-func (typ *MapType) typeCodeSet() typeCodeSet { return typ.codeSet }
-func (typ *MapType) Model() *Model            { return nil }
+func (typ *MapType) Name() string                                    { return typ.name }
+func (typ *MapType) Schema() *Schema                                 { return typ.schema }
+func (typ *MapType) ValueKind() ValueKind                            { return ValueKindMap }
+func (typ *MapType) ItemType() AnyType                               { return typ.itemType }
+func (typ *MapType) typeCodeSet() typeCodeSet                        { return typ.codeSet }
+func (typ *MapType) Model() *Model                                   { return nil }
+func (typ *MapType) MapKeyType() AnyType                             { return typ.keyType }
+func (typ *MapType) MapProp(key uint64) PropImpl                     { return nil }
+func (typ *MapType) MapValueType(key uint64) AnyType                 { return typ.itemType }
+func (typ *MapType) FormatValue(fc *FmtContext, value uint64) string { panic("unsupported") }
 
 func Map(keyType AnyScalarType, itemType AnyType) *MapType {
 	codeSet := typeCodeSet{typeCodeMap}
 	codeSet.append(keyType.typeCodeSet())
 	codeSet.append(itemType.typeCodeSet())
+
+	schema := itemType.Schema()
+	if schema == nil {
+		schema = keyType.Schema()
+	}
+
 	return &MapType{
 		name:     fmt.Sprintf("map[%s]%s", keyType.Name(), itemType.Name()),
 		keyType:  keyType,
 		itemType: itemType,
+		schema:   schema,
 		codeSet:  codeSet,
 	}
 }
 
+func ensureCanAccessKey(typ AnyType, key uint64) {
+	if typ == nil {
+		return
+	}
+	valueType := typ.MapValueType(key)
+	if valueType == nil {
+		reportCannotAccessKey(typ, key)
+	}
+}
+
+func reportCannotAccessKey(typ AnyType, key uint64) {
+	if schema := typ.Schema(); schema != nil {
+		if prop := schema.PropByCode(key); prop != nil {
+			panic(fmt.Sprintf("type %s does not allow key %s", typ.Name(), prop.Name()))
+		}
+	}
+	panic(fmt.Sprintf("type %s does not allow key %d", typ.Name(), key))
+}
+
 var (
-	Int64  = NewIntType[int64]("int64")
-	Uint64 = NewIntType[uint64]("uint64")
+	TInt64 = NewIntType[int64]("int64", func(fc *FmtContext, v int64) string {
+		return strconv.FormatInt(v, 10)
+	})
+	TUint64 = NewIntType[uint64]("uint64", func(fc *FmtContext, v uint64) string {
+		return strconv.FormatUint(v, 10)
+	})
+	TUint64Hex = NewIntType[uint64]("uint64_hex", func(fc *FmtContext, v uint64) string {
+		return "0x" + strconv.FormatUint(v, 16)
+	})
+	TUnknownUint64 = NewIntType[uint64]("unknown_uint64", func(fc *FmtContext, v uint64) string {
+		return strconv.FormatUint(v, 10)
+	})
+	TUknownKey = NewIntType[uint64]("unknown_key", func(fc *FmtContext, v uint64) string {
+		return "0x" + strconv.FormatUint(v, 16)
+	})
+
+	TTime = NewScalarType[time.Time]("time", func(fc *FmtContext, v uint64) string {
+		return Uint64ToTime(v).Format(time.RFC3339)
+	})
+
+	TBool = NewScalarType[bool]("bool", func(fc *FmtContext, v uint64) string {
+		switch v {
+		case 0:
+			return "false"
+		case 1:
+			return "true"
+		default:
+			return fmt.Sprintf("?bool(0x%x)", v)
+		}
+	})
 )

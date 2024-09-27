@@ -2,6 +2,7 @@ package kvo
 
 import (
 	"math"
+	"time"
 )
 
 type ScalarConverter[T any] interface {
@@ -25,4 +26,13 @@ func (floatScalarConverter[T]) ValueToScalar(value T) uint64 {
 }
 func (floatScalarConverter[T]) ScalarToValue(scalar uint64) T {
 	return T(math.Float64frombits(scalar))
+}
+
+type timeWordConverter struct{}
+
+func (timeWordConverter) ValueToScalar(value time.Time) uint64 {
+	return TimeToUint64(value)
+}
+func (timeWordConverter) ScalarToValue(scalar uint64) time.Time {
+	return Uint64ToTime(scalar)
 }

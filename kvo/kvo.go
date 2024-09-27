@@ -29,10 +29,15 @@ type AnyRecord interface {
 }
 
 type AnyMap interface {
-	Model() *Model
+	Type() AnyType
 	IsMissing() bool
 	Keys() []uint64
 	Get(key uint64) uint64
 	GetAnyMap(key uint64) AnyMap
+	Packable() Packable
 	Dump() string
+}
+
+type FmtContext struct {
+	// data map[any]any
 }

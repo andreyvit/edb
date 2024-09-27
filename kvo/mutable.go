@@ -13,16 +13,16 @@ var (
 // (E.g. we're using unsorted keys, so reading performance could be improved
 // by maybe sorting keys before reading.)
 type MutableRecord struct {
-	rootModel *Model
-	original  ImmutableRecordData
-	objects   []*mutableObjectData
-	edits     uint64
+	rootType AnyType
+	original ImmutableRecordData
+	objects  []*mutableObjectData
+	edits    uint64
 }
 
 // NewRecord sets up an empty mutable record with the given root model and
 // an empty root map, and returns the root map.
-func NewRecord(model *Model) MutableMap {
-	return UpdateRecord(EmptyRecord(model))
+func NewRecord(rootType AnyType) MutableMap {
+	return UpdateRecord(EmptyRecord(rootType))
 }
 
 // UpdateRecord sets up a mutable variant of the given record and returns
@@ -33,7 +33,7 @@ func UpdateRecord(orig ImmutableRecord) MutableMap {
 		data = emptyImmutableRecordData
 	}
 	n := data.ObjectCount()
-	rec := &MutableRecord{orig.root, data, make([]*mutableObjectData, n, roundUpToPowerOf2(n)), 0}
+	rec := &MutableRecord{orig.rootType, data, make([]*mutableObjectData, n, roundUpToPowerOf2(n)), 0}
 	return rec.Root()
 }
 
@@ -46,30 +46,30 @@ func (rec *MutableRecord) markModified() {
 }
 
 func (rec *MutableRecord) Original() ImmutableRecord {
-	return rec.original.Record(rec.rootModel)
+	return rec.original.Record(rec.rootType)
 }
 
 func (rec *MutableRecord) Root() MutableMap {
 	if len(rec.objects) == 0 {
-		return rec.addMap(rec.rootModel)
+		return rec.addMap(rec.rootType)
 	} else {
-		return rec.updateMap(0, rec.rootModel)
+		return rec.updateMap(0, rec.rootType)
 	}
 }
 
-func (rec *MutableRecord) addMap(model *Model) MutableMap {
+func (rec *MutableRecord) addMap(typ AnyType) MutableMap {
 	i := len(rec.objects)
 	o := &mutableObjectData{nil, nil, 0, i, objectKindMap}
 	rec.objects = append(rec.objects, o)
 	// no markModified here because adding an object without reference does
 	// not change visible data of the record, and setting a reference will
 	// mark the record as modified
-	return MutableMap{rec, o, model}
+	return MutableMap{rec, o, typ}
 }
 
-func (rec *MutableRecord) updateMap(i int, model *Model) MutableMap {
+func (rec *MutableRecord) updateMap(i int, typ AnyType) MutableMap {
 	o, _ := rec.lookupObject(i)
-	return MutableMap{rec, o, model}
+	return MutableMap{rec, o, typ}
 }
 
 func (rec *MutableRecord) getObject(i int) (*mutableObjectData, ImmutableObjectData) {
@@ -98,7 +98,7 @@ func (rec *MutableRecord) PackedRoot() ImmutableMap {
 }
 
 func (rec *MutableRecord) PackedRecord() ImmutableRecord {
-	return rec.Pack().Record(rec.rootModel)
+	return rec.Pack().Record(rec.rootType)
 }
 
 // Pack produces an on-disk binary encoding of the updated record, merging the
@@ -203,9 +203,9 @@ func (rec *MutableRecord) Pack() ImmutableRecordData {
 
 // MutableMap allows mutating a map within a MutableRecord.
 type MutableMap struct {
-	rec   *MutableRecord
-	obj   *mutableObjectData
-	model *Model
+	rec *MutableRecord
+	obj *mutableObjectData
+	typ AnyType
 }
 
 func (m MutableMap) IsEmpty() bool {
@@ -214,41 +214,40 @@ func (m MutableMap) IsEmpty() bool {
 
 func (m MutableMap) IsMissing() bool        { return m.rec == nil }
 func (m MutableMap) Record() *MutableRecord { return m.rec }
-func (m MutableMap) Model() *Model          { return m.model }
+func (m MutableMap) Type() AnyType          { return m.typ }
+func (m MutableMap) Packable() Packable     { return m.rec }
 func (m MutableMap) Dump() string           { return Dump(m) }
 
 func (m MutableMap) Get(key uint64) uint64 {
-	if m.model != nil {
-		m.model.MustPropByCode(key)
-	}
-
+	ensureCanAccessKey(m.typ, key)
 	return m.obj.MapGet(key)
 }
 
 func (m MutableMap) Set(key, value uint64) {
-	if m.model != nil {
-		m.model.MustPropByCode(key)
-	}
+	ensureCanAccessKey(m.typ, key)
 	if m.obj.MapSet(key, value) {
 		m.rec.markModified()
 	}
 }
 
 func (m MutableMap) GetAnyMap(key uint64) AnyMap {
-	var submodel *Model
-	if m.model != nil {
-		submodel = m.model.MustPropByCode(key).TypeModel()
+	var valueType AnyType
+	if m.typ != nil {
+		valueType = m.typ.MapValueType(key)
+		if valueType == nil {
+			reportCannotAccessKey(m.typ, key)
+		}
 	}
 
 	value := m.obj.MapGet(key)
 	if value == 0 {
-		return ImmutableMap{submodel, m.rec.original, nil}
+		return ImmutableMap{valueType, m.rec.original, nil}
 	} else {
 		updated, orig := m.rec.getObject(int(value))
 		if updated != nil {
-			return MutableMap{m.rec, updated, submodel}
+			return MutableMap{m.rec, updated, valueType}
 		} else {
-			return ImmutableMap{submodel, m.rec.original, orig}
+			return ImmutableMap{valueType, m.rec.original, orig}
 		}
 	}
 }
@@ -258,14 +257,16 @@ func (m MutableMap) Keys() []uint64 {
 }
 
 func (m MutableMap) UpdateMap(key uint64) MutableMap {
-	var submodel *Model
-	if m.model != nil {
-		submodel = m.model.MustPropByCode(key).TypeModel()
+	var valueType AnyType
+	if m.typ != nil {
+		valueType = m.typ.MapValueType(key)
+		if valueType == nil {
+			reportCannotAccessKey(m.typ, key)
+		}
 	}
-
 	value := m.obj.MapGet(key)
 	if value == 0 {
-		child := m.rec.addMap(submodel)
+		child := m.rec.addMap(valueType)
 		m.obj.MapSet(key, child.obj.Ref())
 		return child
 	} else {
@@ -275,7 +276,7 @@ func (m MutableMap) UpdateMap(key uint64) MutableMap {
 				m.rec.markModified()
 			}
 		}
-		return MutableMap{m.rec, child, submodel}
+		return MutableMap{m.rec, child, valueType}
 	}
 }
 
