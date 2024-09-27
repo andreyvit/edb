@@ -23,16 +23,26 @@ func dump(buf *strings.Builder, m AnyMap) {
 			buf.WriteByte(',')
 			buf.WriteByte(' ')
 		}
-		v := m.Get(k)
+		var typ AnyType
 		if model != nil {
 			prop := model.MustPropByCode(k)
 			buf.WriteString(prop.Name())
+			typ = prop.AnyType()
 		} else {
 			buf.WriteString("0x")
 			buf.WriteString(strconv.FormatUint(k, 16))
 		}
 		buf.WriteByte(':')
 		buf.WriteByte(' ')
+		if typ != nil {
+			if child := typ.Model(); child != nil {
+				dump(buf, m.GetAnyMap(k))
+				continue
+			} else if child := typ.ItemType(); child != nil {
+				// TODO
+			}
+		}
+		v := m.Get(k)
 		buf.WriteString(strconv.FormatUint(v, 10))
 	}
 	buf.WriteByte('}')

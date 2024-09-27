@@ -1,10 +1,12 @@
 package kvo
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Schema struct {
-	modelsByName map[string]*Model
-	modelsByCode map[uint64]*Model
+	modelsByName        map[string]*Model
+	modelsByTypeCodeSet map[typeCodeSet]*Model
 
 	propsByName map[string]PropImpl
 	propsByCode []PropImpl
@@ -22,32 +24,17 @@ func (schema *Schema) MustPropByCode(code PropCode) PropImpl {
 	return prop
 }
 
-type PropCode = uint64
-
-type PropImpl interface {
-	Name() string
-	Code() PropCode
-	AnyType() AnyType
-	TypeModel() *Model
-}
-
-type ScalarProp[T any] struct {
-	name string
-	code PropCode
-	typ  *Type[T]
-}
-
-type PropOptions struct {
-}
-
-func NewProp[T any](schema *Schema, code PropCode, name string, typ *Type[T], build func(b *PropBuilder)) PropCode {
-	p := &ScalarProp[T]{
-		code: code,
-		name: name,
-		typ:  typ,
-	}
-	if p.name == "" {
+func (schema *Schema) addProp(prop PropImpl) {
+	code, name := prop.Code(), prop.Name()
+	if name == "" {
 		panic("invalid")
+	}
+	if code == 0 {
+		panic("invalid")
+	}
+
+	if schema.propsByName == nil {
+		schema.propsByName = make(map[string]PropImpl)
 	}
 	if schema.propsByName[name] != nil {
 		panic(fmt.Sprintf("prop %s already exists", name))
@@ -55,44 +42,59 @@ func NewProp[T any](schema *Schema, code PropCode, name string, typ *Type[T], bu
 	if prev := denseMapGet(schema.propsByCode, code); prev != nil {
 		panic(fmt.Sprintf("prop code %d is already assigned to %s, cannot use it for %s", code, prev.Name(), name))
 	}
-	if schema.propsByName == nil {
-		schema.propsByName = make(map[string]PropImpl)
-	}
-	schema.propsByName[name] = p
-	denseMapSet(&schema.propsByCode, p.code, PropImpl(p))
+	schema.propsByName[name] = prop
+	denseMapSet(&schema.propsByCode, prop.Code(), prop)
 	schema.maxPropCode = max(schema.maxPropCode, code)
+}
+
+type PropCode = uint64
+
+type PropImpl interface {
+	Name() string
+	Code() PropCode
+	AnyType() AnyType
+	TypeModel() *Model
+	ValueKind() ValueKind
+}
+
+type Prop struct {
+	name   string
+	code   PropCode
+	typ    AnyType
+	model  *Model
+	schema *Schema
+}
+
+func NewProp(schema *Schema, code PropCode, name string, typ AnyType, build func(b *PropBuilder)) PropCode {
+	p := &Prop{
+		code:   code,
+		name:   name,
+		typ:    typ,
+		schema: schema,
+	}
+	schema.addProp(p)
 	return code
 }
 
-func (p *ScalarProp[T]) Name() string {
-	return p.name
-}
+func (p *Prop) Name() string         { return p.name }
+func (p *Prop) Code() PropCode       { return p.code }
+func (p *Prop) AnyType() AnyType     { return p.typ }
+func (p *Prop) ValueKind() ValueKind { return p.typ.ValueKind() }
+func (p *Prop) TypeModel() *Model    { return p.typ.Model() }
 
-func (p *ScalarProp[T]) Code() PropCode {
-	return p.code
-}
+// func (p *ScalarProp) ValueToScalar(value T) uint64 {
+// 	return p.typ.ScalarConverter().ValueToScalar(value)
+// }
+// func (p *ScalarProp) ScalarToValue(scalar uint64) T {
+// 	return p.typ.ScalarConverter().ScalarToValue(scalar)
+// }
 
-func (p *ScalarProp[T]) AnyType() AnyType {
-	return p.typ
-}
-
-func (p *ScalarProp[T]) ValueToScalar(value T) uint64 {
-	return p.typ.ScalarConverter().ValueToScalar(value)
-}
-func (p *ScalarProp[T]) ScalarToValue(scalar uint64) T {
-	return p.typ.ScalarConverter().ScalarToValue(scalar)
-}
-
-func (p *ScalarProp[T]) TypeModel() *Model {
-	return nil
-}
-
-// func (p *ScalarProp[T]) Get(obj RawObject) T {
+// func (p *ScalarProp) Get(obj RawObject) T {
 // 	raw := obj.GetScalar(p.Code())
 // 	return p.ScalarToValue(raw)
 // }
 
-// func (p *ScalarProp[T]) Set(builder *ObjectBuilder, value T) {
+// func (p *ScalarProp) Set(builder *ObjectBuilder, value T) {
 // 	builder.SetScalar(p.Code(), p.ValueToScalar(value))
 // }
 
@@ -128,7 +130,7 @@ func (pi *PropInstance) PropInstance() *PropInstance {
 	return pi
 }
 
-func NewModel(schema *Schema, compositeType *Type[any], build func(b *ModelBuilder)) *Model {
+func NewModel(schema *Schema, compositeType *EntityType, build func(b *ModelBuilder)) *Model {
 	name := compositeType.name
 	if name == "" {
 		panic("model name missing")
@@ -152,17 +154,18 @@ func NewModel(schema *Schema, compositeType *Type[any], build func(b *ModelBuild
 	if schema.modelsByName == nil {
 		schema.modelsByName = make(map[string]*Model)
 	}
-	if schema.modelsByCode == nil {
-		schema.modelsByCode = make(map[uint64]*Model)
+	if schema.modelsByTypeCodeSet == nil {
+		schema.modelsByTypeCodeSet = make(map[typeCodeSet]*Model)
 	}
 	if schema.modelsByName[model.name] != nil {
 		panic(fmt.Errorf("model %s already defined", model.name))
 	}
-	// if prior := schema.modelsByCode[model.Code]; prior != nil {
-	// 	panic(fmt.Errorf("model code %d used by both %s and %s", model.Code, model.Name, prior.Name))
-	// }
+	codeSet := compositeType.typeCodeSet()
+	if prior := schema.modelsByTypeCodeSet[codeSet]; prior != nil {
+		panic("unreachable")
+	}
 	schema.modelsByName[model.name] = model
-	// schema.modelsByCode[model.Code] = model
+	schema.modelsByTypeCodeSet[codeSet] = model
 
 	return model
 }
