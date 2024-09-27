@@ -134,6 +134,10 @@ type ImmutableRecordData []uint64
 
 var emptyImmutableRecordData = ImmutableRecordData{0}
 
+func EmptyImmutableRecordData() ImmutableRecordData {
+	return emptyImmutableRecordData
+}
+
 func (r ImmutableRecordData) Pack() ImmutableRecordData {
 	return r
 }
