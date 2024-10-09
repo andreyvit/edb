@@ -17,7 +17,14 @@ type Schema struct {
 
 func NewSchema() *Schema {
 	sch := &Schema{}
-	sch.TPropCode = NewScalarSubtype[PropCode]("prop", TUint64)
+	sch.TPropCode = NewIntType("prop", func(fc *FmtContext, key uint64) string {
+		prop := sch.propsByCode[key]
+		if prop == nil {
+			return fmt.Sprintf("unk_0x%x", key)
+		} else {
+			return prop.Name()
+		}
+	})
 	return sch
 }
 

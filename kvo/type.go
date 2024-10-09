@@ -55,6 +55,7 @@ type (
 
 type AnyType interface {
 	Name() string
+	String() string
 	ValueKind() ValueKind
 	Model() *Model
 	ItemType() AnyType
@@ -80,6 +81,7 @@ type WordType struct {
 }
 
 func (typ *WordType) Name() string                                { return typ.name }
+func (typ *WordType) String() string                              { return typ.name }
 func (typ *WordType) Schema() *Schema                             { return nil }
 func (typ *WordType) ValueKind() ValueKind                        { return ValueKindWord }
 func (typ *WordType) ItemType() AnyType                           { return nil }
@@ -131,6 +133,12 @@ func NewScalarSubtype[T any](name string, base *WordType) *WordType {
 	}
 }
 
+func NewUnknownTypeWithErrorCode(errorCode string) *WordType {
+	return NewScalarType[uint64](errorCode, func(fc *FmtContext, v uint64) string {
+		return "0x" + strconv.FormatUint(v, 16) + "::" + errorCode
+	})
+}
+
 type EntityType struct {
 	name    string
 	codeSet typeCodeSet
@@ -147,6 +155,7 @@ func NewEntityType(schema *Schema, name string) *EntityType {
 }
 
 func (typ *EntityType) Name() string                                    { return typ.name }
+func (typ *EntityType) String() string                                  { return typ.name }
 func (typ *EntityType) Schema() *Schema                                 { return typ.schema }
 func (typ *EntityType) ValueKind() ValueKind                            { return ValueKindMap }
 func (typ *EntityType) ItemType() AnyType                               { return nil }
@@ -178,6 +187,7 @@ type MapType struct {
 }
 
 func (typ *MapType) Name() string                                    { return typ.name }
+func (typ *MapType) String() string                                  { return typ.name }
 func (typ *MapType) Schema() *Schema                                 { return typ.schema }
 func (typ *MapType) ValueKind() ValueKind                            { return ValueKindMap }
 func (typ *MapType) ItemType() AnyType                               { return typ.itemType }
@@ -199,7 +209,7 @@ func Map(keyType AnyScalarType, itemType AnyType) *MapType {
 	}
 
 	return &MapType{
-		name:     fmt.Sprintf("map[%s]%s", keyType.Name(), itemType.Name()),
+		name:     fmt.Sprintf("map[%s]%s", keyType.String(), itemType.Name()),
 		keyType:  keyType,
 		itemType: itemType,
 		schema:   schema,
