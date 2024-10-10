@@ -65,7 +65,7 @@ func boltSeekLast(c *bbolt.Cursor, prefix []byte) ([]byte, []byte) {
 	// NOTE: this could be made much faster by incrementing the prefix temporarily, but then we'd need to deal with overflow
 	k, _ := c.Seek(prefix)
 	if k == nil {
-		return nil, nil
+		return c.Last()
 	}
 	for k != nil && bytes.HasPrefix(k, prefix) {
 		k, _ = c.Next()
