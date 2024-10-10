@@ -19,6 +19,7 @@ type Index struct {
 	filler   func(row any, ib *IndexBuilder)
 
 	skipInitialFill bool
+	debugScans      bool
 }
 
 func makeIndexBucketName(name string) bucketName {
@@ -29,6 +30,7 @@ type IndexOpt int
 
 const (
 	IndexOptSkipInitialFill IndexOpt = iota
+	IndexOptDebugScans
 )
 
 func AddIndex[T any](name string, opts ...any) *Index {
@@ -47,6 +49,8 @@ func AddIndex[T any](name string, opts ...any) *Index {
 			switch opt {
 			case IndexOptSkipInitialFill:
 				idx.skipInitialFill = true
+			case IndexOptDebugScans:
+				idx.debugScans = true
 			default:
 				panic(fmt.Errorf("invalid option %T %v", opt, opt))
 			}

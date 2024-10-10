@@ -655,7 +655,7 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 				tx.addIndexKeyBuf(upper)
 			}
 
-			strat = &rangeIndexScanStrategy{els, lower, upper, opt.LowerInc, opt.UpperInc}
+			strat = &rangeIndexScanStrategy{els, lower, upper, opt.LowerInc, opt.UpperInc, idx.debugScans}
 		}
 
 	case ScanMethodExactIndexWithIDRange:
@@ -850,6 +850,7 @@ type rangeIndexScanStrategy struct {
 	upper    []byte
 	lowerInc bool
 	upperInc bool
+	verbose  bool
 }
 
 func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
@@ -858,12 +859,12 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 	if reset {
 		if reverse {
 			if s.upper == nil {
-				if debugLogIndexScans {
+				if s.verbose {
 					log.Printf("range index scan step: SEEK_LAST")
 				}
 				ik, iv = c.Last()
 			} else {
-				if debugLogIndexScans {
+				if s.verbose {
 					log.Printf("range index scan step: SEEK_REV: upper = %x", s.upper)
 				}
 				ik, iv = boltSeekLast(c, s.upper)
@@ -873,12 +874,12 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 			}
 		} else {
 			if s.lower == nil {
-				if debugLogIndexScans {
+				if s.verbose {
 					log.Printf("range index scan step: SEEK_FIRST")
 				}
 				ik, iv = c.First()
 			} else {
-				if debugLogIndexScans {
+				if s.verbose {
 					log.Printf("range index scan step: SEEK_FWD: lower = %x", s.lower)
 				}
 				ik, iv = c.Seek(s.lower)
@@ -888,7 +889,7 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 			}
 		}
 	} else {
-		if debugLogIndexScans {
+		if s.verbose {
 			log.Printf("range index scan step: ADVC: reverse = %v", reverse)
 		}
 		ik, iv = boltAdvance(c, reverse)
@@ -906,7 +907,7 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 		if skippingInitial {
 			if reverse {
 				if bytes.Equal(relevant, s.upper) {
-					if debugLogIndexScans {
+					if s.verbose {
 						log.Printf("range index scan step: SKIP_INITIAL_EQ_UPPER: ik = %x, relevant = %x", ik, relevant)
 					}
 					ik, iv = c.Prev()
@@ -916,7 +917,7 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 				}
 			} else {
 				if bytes.Equal(relevant, s.lower) {
-					if debugLogIndexScans {
+					if s.verbose {
 						log.Printf("range index scan step: SKIP_INITIAL_EQ_LOWER: ik = %x, relevant = %x", ik, relevant)
 					}
 					ik, iv = c.Next()
@@ -934,7 +935,7 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 				// }
 				cmp := bytes.Compare(relevant, s.lower)
 				if cmp < 0 || (cmp == 0 && !s.lowerInc) {
-					if debugLogIndexScans {
+					if s.verbose {
 						log.Printf("range index scan step: BAIL: below lower: ik = %x, lower = %x", ik, lower)
 					}
 					return nil, nil, nil, nil
@@ -944,7 +945,7 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 			if s.upper != nil {
 				cmp := bytes.Compare(relevant, s.upper)
 				if cmp > 0 || (cmp == 0 && !s.upperInc) {
-					if debugLogIndexScans {
+					if s.verbose {
 						log.Printf("range index scan step: BAIL: above upper: ik = %x, upper = %x", ik, upper)
 					}
 					return nil, nil, nil, nil
@@ -952,13 +953,13 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 			}
 		}
 
-		if debugLogIndexScans {
+		if s.verbose {
 			log.Printf("range index scan step: MTCH: ik = %x, iv = %q", ik, iv)
 		}
 		dk, itup := decodeIndexTableKey(ik, ikTup, iv, idx)
 		return ik, iv, itup, dk
 	}
-	if debugLogIndexScans {
+	if s.verbose {
 		log.Printf("range index scan step: EOFd")
 	}
 	return nil, nil, nil, nil
