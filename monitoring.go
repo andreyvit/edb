@@ -6,20 +6,20 @@ import (
 )
 
 type TableStats struct {
-	Rows      int
-	IndexRows int
+	Rows      int64
+	IndexRows int64
 
-	DataSize   int
-	DataAlloc  int
-	IndexSize  int
-	IndexAlloc int
+	DataSize   int64
+	DataAlloc  int64
+	IndexSize  int64
+	IndexAlloc int64
 }
 
-func (ts *TableStats) TotalSize() int {
+func (ts *TableStats) TotalSize() int64 {
 	return ts.DataSize + ts.IndexSize
 }
 
-func (ts *TableStats) TotalAlloc() int {
+func (ts *TableStats) TotalAlloc() int64 {
 	return ts.DataAlloc + ts.IndexAlloc
 }
 
@@ -29,17 +29,38 @@ func (tx *Tx) TableStats(tbl *Table) TableStats {
 	dataBuck := nonNil(tableBuck.Bucket(dataBucket.Raw()))
 	bs := dataBuck.Stats()
 	result := TableStats{
-		Rows:      bs.KeyN,
-		DataSize:  bs.LeafInuse,
-		DataAlloc: bs.BranchAlloc + bs.LeafAlloc,
+		Rows:      int64(bs.KeyN),
+		DataSize:  int64(bs.LeafInuse),
+		DataAlloc: int64(bs.BranchAlloc + bs.LeafAlloc),
 	}
 
 	for _, idx := range tbl.indices {
 		indexBuck := nonNil(tableBuck.Bucket(idx.buck.Raw()))
 		bs = indexBuck.Stats()
-		result.IndexRows += bs.KeyN
-		result.IndexSize += bs.LeafInuse
-		result.IndexAlloc += bs.BranchAlloc + bs.LeafAlloc
+		result.IndexRows += int64(bs.KeyN)
+		result.IndexSize += int64(bs.LeafInuse)
+		result.IndexAlloc += int64(bs.BranchAlloc + bs.LeafAlloc)
+	}
+
+	return result
+}
+
+func (tx *Tx) KVTableStats(tbl *KVTable) TableStats {
+	dataBuck := nonNil(tx.btx.Bucket(tbl.dataBuck.Raw()))
+
+	bs := dataBuck.Stats()
+	result := TableStats{
+		Rows:      int64(bs.KeyN),
+		DataSize:  int64(bs.LeafInuse),
+		DataAlloc: int64(bs.BranchAlloc + bs.LeafAlloc),
+	}
+
+	for _, idx := range tbl.indices {
+		indexBuck := nonNil(tx.btx.Bucket(idx.idxBuck.Raw()))
+		bs = indexBuck.Stats()
+		result.IndexRows += int64(bs.KeyN)
+		result.IndexSize += int64(bs.LeafInuse)
+		result.IndexAlloc += int64(bs.BranchAlloc + bs.LeafAlloc)
 	}
 
 	return result
