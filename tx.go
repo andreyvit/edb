@@ -77,6 +77,9 @@ func (tx *Tx) DBTx() *Tx {
 }
 
 func (tx *Tx) DB() *DB {
+	if tx.closed {
+		panic("tx is closed")
+	}
 	return tx.db
 }
 
@@ -96,6 +99,15 @@ func (tx *Tx) EndVerbose() {
 }
 
 func (tx *Tx) Schema() *Schema {
+	if tx == nil {
+		panic("tx is nil")
+	}
+	if tx.closed {
+		panic("tx is closed")
+	}
+	if tx.db == nil {
+		panic("db is nil??")
+	}
 	return tx.db.schema
 }
 
