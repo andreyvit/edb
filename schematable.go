@@ -28,6 +28,8 @@ type Table struct {
 	zeroKey         []byte
 	migrator        func(tx *Tx, row any, oldVer uint64)
 	suppressContent bool
+
+	TaggableImpl
 }
 
 func (tbl *Table) Name() string {
@@ -58,6 +60,8 @@ func AddTable[Row any](scm *Schema, name string, latestSchemaVer uint64, indexer
 				if opt == SuppressContentWhenLogging {
 					b.SuppressContentWhenLogging()
 				}
+			case *Tag:
+				b.Tag(opt)
 			default:
 				panic(fmt.Errorf("invalid option %T %v", opt, opt))
 			}
@@ -85,7 +89,7 @@ func (tbl *Table) KeyType() reflect.Type {
 }
 
 func (tbl *Table) newRow(schemaVer uint64) reflect.Value {
-	// TODO: create legacy version if needed
+	_ = schemaVer // TODO: create legacy version if needed
 	return reflect.New(tbl.rowType)
 }
 
@@ -210,4 +214,8 @@ func (tbl *Table) decodeRow(buf []byte) (reflect.Value, error) {
 	err := tbl.valueEnc.DecodeValue(buf, rowVal)
 	// log.Printf("decoded row from %q: %#v", buf, rowVal.Elem().Interface())
 	return rowVal, err
+}
+
+func (tbl *Table) RowType() reflect.Type {
+	return tbl.rowType
 }

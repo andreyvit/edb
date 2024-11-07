@@ -16,6 +16,8 @@ type KVTable struct {
 
 	indices       []*KVIndex
 	indicesByName map[string]*KVIndex
+
+	TaggableImpl
 }
 
 type KVKey interface {
@@ -24,8 +26,8 @@ type KVKey interface {
 	String() string
 }
 
-func DefineRawTable(scm *Schema, name string) *KVTable {
-	tbl := DefineKVTable(scm, name, nil, nil, nil)
+func DefineRawTable(scm *Schema, name string, build func(b *KVTableBuilder)) *KVTable {
+	tbl := DefineKVTable(scm, name, nil, nil, build)
 	tbl.isRaw = true
 	return tbl
 }
@@ -79,6 +81,10 @@ func (tbl *KVTable) decodeValue(raw []byte) kvo.ImmutableMap {
 
 type KVTableBuilder struct {
 	table *KVTable
+}
+
+func (b *KVTableBuilder) Tag(tag *Tag) {
+	b.table.tags = append(b.table.tags, tag)
 }
 
 func (b *KVTableBuilder) DefineIndex(name string, keySample KVIndexKey, resolver KVIndexKeyToPrimaryKey, indexer KVIndexer) *KVIndex {

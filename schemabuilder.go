@@ -52,6 +52,10 @@ func (b *TableBuilder[Row, Key]) Migrate(f func(tx *Tx, row *Row, oldVer uint64)
 	}
 }
 
+func (b *TableBuilder[Row, Key]) Tag(tag *Tag) {
+	b.tbl.tags = append(b.tbl.tags, tag)
+}
+
 func (b *TableBuilder[Row, Key]) AddIndex(idx *Index) {
 	b.tbl.AddIndex(idx)
 }
