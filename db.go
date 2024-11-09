@@ -178,3 +178,7 @@ func (db *DB) DescribeOpenTxns() string {
 
 	return buf.String()
 }
+
+func Foo() int64 {
+	return 42
+}
