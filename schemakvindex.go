@@ -36,7 +36,7 @@ func (idx *KVIndex) FullName() string {
 
 func (idx *KVIndex) enumEntries(k, v []byte, f func(ik []byte)) {
 	b := KVIndexContentBuilder{f}
-	idx.indexer(&b, k, kvo.LoadRecord(v, idx.table.rootModel.Type()))
+	idx.indexer(&b, k, kvo.LoadRecord(v, idx.table.RootType()))
 }
 
 func (idx *KVIndex) entries(k, v []byte) [][]byte {

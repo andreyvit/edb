@@ -59,6 +59,9 @@ func (tbl *KVTable) RootModel() *kvo.Model {
 }
 
 func (tbl *KVTable) RootType() kvo.AnyType {
+	if tbl.rootModel == nil {
+		return kvo.Map(kvo.TUknownKey, kvo.TUnknownUint64)
+	}
 	return tbl.rootModel.Type()
 }
 

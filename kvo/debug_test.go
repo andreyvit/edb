@@ -56,7 +56,7 @@ func TestDump(t *testing.T) {
 	fillGizmo(w.UpdateMap(444), 4000, 1)
 
 	a := m.rec.PackedRoot().Dump()
-	e := "{foo: 0x42, bar: {100: 42, 200: 84}, qux: {wibble: 1000, wobble: {wibble: 1001, wobble: {wibble: 1002}}}, waldo: {222: {wibble: 2000}, 444: {wibble: 4000, wobble: {wibble: 4001}}}}"
+	e := "{foo: 0x42, bar: {100: 42, 200: 84}, qux: {wibble: 1000, wobble: {wibble: 1001, wobble: {wibble: 1002}}}, waldo: {222: {wibble: 2000}, 444: {wibble: 4000, wobble: {wibble: 4001}}}} (352 bytes)"
 	if a != e {
 		t.Fatalf("** got:\n%v\n\nwanted:\n%v", a, e)
 	}
