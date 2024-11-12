@@ -48,13 +48,22 @@ func Writable(t *testing.T, o journal.Options) *TestJournal {
 
 	j.Journal = journal.New(dir, o)
 	j.StartWriting()
-	t.Cleanup(j.FinishWriting)
+	t.Cleanup(func() {
+		err := j.FinishWriting()
+		if err != nil {
+			t.Error(err)
+		}
+	})
 	return j
 }
 
 func (j *TestJournal) Eq(fileName string, expected ...string) {
 	j.T.Helper()
 	BytesEq(j.T, j.Data(fileName), Expand(expected...))
+}
+
+func (j *TestJournal) Put(fileName string, expected ...string) {
+	ensure(os.WriteFile(filepath.Join(j.Dir, fileName), Expand(expected...), 0o644))
 }
 
 func (j *TestJournal) Data(fileName string) []byte {
@@ -100,6 +109,12 @@ func must[T any](v T, err error) T {
 		panic(err)
 	}
 	return v
+}
+
+func ensure(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 
 func Expand(specs ...string) []byte {
