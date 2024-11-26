@@ -112,7 +112,15 @@ func (db *DB) Size() int64 {
 	return db.lastSize.Load()
 }
 
+// Close is safe to call multiple times, but not concurrently.
 func (db *DB) Close() {
+	if db.bdb.NoFreelistSync && db.WriteCount.Load() > 0 {
+		// Write freelist to make startup fast.
+		db.bdb.NoFreelistSync = false
+		db.bdb.Update(func(*bbolt.Tx) error {
+			return nil
+		})
+	}
 	err := db.bdb.Close()
 	if err != nil {
 		panic(fmt.Errorf("kvdb: closing: %w", err))
