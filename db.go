@@ -31,6 +31,9 @@ type DB struct {
 
 	txns     []*Tx
 	txnsLock sync.Mutex
+
+	closed  atomic.Bool
+	closeWG sync.WaitGroup
 }
 
 type Options struct {
@@ -81,6 +84,7 @@ func Open(path string, schema *Schema, opt Options) (*DB, error) {
 		tableStates: make([]*tableState, len(schema.tables)),
 		strict:      opt.IsTesting,
 	}
+	db.closeWG.Add(1)
 
 	db.Write(func(tx *Tx) {
 		now := time.Now()
@@ -114,6 +118,19 @@ func (db *DB) Size() int64 {
 
 // Close is safe to call multiple times, but not concurrently.
 func (db *DB) Close() {
+	if db.closed.CompareAndSwap(false, true) {
+		db.doClose()
+	}
+	db.closeWG.Wait()
+}
+
+func (db *DB) IsClosed() bool {
+	return db.closed.Load()
+}
+
+func (db *DB) doClose() {
+	defer db.closeWG.Done()
+
 	if db.bdb.NoFreelistSync && db.WriteCount.Load() > 0 {
 		// Write freelist to make startup fast.
 		db.bdb.NoFreelistSync = false
@@ -121,6 +138,7 @@ func (db *DB) Close() {
 			return nil
 		})
 	}
+
 	err := db.bdb.Close()
 	if err != nil {
 		panic(fmt.Errorf("kvdb: closing: %w", err))

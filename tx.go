@@ -44,6 +44,9 @@ type Tx struct {
 }
 
 func (db *DB) newTx(btx *bbolt.Tx, managed bool, memo map[string]any, stack []byte) *Tx {
+	if db.IsClosed() {
+		panic("database closed")
+	}
 	db.lastSize.Store(btx.Size())
 	if btx.Writable() {
 		WriterCount.Add(1)
@@ -139,6 +142,9 @@ func (tx *Tx) OnChange(opts map[*Table]ChangeFlags, f func(tx *Tx, chg *Change))
 // A read-only transaction would be a natural extension of Check-Mutate-Read
 // with Check and Mutate phases skipped.
 func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
+	if db.IsClosed() {
+		panic("database closed")
+	}
 	if writable {
 		var funcErr error
 		var tx *Tx
@@ -214,6 +220,9 @@ func safelyCall(fn func(*Tx) error, tx *Tx) (err error) {
 }
 
 func (db *DB) BeginRead() *Tx {
+	if db.IsClosed() {
+		panic("database closed")
+	}
 	btx, err := db.bdb.Begin(false)
 	if err != nil {
 		panic(fmt.Errorf("failed to start reading: %w", err))
@@ -243,6 +252,9 @@ func (db *DB) Write(f func(tx *Tx)) {
 }
 
 func (db *DB) BeginUpdate() *Tx {
+	if db.IsClosed() {
+		panic("database closed")
+	}
 	btx, err := db.bdb.Begin(true)
 	if err != nil {
 		panic(fmt.Errorf("db.Begin(true) failed: %w", err))
