@@ -46,6 +46,16 @@ func (c Cursor[Row]) Meta() ValueMeta {
 	return c.RawCursor.Meta()
 }
 
+func (c Cursor[Row]) Rows() func(yield func(*Row) bool) {
+	return func(yield func(*Row) bool) {
+		for c.Next() {
+			if !yield(c.Row()) {
+				break
+			}
+		}
+	}
+}
+
 func TableScan[Row any](txh Txish, opt ScanOptions) Cursor[Row] {
 	tx := txh.DBTx()
 	tbl := tableOf[Row](tx)
