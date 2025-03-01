@@ -86,6 +86,10 @@ func (tx *Tx) DB() *DB {
 	return tx.db
 }
 
+func (tx *Tx) StartTime() time.Time {
+	return tx.startTime
+}
+
 func (tx *Tx) SetLogger(logger *slog.Logger) {
 	tx.logger = logger
 }
