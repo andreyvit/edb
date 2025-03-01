@@ -6,6 +6,11 @@ import (
 	"strings"
 )
 
+type Tablish interface {
+	TableName() string
+	HasTag(tag *Tag) bool
+}
+
 var indexBuilderPtrType = reflect.TypeOf((*IndexBuilder)(nil))
 var anyType = reflect.TypeOf((*any)(nil)).Elem()
 
