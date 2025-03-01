@@ -75,7 +75,7 @@ func (tx *Tx) deleteByKeyRaw(tbl *Table, keyRaw []byte, keyValIfKnown reflect.Va
 	}
 
 	var old value
-	decodeTableValue(&old, tbl, keyRaw, v)
+	decodeTableValue(&old, tbl, keyRaw, v, false)
 
 	tx.markWritten()
 

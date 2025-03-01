@@ -332,6 +332,7 @@ type RawCursor interface {
 	Row() (any, ValueMeta)
 	TryRow() (any, ValueMeta, error)
 	RawRow() []byte
+	ValueMemento() []byte
 }
 
 type RawTableCursor struct {
@@ -451,16 +452,26 @@ func (c *RawTableCursor) RowVal() (reflect.Value, ValueMeta) {
 }
 
 func (c *RawTableCursor) TryRowVal() (reflect.Value, ValueMeta, error) {
-	return decodeTableRow(c.table, c.k, c.v, c.tx)
+	return decodeTableRow(c.table, c.k, c.v, c.tx, false)
 }
 
 func (c *RawTableCursor) RawRow() []byte {
 	return c.v
 }
 
+func (c *RawTableCursor) ValueMemento() []byte {
+	brief, err := briefRawValue(c.RawRow())
+	if err != nil {
+		err := tableErrf(c.table, nil, c.RawKey(), err, "")
+		log.Printf("** ERROR: %v", err)
+		panic(err)
+	}
+	return brief
+}
+
 func (c *RawTableCursor) Meta() ValueMeta {
 	var vle value
-	decodeTableValue(&vle, c.table, c.k, c.v)
+	decodeTableValue(&vle, c.table, c.k, c.v, false)
 	return vle.ValueMeta()
 }
 
@@ -580,17 +591,27 @@ func (c *RawIndexCursor) RowVal() (reflect.Value, ValueMeta) {
 
 func (c *RawIndexCursor) TryRowVal() (reflect.Value, ValueMeta, error) {
 	dv := c.dbuck.Get(c.dk)
-	return decodeTableRow(c.table, c.dk, dv, c.tx)
+	return decodeTableRow(c.table, c.dk, dv, c.tx, false)
 }
 
 func (c *RawIndexCursor) RawRow() []byte {
 	return c.dbuck.Get(c.dk)
 }
 
+func (c *RawIndexCursor) ValueMemento() []byte {
+	brief, err := briefRawValue(c.RawRow())
+	if err != nil {
+		err := tableErrf(c.table, nil, c.RawKey(), err, "")
+		log.Printf("** ERROR: %v", err)
+		panic(err)
+	}
+	return brief
+}
+
 func (c *RawIndexCursor) Meta() ValueMeta {
 	dv := c.dbuck.Get(c.dk)
 	var vle value
-	decodeTableValue(&vle, c.table, c.dk, dv)
+	decodeTableValue(&vle, c.table, c.dk, dv, false)
 	return vle.ValueMeta()
 }
 

@@ -21,6 +21,10 @@ func Put(txh Txish, rows ...any) bool {
 	return isModified
 }
 
+func (tx *Tx) DecodeMementoVal(tbl *Table, keyRaw []byte, memento []byte) (rowVal reflect.Value, meta ValueMeta, err error) {
+	return decodeTableRow(tbl, keyRaw, memento, tx, true)
+}
+
 func (tx *Tx) Put(tbl *Table, row any) (oldMeta, newMeta ValueMeta) {
 	return tx.PutVal(tbl, reflect.ValueOf(row))
 }
@@ -46,7 +50,7 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 	oldValueRaw := dataBuck.Get(keyRaw)
 	var old value
 	if oldValueRaw != nil {
-		err := old.decode(oldValueRaw)
+		err := old.decode(oldValueRaw, false)
 		if err != nil {
 			panic(tableErrf(tbl, nil, keyRaw, err, "decoding old value"))
 		}
@@ -119,7 +123,7 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 		}
 		if opts.Contains(ChangeFlagIncludeMutableRow) {
 			var newVal value
-			err := newVal.decode(valueRaw)
+			err := newVal.decode(valueRaw, false)
 			if err != nil {
 				panic(tableErrf(tbl, nil, keyRaw, err, "decoding new value"))
 			}

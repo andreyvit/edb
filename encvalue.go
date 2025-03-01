@@ -95,7 +95,17 @@ func putValueHeader(buf []byte, flags valueFlags, schemaVer uint64, modCount uin
 	}
 }
 
-func (vle *value) decode(data []byte) error {
+func briefRawValue(data []byte) ([]byte, error) {
+	var vle value
+	err := vle.decode(data, false)
+	if err != nil {
+		return nil, err
+	}
+	return data[:len(data)-len(vle.Index)], nil
+}
+
+// isBrief = true if data is expected to miss the index part
+func (vle *value) decode(data []byte, isMemento bool) error {
 	orig := data
 	if len(data) < minValueSize {
 		return dataErrf(orig, len(data)-len(orig), nil, "invalid value: at least %d bytes required", minValueSize)
@@ -134,13 +144,19 @@ func (vle *value) decode(data []byte) error {
 	}
 	data = data[n:]
 
-	expectedSize := dataSize + indexSize
-	if uint64(len(data)) != expectedSize {
-		return dataErrf(orig, len(data)-len(orig), nil, "invalid value: got %d bytes for data+index, expected %d bytes", len(data), expectedSize)
+	if isMemento {
+		if uint64(len(data)) != dataSize {
+			return dataErrf(orig, len(data)-len(orig), nil, "invalid value: got %d bytes for memento data, expected %d bytes", len(data), dataSize)
+		}
+		vle.Data = data
+	} else {
+		expectedSize := dataSize + indexSize
+		if uint64(len(data)) != expectedSize {
+			return dataErrf(orig, len(data)-len(orig), nil, "invalid value: got %d bytes for data+index, expected %d bytes", len(data), expectedSize)
+		}
+
+		vle.Data, data = data[:dataSize], data[dataSize:]
+		vle.Index, data = data[:indexSize], data[indexSize:]
 	}
-
-	vle.Data, data = data[:dataSize], data[dataSize:]
-	vle.Index, data = data[:indexSize], data[indexSize:]
-
 	return nil
 }

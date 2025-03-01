@@ -52,9 +52,9 @@ func keyRawToVal(raw []byte, tbl *Table) reflect.Value {
 	}
 }
 
-func decodeTableRow(tbl *Table, keyRaw, valueRaw []byte, migrationTx *Tx) (rowVal reflect.Value, rowMeta ValueMeta, err error) {
+func decodeTableRow(tbl *Table, keyRaw, valueRaw []byte, migrationTx *Tx, isMemento bool) (rowVal reflect.Value, rowMeta ValueMeta, err error) {
 	var vle value
-	decodeTableValue(&vle, tbl, keyRaw, valueRaw)
+	decodeTableValue(&vle, tbl, keyRaw, valueRaw, isMemento)
 	rowVal, _, rowMeta, err = decodeTableRowFromValue(&vle, tbl, keyRaw, migrationTx)
 	return
 }
@@ -81,8 +81,8 @@ func decodeTableRowFromValue(vle *value, tbl *Table, keyRaw []byte, migrationTx 
 	return
 }
 
-func decodeTableValue(vle *value, tbl *Table, keyRaw, valueRaw []byte) {
-	err := vle.decode(valueRaw)
+func decodeTableValue(vle *value, tbl *Table, keyRaw, valueRaw []byte, isMemento bool) {
+	err := vle.decode(valueRaw, isMemento)
 	if err != nil {
 		err := tableErrf(tbl, nil, keyRaw, err, "")
 		log.Printf("** ERROR: %v", err)

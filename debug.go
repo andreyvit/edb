@@ -91,7 +91,7 @@ func (tx *Tx) dumpIndex(w *strings.Builder, prefix string, f DumpFlags, idx *Ind
 }
 
 func (tx *Tx) dumpRow(w *strings.Builder, prefix string, f DumpFlags, tbl *Table, rowPos int, k, v []byte, migratorTx *Tx) {
-	rowVal, rowMeta, err := decodeTableRow(tbl, k, v, migratorTx)
+	rowVal, rowMeta, err := decodeTableRow(tbl, k, v, migratorTx, false)
 	if err != nil {
 		fmt.Fprintf(w, "%s.%d = (m%d s%d) ** ERROR: %v\n", prefix, rowPos, rowMeta.ModCount, rowMeta.SchemaVer, err)
 		return

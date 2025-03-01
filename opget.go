@@ -166,10 +166,10 @@ func (tx *Tx) getRowValByRawKey(tbl *Table, keyRaw []byte, includeRow bool) (ref
 	}
 
 	if includeRow {
-		return decodeTableRow(tbl, keyRaw, valueRaw, tx)
+		return decodeTableRow(tbl, keyRaw, valueRaw, tx, false)
 	} else {
 		var vle value
-		decodeTableValue(&vle, tbl, keyRaw, valueRaw)
+		decodeTableValue(&vle, tbl, keyRaw, valueRaw, false)
 		return reflect.Value{}, vle.ValueMeta(), nil
 	}
 }
