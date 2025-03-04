@@ -138,6 +138,7 @@ type PropInstance struct {
 	Prop     PropImpl
 	Dense    bool
 	Required bool
+	LocalID  LocalID
 
 	denseIndex int
 }
@@ -237,6 +238,8 @@ const (
 	PropRequired
 )
 
+type LocalID uint64
+
 func (b *ModelBuilder) Prop(propCode PropCode, opts ...any) {
 	prop := b.model.schema.PropByCode(propCode)
 	name := prop.Name()
@@ -255,6 +258,8 @@ func (b *ModelBuilder) Prop(propCode PropCode, opts ...any) {
 			case PropRequired:
 				pi.Required = true
 			}
+		case LocalID:
+			pi.LocalID = opt
 		default:
 			panic(fmt.Errorf("unexpected prop option %T", opt))
 		}
