@@ -371,8 +371,28 @@ func (c *RawTableCursor) Next() bool {
 	} else {
 		c.init = true
 		if c.reverse {
-			if c.upper != nil {
-				panic("reverse range scan not supported yet")
+			upper := c.upper
+			if upper == nil && len(c.prefix) > 0 {
+				upper = c.prefix
+			}
+			if upper != nil {
+				k, v = c.dcur.Seek(upper)
+				p := upper
+				for len(k) > 0 {
+					if len(k) < len(p) || !bytes.Equal(p, k[:len(p)]) {
+						k, v = c.dcur.Prev()
+						break
+					}
+
+					if kn, vn := c.dcur.Next(); len(kn) == 0 {
+						break
+					} else {
+						k, v = kn, vn
+					}
+				}
+				if debugLogTableScans {
+					log.Printf("%s::TableScan: SEEK to upper = %x: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, upper, c.prefix, c.reverse, k, v)
+				}
 			} else {
 				k, v = c.dcur.Last()
 				if debugLogTableScans {

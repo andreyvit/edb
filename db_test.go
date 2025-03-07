@@ -227,6 +227,27 @@ func TestDBCompositeKey(t *testing.T) {
 		rows := All(TableScan[Widget](tx, FullScan()))
 		deepEqual(t, rows, []*Widget{u2, u1, u4, u5, u3})
 
+		rows = All(TableScan[Widget](tx, ExactScan(AB{0, 0}).Prefix(1)))
+		isempty(t, rows)
+
+		rows = All(TableScan[Widget](tx, ExactScan(AB{1, 0}).Prefix(1)))
+		deepEqual(t, rows, []*Widget{u2, u1})
+
+		rows = All(TableScan[Widget](tx, ExactScan(AB{1, 0}).Prefix(1).Reversed()))
+		deepEqual(t, rows, []*Widget{u1, u2})
+
+		rows = All(TableScan[Widget](tx, ExactScan(AB{2, 0}).Prefix(1)))
+		deepEqual(t, rows, []*Widget{u4, u5})
+
+		rows = All(TableScan[Widget](tx, ExactScan(AB{2, 0}).Prefix(1).Reversed()))
+		deepEqual(t, rows, []*Widget{u5, u4})
+
+		rows = All(TableScan[Widget](tx, ExactScan(AB{3, 0}).Prefix(1).Reversed()))
+		deepEqual(t, rows, []*Widget{u3})
+
+		rows = All(TableScan[Widget](tx, ExactScan(AB{4, 0}).Prefix(1).Reversed()))
+		isempty(t, rows)
+
 		// CD
 
 		rows = All(IndexScan[Widget](tx, widgetsByCD, FullScan()))
