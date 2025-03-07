@@ -410,6 +410,8 @@ func deepEqual[T any](t testing.TB, a, e T) {
 	if !reflect.DeepEqual(a, e) {
 		t.Helper()
 		t.Errorf("** got %v, wanted %v", a, e)
+	} else {
+		t.Logf("✓ got %v", a)
 	}
 }
 
@@ -417,6 +419,8 @@ func isempty[T any, S ~[]T](t testing.TB, a S) {
 	if len(a) > 0 {
 		t.Helper()
 		t.Errorf("** got %v, wanted empty slice", a)
+	} else {
+		t.Logf("✓ empty")
 	}
 }
 
