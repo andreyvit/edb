@@ -2,6 +2,7 @@ package kvo
 
 import (
 	"fmt"
+	"iter"
 	"sort"
 	"unsafe"
 )
@@ -68,7 +69,18 @@ func (m ImmutableMap) Packable() Packable                  { return m.rec }
 func (m ImmutableMap) Type() AnyType                       { return m.typ }
 func (m ImmutableMap) Dump() string                        { return Dump(m) }
 func (m ImmutableMap) Get(key uint64) uint64               { return m.obj.MapGet(key) }
+func (m ImmutableMap) KeyCount() int                       { return m.obj.KeyCount() }
 func (m ImmutableMap) Keys() []uint64                      { return m.obj.MapKeys() }
+
+func (m ImmutableMap) KeySeq() iter.Seq[uint64] {
+	return func(yield func(uint64) bool) {
+		for _, k := range m.Keys() {
+			if !yield(k) {
+				break
+			}
+		}
+	}
+}
 
 func (m ImmutableMap) KeyModel(key uint64) AnyType {
 	if m.typ == nil {
@@ -196,6 +208,10 @@ func (r ImmutableRecordData) object(i int) (ImmutableObjectData, byte, uint32) {
 // It can be a map, an array or a set. Could even be a string or a blob, but
 // we'd lack the exact size info, and those are better represented as []byte.
 type ImmutableObjectData []uint64
+
+func (m ImmutableObjectData) KeyCount() int {
+	return len(m) / 2
+}
 
 func (m ImmutableObjectData) MapKeys() []uint64 {
 	return m[:len(m)/2]

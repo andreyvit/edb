@@ -1,6 +1,9 @@
 package kvo
 
-import "sort"
+import (
+	"iter"
+	"sort"
+)
 
 var (
 	tombstone = &mutableObjectData{nil, nil, 0, -1, objectKindTombstone}
@@ -252,8 +255,15 @@ func (m MutableMap) GetAnyMap(key uint64) AnyMap {
 	}
 }
 
+func (m MutableMap) KeyCount() int            { return m.obj.KeyCount() }
+func (m MutableMap) KeySeq() iter.Seq[uint64] { return m.obj.KeySeq() }
+
 func (m MutableMap) Keys() []uint64 {
-	panic("not implemented")
+	result := make([]uint64, 0, m.KeyCount())
+	for key := range m.KeySeq() {
+		result = append(result, key)
+	}
+	return result
 }
 
 func (m MutableMap) UpdateMap(key uint64) MutableMap {
@@ -315,6 +325,21 @@ func (o *mutableObjectData) MapSet(key uint64, value uint64) bool {
 	}
 	o.data = append(o.data, key, value)
 	return true
+}
+
+func (o *mutableObjectData) KeyCount() int {
+	return len(o.data) / 2
+}
+
+func (o *mutableObjectData) KeySeq() iter.Seq[uint64] {
+	return func(yield func(uint64) bool) {
+		n := len(o.data) / 2
+		for i := range n {
+			if !yield(o.data[i*2]) {
+				break
+			}
+		}
+	}
 }
 
 func (o *mutableObjectData) Ref() uint64 {

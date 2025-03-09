@@ -17,6 +17,8 @@
 // long-term as part of change history. This might or might not match #3.
 package kvo
 
+import "iter"
+
 type Packable interface {
 	// Pack returns ImmutableRecordData of this record. Must return nil if
 	// called on a nil struct pointer.
@@ -31,7 +33,9 @@ type AnyRecord interface {
 type AnyMap interface {
 	Type() AnyType
 	IsMissing() bool
+	KeyCount() int
 	Keys() []uint64
+	KeySeq() iter.Seq[uint64]
 	Get(key uint64) uint64
 	GetAnyMap(key uint64) AnyMap
 	Packable() Packable
