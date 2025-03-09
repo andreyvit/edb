@@ -9,9 +9,6 @@ func Dump(m AnyMap) string {
 	var buf strings.Builder
 	var fc FmtContext
 	dump(&buf, &fc, m)
-	buf.WriteString(" (")
-	buf.WriteString(strconv.Itoa(len(m.Packable().Pack().Bytes())))
-	buf.WriteString(" bytes)")
 	return buf.String()
 }
 
