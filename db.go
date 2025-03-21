@@ -34,6 +34,10 @@ type DB struct {
 
 	closed  atomic.Bool
 	closeWG sync.WaitGroup
+
+	safeToQuitCallbackLock   sync.Mutex
+	safeToQuitCallback       func()
+	safeToQuitCallbackCalled bool
 }
 
 type Options struct {
@@ -118,6 +122,17 @@ func (db *DB) Size() int64 {
 
 // Close is safe to call multiple times, but not concurrently.
 func (db *DB) Close() {
+	db.CloseWithSafeToQuitCallback(nil)
+}
+
+// Close is safe to call multiple times, but not concurrently.
+func (db *DB) CloseWithSafeToQuitCallback(safeToQuit func()) {
+	if safeToQuit != nil {
+		if !db.addSafeToQuitCallback(safeToQuit) {
+			safeToQuit()
+		}
+	}
+
 	if db.closed.CompareAndSwap(false, true) {
 		db.doClose()
 	}
@@ -126,6 +141,35 @@ func (db *DB) Close() {
 
 func (db *DB) IsClosed() bool {
 	return db.closed.Load()
+}
+
+func (db *DB) addSafeToQuitCallback(safeToQuit func()) bool {
+	db.safeToQuitCallbackLock.Lock()
+	defer db.safeToQuitCallbackLock.Unlock()
+
+	if db.safeToQuitCallbackCalled {
+		return false
+	}
+
+	if prev := db.safeToQuitCallback; prev == nil {
+		db.safeToQuitCallback = safeToQuit
+	} else {
+		db.safeToQuitCallback = func() {
+			prev()
+			safeToQuit()
+		}
+	}
+	return true
+}
+
+func (db *DB) retrieveSafeToQuitCallback() func() {
+	db.safeToQuitCallbackLock.Lock()
+	defer db.safeToQuitCallbackLock.Unlock()
+
+	f := db.safeToQuitCallback
+	db.safeToQuitCallback = nil
+	db.safeToQuitCallbackCalled = true
+	return f
 }
 
 func (db *DB) doClose() {
@@ -141,6 +185,10 @@ func (db *DB) doClose() {
 		if db.logf != nil {
 			elapsed := time.Since(start)
 			db.logf("db: bbolt freelist written in %d ms", elapsed.Milliseconds())
+		}
+		f := db.retrieveSafeToQuitCallback()
+		if f != nil {
+			f()
 		}
 	}
 
