@@ -221,6 +221,13 @@ func (model *Model) PropByCode(key uint64) PropImpl {
 	return nil
 }
 
+func (model *Model) PropByName(name string) PropImpl {
+	if pi := model.propsByName[name]; pi != nil {
+		return pi.Prop
+	}
+	return nil
+}
+
 type ModelBuilder struct {
 	model *Model
 }
