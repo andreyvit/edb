@@ -180,6 +180,14 @@ func First[Row any](c Cursor[Row]) *Row {
 	return nil
 }
 
+func FirstKey[Key, Row any](c Cursor[Row]) Key {
+	if c.Next() {
+		return c.Key().(Key)
+	}
+	var zero Key
+	return zero
+}
+
 func Select[Row any](c Cursor[Row], f func(*Row) bool) *Row {
 	for c.Next() {
 		row := c.Row()
