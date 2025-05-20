@@ -3,6 +3,7 @@ package edb
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 )
 
@@ -82,10 +83,10 @@ func (scm *Schema) addKVTable(tbl *KVTable) {
 }
 
 func (scm *Schema) Tables() []*Table {
-	return append([]*Table(nil), scm.tables...)
+	return slices.Clone(scm.tables)
 }
 func (scm *Schema) KVTables() []*KVTable {
-	return append([]*KVTable(nil), scm.kvtables...)
+	return slices.Clone(scm.kvtables)
 }
 
 func (scm *Schema) TableNamed(name string) *Table {

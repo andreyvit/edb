@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 
 	"go.etcd.io/bbolt"
@@ -78,6 +79,10 @@ func (tbl *Table) AddIndex(idx *Index) *Table {
 	tbl.indicesByName[idx.name] = idx
 	idx.table = tbl
 	return tbl
+}
+
+func (tbl *Table) Indices() []*Index {
+	return slices.Clone(tbl.indices)
 }
 
 func (tbl *Table) IndexNamed(name string) *Index {

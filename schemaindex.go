@@ -136,3 +136,22 @@ func (idx *Index) ParseNakedIndexKey(s string) (any, error) {
 	}
 	return val.Interface(), nil
 }
+
+func (idx *Index) RawKeyString(keyRaw []byte) string {
+	tup, err := decodeTuple(keyRaw)
+	if err != nil {
+		panic(fmt.Errorf("%s key: %w", idx.FullName(), err))
+	}
+	return strings.Join(idx.keyEnc.tupleToStrings(tup), "|")
+}
+
+func (idx *Index) KeyString(key any) string {
+	return idx.RawKeyString(idx.EncodeKey(key))
+}
+
+func (idx *Index) EncodeKey(key any) []byte {
+	return idx.EncodeKeyVal(reflect.ValueOf(key))
+}
+func (idx *Index) EncodeKeyVal(keyVal reflect.Value) []byte {
+	return idx.keyEnc.encode(nil, keyVal)
+}
