@@ -64,6 +64,9 @@ type AnyType interface {
 	MapValueType(key uint64) AnyType
 	Schema() *Schema // can return nil for generic types
 	FormatValue(fc *FmtContext, value uint64) string
+	Sub(newValue, oldValue uint64) uint64
+	Add(value, delta uint64) uint64
+	Sign(delta uint64) int
 	// reflectType() reflect.Type
 	typeCodeSet() typeCodeSet
 }
@@ -73,11 +76,17 @@ type AnyScalarType interface {
 }
 
 type WordFormatter = func(fc *FmtContext, v uint64) string
+type WordSubtractor = func(newValue, oldValue uint64) uint64
+type WordAdder = func(value uint64, delta uint64) uint64
+type WordSigner = func(delta uint64) int
 
 type WordType struct {
-	name      string
-	codeSet   typeCodeSet
-	formatter func(fc *FmtContext, v uint64) string
+	name       string
+	codeSet    typeCodeSet
+	formatter  WordFormatter
+	adder      WordAdder
+	subtractor WordSubtractor
+	signer     WordSigner
 }
 
 func (typ *WordType) Name() string                                { return typ.name }
@@ -92,29 +101,65 @@ func (typ *WordType) MapProp(key uint64) PropImpl                 { return nil }
 func (typ *WordType) MapValueType(key uint64) AnyType             { return nil }
 func (typ *WordType) FormatValue(fc *FmtContext, v uint64) string { return typ.formatter(fc, v) }
 
+func (typ *WordType) Sub(newValue, oldValue uint64) uint64 {
+	return typ.subtractor(newValue, oldValue)
+}
+func (typ *WordType) Add(value, delta uint64) uint64 {
+	return typ.adder(value, delta)
+}
+func (typ *WordType) Sign(delta uint64) int {
+	return typ.signer(delta)
+}
+
 // func (typ *Type) ScalarConverter() ScalarConverter[T] {
 // 	return typ.conv
 // }
 
-func NewScalarType[T any](name string, formatter func(fc *FmtContext, v uint64) string) *WordType {
+func NewScalarType[T any](name string, formatter WordFormatter, subtractor WordSubtractor, adder WordAdder, signer WordSigner) *WordType {
 	return &WordType{
-		name:      name,
-		codeSet:   allocateTypeCode(),
-		formatter: formatter,
+		name:       name,
+		codeSet:    allocateTypeCode(),
+		formatter:  formatter,
+		adder:      adder,
+		subtractor: subtractor,
+		signer:     signer,
 	}
+}
+
+func sign(v int64) int {
+	if v < 0 {
+		return -1
+	} else if v > 0 {
+		return 1
+	}
+	return 0
+}
+
+func signf(v float64) int {
+	if v < 0 {
+		return -1
+	} else if v > 0 {
+		return 1
+	}
+	return 0
 }
 
 func NewIntType[T IntegerValue](name string, formatter func(fc *FmtContext, v T) string) *WordType {
 	conv := intScalarConverter[T]{}
 	return NewScalarType[T](name, func(fc *FmtContext, v uint64) string {
 		return formatter(fc, conv.ScalarToValue(v))
+	}, func(newValue, oldValue uint64) uint64 {
+		return uint64(int64(conv.ScalarToValue(newValue)) - int64(conv.ScalarToValue(oldValue)))
+	}, func(value, delta uint64) uint64 {
+		return conv.ValueToScalar(T(int64(conv.ScalarToValue(value)) + int64(delta)))
+	}, func(delta uint64) int {
+		return sign(int64(delta))
 	})
 }
 
 func NewIntStringerType[T IntegerStringer](name string) *WordType {
-	conv := intScalarConverter[T]{}
-	return NewScalarType[T](name, func(fc *FmtContext, v uint64) string {
-		return conv.ScalarToValue(v).String()
+	return NewIntType[T](name, func(fc *FmtContext, v T) string {
+		return v.String()
 	})
 }
 
@@ -122,6 +167,12 @@ func NewFloatType[T FloatValue](name string, formatter func(fc *FmtContext, v T)
 	conv := floatScalarConverter[T]{}
 	return NewScalarType[T](name, func(fc *FmtContext, v uint64) string {
 		return formatter(fc, conv.ScalarToValue(v))
+	}, func(newValue, oldValue uint64) uint64 {
+		return conv.ValueToScalar(conv.ScalarToValue(newValue) - conv.ScalarToValue(oldValue))
+	}, func(value, delta uint64) uint64 {
+		return conv.ValueToScalar(conv.ScalarToValue(value) + conv.ScalarToValue(delta))
+	}, func(delta uint64) int {
+		return signf(float64(conv.ScalarToValue(delta)))
 	})
 }
 
@@ -136,6 +187,12 @@ func NewScalarSubtype[T any](name string, base *WordType) *WordType {
 func NewUnknownTypeWithErrorCode(errorCode string) *WordType {
 	return NewScalarType[uint64](errorCode, func(fc *FmtContext, v uint64) string {
 		return "0x" + strconv.FormatUint(v, 16) + "::" + errorCode
+	}, func(newValue, oldValue uint64) uint64 {
+		return uint64(int64((newValue)) - int64((oldValue)))
+	}, func(value, delta uint64) uint64 {
+		return uint64(int64((value)) + int64(delta))
+	}, func(delta uint64) int {
+		return sign(int64(delta))
 	})
 }
 
@@ -162,6 +219,9 @@ func (typ *EntityType) ItemType() AnyType                               { return
 func (typ *EntityType) typeCodeSet() typeCodeSet                        { return typ.codeSet }
 func (typ *EntityType) MapKeyType() AnyType                             { return typ.schema.TPropCode }
 func (typ *EntityType) FormatValue(fc *FmtContext, value uint64) string { panic("unsupported") }
+func (typ *EntityType) Sub(newValue, oldValue uint64) uint64            { panic("unsupported") }
+func (typ *EntityType) Add(value, delta uint64) uint64                  { panic("unsupported") }
+func (typ *EntityType) Sign(delta uint64) int                           { panic("unsupported") }
 
 func (typ *EntityType) Model() *Model {
 	if typ.model == nil {
@@ -197,6 +257,9 @@ func (typ *MapType) MapKeyType() AnyType                             { return ty
 func (typ *MapType) MapProp(key uint64) PropImpl                     { return nil }
 func (typ *MapType) MapValueType(key uint64) AnyType                 { return typ.itemType }
 func (typ *MapType) FormatValue(fc *FmtContext, value uint64) string { panic("unsupported") }
+func (typ *MapType) Sub(newValue, oldValue uint64) uint64            { panic("unsupported") }
+func (typ *MapType) Add(value, delta uint64) uint64                  { panic("unsupported") }
+func (typ *MapType) Sign(delta uint64) int                           { panic("unsupported") }
 
 func Map(keyType AnyScalarType, itemType AnyType) *MapType {
 	codeSet := typeCodeSet{typeCodeMap}
@@ -255,6 +318,12 @@ var (
 
 	TTime = NewScalarType[time.Time]("time", func(fc *FmtContext, v uint64) string {
 		return Uint64ToTime(v).Format(time.RFC3339)
+	}, func(newValue, oldValue uint64) uint64 {
+		return uint64(int64(newValue) - int64(oldValue))
+	}, func(value, delta uint64) uint64 {
+		return uint64(int64(value) + int64(delta))
+	}, func(delta uint64) int {
+		return sign(int64(delta))
 	})
 
 	TBool = NewScalarType[bool]("bool", func(fc *FmtContext, v uint64) string {
@@ -266,5 +335,5 @@ var (
 		default:
 			return fmt.Sprintf("?bool(0x%x)", v)
 		}
-	})
+	}, nil, nil, nil)
 )
