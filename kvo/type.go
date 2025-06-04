@@ -64,9 +64,9 @@ type AnyType interface {
 	MapValueType(key uint64) AnyType
 	Schema() *Schema // can return nil for generic types
 	FormatValue(fc *FmtContext, value uint64) string
-	Sub(newValue, oldValue uint64) uint64
-	Add(value, delta uint64) uint64
-	Sign(delta uint64) int
+	Sub(lhs, rhs uint64) uint64
+	Add(lhs, rhs uint64) uint64
+	Sign(v uint64) int
 	// reflectType() reflect.Type
 	typeCodeSet() typeCodeSet
 }
@@ -76,9 +76,9 @@ type AnyScalarType interface {
 }
 
 type WordFormatter = func(fc *FmtContext, v uint64) string
-type WordSubtractor = func(newValue, oldValue uint64) uint64
-type WordAdder = func(value uint64, delta uint64) uint64
-type WordSigner = func(delta uint64) int
+type WordSubtractor = func(lhs, rhs uint64) uint64
+type WordAdder = func(lhs, rhs uint64) uint64
+type WordSigner = func(v uint64) int
 
 type WordType struct {
 	name       string
@@ -101,14 +101,20 @@ func (typ *WordType) MapProp(key uint64) PropImpl                 { return nil }
 func (typ *WordType) MapValueType(key uint64) AnyType             { return nil }
 func (typ *WordType) FormatValue(fc *FmtContext, v uint64) string { return typ.formatter(fc, v) }
 
-func (typ *WordType) Sub(newValue, oldValue uint64) uint64 {
-	return typ.subtractor(newValue, oldValue)
+func (typ *WordType) Add(lhs, rhs uint64) uint64 {
+	return typ.adder(lhs, rhs)
 }
-func (typ *WordType) Add(value, delta uint64) uint64 {
-	return typ.adder(value, delta)
+func (typ *WordType) Sub(lhs, rhs uint64) uint64 {
+	return typ.subtractor(lhs, rhs)
 }
-func (typ *WordType) Sign(delta uint64) int {
-	return typ.signer(delta)
+func (typ *WordType) Sign(v uint64) int {
+	return typ.signer(v)
+}
+func (typ *WordType) MulInt(lhs uint64, rhs int64) uint64 {
+	return uint64(int64(lhs) * rhs) // TODO
+}
+func (typ *WordType) Neg(v uint64) uint64 {
+	return typ.subtractor(0, v)
 }
 
 // func (typ *Type) ScalarConverter() ScalarConverter[T] {
@@ -148,10 +154,14 @@ func NewIntType[T IntegerValue](name string, formatter func(fc *FmtContext, v T)
 	conv := intScalarConverter[T]{}
 	return NewScalarType[T](name, func(fc *FmtContext, v uint64) string {
 		return formatter(fc, conv.ScalarToValue(v))
-	}, func(newValue, oldValue uint64) uint64 {
-		return uint64(int64(conv.ScalarToValue(newValue)) - int64(conv.ScalarToValue(oldValue)))
-	}, func(value, delta uint64) uint64 {
-		return conv.ValueToScalar(T(int64(conv.ScalarToValue(value)) + int64(delta)))
+	}, func(lhs, rhs uint64) uint64 {
+		return uint64(
+			int64(conv.ScalarToValue(lhs)) -
+				int64(conv.ScalarToValue(rhs)))
+	}, func(lhs, rhs uint64) uint64 {
+		return conv.ValueToScalar(
+			T(int64(conv.ScalarToValue(lhs))) +
+				T(int64(conv.ScalarToValue(rhs))))
 	}, func(delta uint64) int {
 		return sign(int64(delta))
 	})
@@ -168,9 +178,11 @@ func NewFloatType[T FloatValue](name string, formatter func(fc *FmtContext, v T)
 	return NewScalarType[T](name, func(fc *FmtContext, v uint64) string {
 		return formatter(fc, conv.ScalarToValue(v))
 	}, func(newValue, oldValue uint64) uint64 {
-		return conv.ValueToScalar(conv.ScalarToValue(newValue) - conv.ScalarToValue(oldValue))
+		return conv.ValueToScalar(
+			conv.ScalarToValue(newValue) - conv.ScalarToValue(oldValue))
 	}, func(value, delta uint64) uint64 {
-		return conv.ValueToScalar(conv.ScalarToValue(value) + conv.ScalarToValue(delta))
+		return conv.ValueToScalar(
+			conv.ScalarToValue(value) + conv.ScalarToValue(delta))
 	}, func(delta uint64) int {
 		return signf(float64(conv.ScalarToValue(delta)))
 	})
@@ -219,9 +231,9 @@ func (typ *EntityType) ItemType() AnyType                               { return
 func (typ *EntityType) typeCodeSet() typeCodeSet                        { return typ.codeSet }
 func (typ *EntityType) MapKeyType() AnyType                             { return typ.schema.TPropCode }
 func (typ *EntityType) FormatValue(fc *FmtContext, value uint64) string { panic("unsupported") }
-func (typ *EntityType) Sub(newValue, oldValue uint64) uint64            { panic("unsupported") }
-func (typ *EntityType) Add(value, delta uint64) uint64                  { panic("unsupported") }
-func (typ *EntityType) Sign(delta uint64) int                           { panic("unsupported") }
+func (typ *EntityType) Sub(lhs, rhs uint64) uint64                      { panic("unsupported") }
+func (typ *EntityType) Add(lhs, rhs uint64) uint64                      { panic("unsupported") }
+func (typ *EntityType) Sign(v uint64) int                               { panic("unsupported") }
 
 func (typ *EntityType) Model() *Model {
 	if typ.model == nil {
@@ -257,9 +269,9 @@ func (typ *MapType) MapKeyType() AnyType                             { return ty
 func (typ *MapType) MapProp(key uint64) PropImpl                     { return nil }
 func (typ *MapType) MapValueType(key uint64) AnyType                 { return typ.itemType }
 func (typ *MapType) FormatValue(fc *FmtContext, value uint64) string { panic("unsupported") }
-func (typ *MapType) Sub(newValue, oldValue uint64) uint64            { panic("unsupported") }
-func (typ *MapType) Add(value, delta uint64) uint64                  { panic("unsupported") }
-func (typ *MapType) Sign(delta uint64) int                           { panic("unsupported") }
+func (typ *MapType) Sub(lhs, rhs uint64) uint64                      { panic("unsupported") }
+func (typ *MapType) Add(lhs, rhs uint64) uint64                      { panic("unsupported") }
+func (typ *MapType) Sign(v uint64) int                               { panic("unsupported") }
 
 func Map(keyType AnyScalarType, itemType AnyType) *MapType {
 	codeSet := typeCodeSet{typeCodeMap}
