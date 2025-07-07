@@ -172,11 +172,19 @@ func (tbl *Table) DecodeKeyValInto(keyVal reflect.Value, rawKey []byte) {
 }
 
 func (tbl *Table) RawKeyString(keyRaw []byte) string {
+	str, err := tbl.TryRawKeyString(keyRaw)
+	if err != nil {
+		panic(err)
+	}
+	return str
+}
+
+func (tbl *Table) TryRawKeyString(keyRaw []byte) (string, error) {
 	tup, err := decodeTuple(keyRaw)
 	if err != nil {
-		panic(fmt.Errorf("%s key: %w", tbl.name, err))
+		return "", err
 	}
-	return strings.Join(tbl.keyEnc.tupleToStrings(tup), tbl.keyStringSep)
+	return strings.Join(tbl.keyEnc.tupleToStrings(tup), tbl.keyStringSep), nil
 	// keyVal := tbl.decodeKey(keyRaw)
 	// return fmt.Sprint(keyVal.Interface())
 }
