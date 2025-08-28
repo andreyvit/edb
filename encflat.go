@@ -205,9 +205,17 @@ func (enc *flatEncoding) decodeTup(tup tuple, val reflect.Value) error {
 }
 
 func (enc *flatEncoding) tupleToStrings(tup tuple) []string {
+	result, err := enc.tryTupleToStrings(tup)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
+func (enc *flatEncoding) tryTupleToStrings(tup tuple) ([]string, error) {
 	n := len(enc.components)
 	if len(tup) != n {
-		panic(fmt.Errorf("wrong number of components: got %d, wanted %d in: %v", len(tup), len(enc.components), tup))
+		return nil, fmt.Errorf("wrong number of components: got %d, wanted %d in: %v", len(tup), len(enc.components), tup)
 	}
 	result := make([]string, n)
 	for i, fc := range enc.components {
@@ -217,31 +225,31 @@ func (enc *flatEncoding) tupleToStrings(tup tuple) []string {
 			val := reflect.New(fc.Type)
 			err = fc.Decode(tup[i], val.Elem())
 			if fc.Decode == nil {
-				panic(fmt.Errorf("no Decode for %v", fc.Type))
+				return nil, fmt.Errorf("no Decode for %v", fc.Type)
 			}
 			if err != nil {
-				panic(fmt.Errorf("invalid component %d: %w - in %v", i, err, tup))
+				return nil, fmt.Errorf("invalid component %d: %w - in %v", i, err, tup)
 			}
 			result[i] = fc.Stringer(val)
 		} else if fc.RawStringer != nil {
 			result[i], err = fc.RawStringer(tup[i])
 			if err != nil {
-				panic(fmt.Errorf("invalid component %d: %w - in %v", i, err, tup))
+				return nil, fmt.Errorf("invalid component %d: %w - in %v", i, err, tup)
 			}
 		} else {
 			val := reflect.New(fc.Type)
 			if fc.Decode == nil {
-				panic(fmt.Errorf("no Decode for %v", fc.Type))
+				return nil, fmt.Errorf("no Decode for %v", fc.Type)
 			}
 			err = fc.Decode(tup[i], val.Elem())
 			if err != nil {
-				panic(fmt.Errorf("invalid component %d: %w - in %v", i, err, tup))
+				return nil, fmt.Errorf("invalid component %d: %w - in %v", i, err, tup)
 			}
 			result[i] = fmt.Sprint(val.Interface())
 		}
 		// log.Printf("i=%d fc=%T %v => %q", i, fc, fc, result[i])
 	}
-	return result
+	return result, nil
 }
 
 func (enc *flatEncoding) stringsToRawKey(buf []byte, strs []string) ([]byte, error) {

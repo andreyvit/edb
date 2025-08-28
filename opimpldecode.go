@@ -62,7 +62,10 @@ func decodeTableRow(tbl *Table, keyRaw, valueRaw []byte, migrationTx *Tx, isMeme
 func decodeTableRowFromValue(vle *value, tbl *Table, keyRaw []byte, migrationTx *Tx) (rowVal, keyVal reflect.Value, rowMeta ValueMeta, err error) {
 	rowVal = tbl.newRow(vle.SchemaVer)
 	keyVal = tbl.RowKeyVal(rowVal)
-	tbl.DecodeKeyValInto(keyVal, keyRaw)
+	err = tbl.TryDecodeKeyValInto(keyVal, keyRaw)
+	if err != nil {
+		return
+	}
 
 	keyVal = tbl.DecodeKeyVal(keyRaw)
 
