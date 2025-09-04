@@ -11,7 +11,7 @@ import (
 	"go.etcd.io/bbolt"
 )
 
-const debugTrackTxns = false
+const debugTrackTxns = true
 
 type DB struct {
 	bdb     *bbolt.DB
