@@ -311,6 +311,35 @@ func reportCannotAccessKey(typ AnyType, key uint64) {
 	panic(fmt.Sprintf("type %s does not allow key %d", typ.Name(), key))
 }
 
+type MachineStringType struct {
+	name    string
+	codeSet typeCodeSet
+}
+
+func (typ *MachineStringType) Name() string                    { return typ.name }
+func (typ *MachineStringType) String() string                  { return typ.name }
+func (typ *MachineStringType) Schema() *Schema                 { return nil }
+func (typ *MachineStringType) ValueKind() ValueKind            { return ValueKindScalarData }
+func (typ *MachineStringType) ItemType() AnyType               { return nil }
+func (typ *MachineStringType) typeCodeSet() typeCodeSet        { return typ.codeSet }
+func (typ *MachineStringType) Model() *Model                   { return nil }
+func (typ *MachineStringType) MapKeyType() AnyType             { return nil }
+func (typ *MachineStringType) MapProp(key uint64) PropImpl     { return nil }
+func (typ *MachineStringType) MapValueType(key uint64) AnyType { return nil }
+func (typ *MachineStringType) FormatValue(fc *FmtContext, value uint64) string {
+	panic("unsupported")
+}
+func (typ *MachineStringType) Sub(lhs, rhs uint64) uint64 { panic("unsupported") }
+func (typ *MachineStringType) Add(lhs, rhs uint64) uint64 { panic("unsupported") }
+func (typ *MachineStringType) Sign(v uint64) int          { panic("unsupported") }
+
+func NewMachineStringType[T ~string](name string) *MachineStringType {
+	return &MachineStringType{
+		name:    name,
+		codeSet: allocateTypeCode(),
+	}
+}
+
 var (
 	TInt64 = NewIntType[int64]("int64", func(fc *FmtContext, v int64) string {
 		return strconv.FormatInt(v, 10)
@@ -348,4 +377,6 @@ var (
 			return fmt.Sprintf("?bool(0x%x)", v)
 		}
 	}, nil, nil, nil)
+
+	TMachineString = NewMachineStringType[string]("string")
 )

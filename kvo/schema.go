@@ -87,6 +87,10 @@ func NewProp(schema *Schema, code PropCode, name string, typ AnyType, build func
 		typ:    typ,
 		schema: schema,
 	}
+	if build != nil {
+		b := PropBuilder{}
+		build(&b)
+	}
 	schema.addProp(p)
 	return code
 }
