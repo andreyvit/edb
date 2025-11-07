@@ -214,6 +214,14 @@ func (model *Model) mustPropInstanceByCode(key uint64) *PropInstance {
 	return pi
 }
 
+func (model *Model) AllProps() []PropImpl {
+	res := make([]PropImpl, len(model.props))
+	for i, pi := range model.props {
+		res[i] = pi.Prop
+	}
+	return res
+}
+
 func (model *Model) MustPropByCode(key uint64) PropImpl {
 	return model.mustPropInstanceByCode(key).Prop
 }
