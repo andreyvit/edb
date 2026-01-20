@@ -21,6 +21,7 @@ type Txish interface {
 
 type Tx struct {
 	db        *DB
+	stx       storageTx
 	btx       *bbolt.Tx
 	managed   bool
 	closed    bool
@@ -43,12 +44,12 @@ type Tx struct {
 	changeOptions map[*Table]ChangeFlags
 }
 
-func (db *DB) newTx(btx *bbolt.Tx, managed bool, memo map[string]any, stack []byte) *Tx {
+func (db *DB) newTx(stx storageTx, managed bool, memo map[string]any, stack []byte) *Tx {
 	if db.IsClosed() {
 		panic("database closed")
 	}
-	db.lastSize.Store(btx.Size())
-	if btx.Writable() {
+	db.lastSize.Store(stx.Size())
+	if stx.Writable() {
 		WriterCount.Add(1)
 	} else {
 		ReaderCount.Add(1)
@@ -56,8 +57,13 @@ func (db *DB) newTx(btx *bbolt.Tx, managed bool, memo map[string]any, stack []by
 	if debugTrackTxns && stack == nil {
 		stack = debug.Stack()
 	}
+	var btx *bbolt.Tx
+	if p, ok := stx.(interface{ BoltTx() *bbolt.Tx }); ok {
+		btx = p.BoltTx()
+	}
 	tx := &Tx{
 		db:        db,
+		stx:       stx,
 		btx:       btx,
 		managed:   managed,
 		memo:      memo,
@@ -150,6 +156,25 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 		panic("database closed")
 	}
 	if writable {
+		if db.bdb == nil {
+			stx, err := db.storage.BeginTx(true)
+			if err != nil {
+				return err
+			}
+			tx := db.newTx(stx, false, nil, nil)
+			defer tx.Close()
+
+			funcErr := safelyCall(f, tx)
+			if funcErr != nil && tx.written && !tx.commitDespiteErr {
+				return funcErr
+			}
+			commitErr := tx.Commit()
+			if commitErr != nil {
+				return commitErr
+			}
+			return funcErr
+		}
+
 		var funcErr error
 		var tx *Tx
 		// var calls int
@@ -179,7 +204,7 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 			// } else {
 			// 	log.Printf("Tx.START")
 			// }
-			tx = db.newTx(btx, true, memo, stack)
+			tx = db.newTx(&boltStorageTx{btx: btx}, true, memo, stack)
 			defer tx.Close()
 			funcErr = safelyCall(f, tx)
 			memo = tx.memo
@@ -197,8 +222,18 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 		}
 		return err
 	} else {
+		if db.bdb == nil {
+			stx, err := db.storage.BeginTx(false)
+			if err != nil {
+				return err
+			}
+			tx := db.newTx(stx, false, nil, nil)
+			defer tx.Close()
+			return f(tx)
+		}
+
 		return db.bdb.View(func(btx *bbolt.Tx) error {
-			tx := db.newTx(btx, true, nil, nil)
+			tx := db.newTx(&boltStorageTx{btx: btx}, true, nil, nil)
 			defer tx.Close()
 			return f(tx)
 		})
@@ -227,11 +262,11 @@ func (db *DB) BeginRead() *Tx {
 	if db.IsClosed() {
 		panic("database closed")
 	}
-	btx, err := db.bdb.Begin(false)
+	stx, err := db.storage.BeginTx(false)
 	if err != nil {
 		panic(fmt.Errorf("failed to start reading: %w", err))
 	}
-	return db.newTx(btx, false, nil, nil)
+	return db.newTx(stx, false, nil, nil)
 }
 
 func (db *DB) Read(f func(tx *Tx)) {
@@ -259,15 +294,15 @@ func (db *DB) BeginUpdate() *Tx {
 	if db.IsClosed() {
 		panic("database closed")
 	}
-	btx, err := db.bdb.Begin(true)
+	stx, err := db.storage.BeginTx(true)
 	if err != nil {
-		panic(fmt.Errorf("db.Begin(true) failed: %w", err))
+		panic(fmt.Errorf("db.BeginTx(true) failed: %w", err))
 	}
-	return db.newTx(btx, false, nil, nil)
+	return db.newTx(stx, false, nil, nil)
 }
 
 func (tx *Tx) IsWritable() bool {
-	return tx.btx.Writable()
+	return tx.stx.Writable()
 }
 
 func (tx *Tx) CommitDespiteError() {
@@ -279,8 +314,8 @@ func (tx *Tx) markWritten() {
 }
 
 func (tx *Tx) prepareToRead() {
-	if tx.btx == nil {
-
+	if tx.stx == nil {
+		return
 	}
 }
 
@@ -311,7 +346,7 @@ func (tx *Tx) Close() {
 	if debugTrackTxns {
 		tx.db.removeTx(tx)
 	}
-	if tx.btx.Writable() {
+	if tx.stx.Writable() {
 		WriterCount.Add(-1)
 		tx.db.WriteCount.Add(1)
 	} else {
@@ -319,12 +354,8 @@ func (tx *Tx) Close() {
 		tx.db.ReadCount.Add(1)
 	}
 	if !tx.managed {
-		// The only error Rollback returns is ErrTxClosed, and it just signals that
-		// we've ran Commit (which is the normal flow).
-		err := tx.btx.Rollback()
-		if err != nil && err != bbolt.ErrTxClosed {
-			panic(err) // not expected to happen unless Bolt API changes
-		}
+		err := tx.stx.Rollback()
+		ensure(err)
 	}
 	tx.release()
 }
@@ -360,7 +391,12 @@ func (tx *Tx) release() {
 }
 
 func (tx *Tx) Commit() error {
-	return tx.btx.Commit()
+	return tx.stx.Commit()
+}
+
+// BoltTx returns the underlying Bolt transaction if this DB uses Bolt, otherwise nil.
+func (tx *Tx) BoltTx() *bbolt.Tx {
+	return tx.btx
 }
 
 func (tx *Tx) GetMemo(key string) (any, bool) {

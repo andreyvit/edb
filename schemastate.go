@@ -4,8 +4,6 @@ import (
 	"log"
 	"reflect"
 	"time"
-
-	"go.etcd.io/bbolt"
 )
 
 func (db *DB) tableState(tbl *Table) *tableState {
@@ -56,10 +54,10 @@ var tableStateKey = []byte("_state")
 const tableStateEncoding = MsgPack
 
 func prepareTable(tx *Tx, tbl *Table, now time.Time) *tableState {
-	tableRootB := must(tx.btx.CreateBucketIfNotExists(tbl.buck.Raw()))
-	_ = must(tableRootB.CreateBucketIfNotExists(dataBucket.Raw()))
+	tableRootB := must(tx.stx.CreateBucket(tbl.name, ""))
+	_ = must(tx.stx.CreateBucket(tbl.name, dataBucketName))
 	for _, idx := range tbl.indices {
-		_ = must(tableRootB.CreateBucketIfNotExists(idx.buck.Raw()))
+		_ = must(tx.stx.CreateBucket(tbl.name, idx.buck))
 	}
 
 	ts := new(tableState)
@@ -93,7 +91,7 @@ func prepareTable(tx *Tx, tbl *Table, now time.Time) *tableState {
 	}
 	for k, is := range ts.Indices {
 		if is.index == nil {
-			dropDeletedIndex(tbl, tableRootB, k)
+			dropDeletedIndex(tx, tbl, k)
 			delete(ts.Indices, k)
 		}
 	}
@@ -149,13 +147,13 @@ func upgradeRow(c *RawTableCursor, tx *Tx, tbl *Table) (ok bool) {
 func (ts *tableState) save(tx *Tx) {
 	// log.Printf("table state for %s: %s", ts.table.Name(), must(json.Marshal(ts)))
 	rawTS := tableStateEncoding.EncodeValue(nil, reflect.ValueOf(ts))
-	tableRootB := ts.table.rootBucketIn(tx.btx)
+	tableRootB := ts.table.rootBucketIn(tx)
 	ensure(tableRootB.Put(tableStateKey, rawTS))
 }
 
-func dropDeletedIndex(tbl *Table, tableRootB *bbolt.Bucket, name string) {
-	err := tableRootB.DeleteBucket(makeIndexBucketName(name).Raw())
-	if err == bbolt.ErrBucketNotFound {
+func dropDeletedIndex(tx *Tx, tbl *Table, name string) {
+	err := tx.stx.DeleteBucket(tbl.name, indexBucketName(name))
+	if err == ErrBucketNotFound {
 		return
 	}
 	ensure(err)
@@ -163,12 +161,12 @@ func dropDeletedIndex(tbl *Table, tableRootB *bbolt.Bucket, name string) {
 }
 
 func prepareMap(tx *Tx, mp *KVMap) {
-	must(tx.btx.CreateBucketIfNotExists(mp.buck.Raw()))
+	must(tx.stx.CreateBucket(mp.name, ""))
 }
 
 func prepareKVTable(tx *Tx, tbl *KVTable) {
-	_ = must(tx.btx.CreateBucketIfNotExists(tbl.dataBuck.Raw()))
+	_ = must(tx.stx.CreateBucket(tbl.name, ""))
 	for _, idx := range tbl.indices {
-		_ = must(tx.btx.CreateBucketIfNotExists(idx.idxBuck.Raw()))
+		_ = must(tx.stx.CreateBucket(idx.idxBuck, ""))
 	}
 }

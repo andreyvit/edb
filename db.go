@@ -14,6 +14,7 @@ import (
 const debugTrackTxns = true
 
 type DB struct {
+	storage storage
 	bdb     *bbolt.DB
 	schema  *Schema
 	logf    func(format string, args ...any)
@@ -49,7 +50,12 @@ type Options struct {
 	NoPersistentFreeList bool
 }
 
+const InMemory = "memory:"
+
 func Open(path string, schema *Schema, opt Options) (*DB, error) {
+	if path == InMemory {
+		return openWithStorage(newMemStorage(), schema, opt)
+	}
 	bopt := &bbolt.Options{
 		Timeout: 10 * time.Second,
 	}
@@ -80,8 +86,19 @@ func Open(path string, schema *Schema, opt Options) (*DB, error) {
 		}
 	}
 
+	db, err := openWithStorage(newBoltStorage(bdb), schema, opt)
+	if err != nil {
+		_ = bdb.Close()
+		return nil, err
+	}
+	db.bdb = bdb
+
+	return db, nil
+}
+
+func openWithStorage(storage storage, schema *Schema, opt Options) (*DB, error) {
 	db := &DB{
-		bdb:         bdb,
+		storage:     storage,
 		schema:      schema,
 		logf:        opt.Logf,
 		verbose:     opt.Verbose,
@@ -175,7 +192,7 @@ func (db *DB) retrieveSafeToQuitCallback() func() {
 func (db *DB) doClose() {
 	defer db.closeWG.Done()
 
-	if db.bdb.NoFreelistSync && db.WriteCount.Load() > 0 {
+	if db.bdb != nil && db.bdb.NoFreelistSync && db.WriteCount.Load() > 0 {
 		// Write freelist to make startup fast.
 		db.bdb.NoFreelistSync = false
 		start := time.Now()
@@ -192,9 +209,11 @@ func (db *DB) doClose() {
 		}
 	}
 
-	err := db.bdb.Close()
-	if err != nil {
-		panic(fmt.Errorf("kvdb: closing: %w", err))
+	if db.storage != nil {
+		err := db.storage.Close()
+		if err != nil {
+			panic(fmt.Errorf("kvdb: closing: %w", err))
+		}
 	}
 }
 

@@ -4,7 +4,6 @@ import (
 	"log/slog"
 
 	"github.com/andreyvit/edb/kvo"
-	"go.etcd.io/bbolt"
 )
 
 func (tx *Tx) KVGet(tbl *KVTable, key []byte) kvo.ImmutableMap {
@@ -19,7 +18,7 @@ func (tx *Tx) KVGetRaw(tbl *KVTable, key []byte) []byte {
 	if tx == nil {
 		panic("nil tx")
 	}
-	dataBuck := nonNil(tx.btx.Bucket(tbl.dataBuck.Raw()))
+	dataBuck := nonNil(tx.stx.Bucket(tbl.name, ""))
 	return dataBuck.Get(key)
 }
 
@@ -39,7 +38,8 @@ func (tx *Tx) KVPutRaw(tbl *KVTable, key, value []byte) {
 	if tx == nil {
 		panic("nil tx")
 	}
-	dataBuck := nonNil(tx.btx.Bucket(tbl.dataBuck.Raw()))
+	dataBuck := nonNil(tx.stx.Bucket(tbl.name, ""))
+	tx.markWritten()
 	if len(tbl.indices) > 0 {
 		oldValue := dataBuck.Get(key)
 		for _, idx := range tbl.indices {
@@ -51,21 +51,21 @@ func (tx *Tx) KVPutRaw(tbl *KVTable, key, value []byte) {
 				newEntries = idx.entries(key, value)
 			}
 
-			var idxBuck *bbolt.Bucket
+			var idxBuck storageBucket
 			for _, ik := range oldEntries {
 				if !containsBytes(newEntries, ik) {
 					if idxBuck == nil {
-						idxBuck = nonNil(tx.btx.Bucket(idx.idxBuck.Raw()))
+						idxBuck = nonNil(tx.stx.Bucket(idx.idxBuck, ""))
 					}
-					idxBuck.Delete(ik)
+					ensure(idxBuck.Delete(ik))
 				}
 			}
 			for _, ik := range newEntries {
 				if !containsBytes(oldEntries, ik) {
 					if idxBuck == nil {
-						idxBuck = nonNil(tx.btx.Bucket(idx.idxBuck.Raw()))
+						idxBuck = nonNil(tx.stx.Bucket(idx.idxBuck, ""))
 					}
-					idxBuck.Put(ik, emptyIndexValue)
+					ensure(idxBuck.Put(ik, emptyIndexValue))
 				}
 			}
 		}
@@ -87,7 +87,7 @@ func (tx *Tx) KVTableScan(tbl *KVTable, rang RawRange) *KVCursor {
 	if tx == nil {
 		panic("nil tx")
 	}
-	dataBuck := nonNil(tx.btx.Bucket(tbl.dataBuck.Raw()))
+	dataBuck := nonNil(tx.stx.Bucket(tbl.name, ""))
 	logger := tx.logger
 	if logger == nil {
 		logger = slog.Default()
@@ -102,8 +102,8 @@ func (tx *Tx) KVIndexScan(idx *KVIndex, rang RawRange) *KVCursor {
 	if tx == nil {
 		panic("nil tx")
 	}
-	dataBuck := nonNil(tx.btx.Bucket(idx.table.dataBuck.Raw()))
-	idxBuck := nonNil(tx.btx.Bucket(idx.idxBuck.Raw()))
+	dataBuck := nonNil(tx.stx.Bucket(idx.table.name, ""))
+	idxBuck := nonNil(tx.stx.Bucket(idx.idxBuck, ""))
 	logger := tx.logger
 	if logger == nil {
 		logger = slog.Default()
@@ -193,7 +193,7 @@ func (ci *kvTableCursorImpl) RawTableValue() []byte { return ci.v }
 type kvIndexCursorImpl struct {
 	idxCur   RawRangeCursor
 	idx      *KVIndex
-	dataBuck *bbolt.Bucket
+	dataBuck storageBucket
 }
 
 func (ci *kvIndexCursorImpl) Next() bool          { return ci.idxCur.Next() }

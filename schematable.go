@@ -6,8 +6,6 @@ import (
 	"reflect"
 	"slices"
 	"strings"
-
-	"go.etcd.io/bbolt"
 )
 
 type Table struct {
@@ -15,7 +13,6 @@ type Table struct {
 	name            string
 	latestSchemaVer uint64
 	pos             int // index in schema.tables, unstable across code changes
-	buck            bucketName
 	rowType         reflect.Type
 	rowTypePtr      reflect.Type
 	rowInfo         *structInfo
@@ -98,12 +95,12 @@ func (tbl *Table) newRow(schemaVer uint64) reflect.Value {
 	return reflect.New(tbl.rowType)
 }
 
-func (tbl *Table) rootBucketIn(btx *bbolt.Tx) *bbolt.Bucket {
-	return nonNil(btx.Bucket(tbl.buck.Raw()))
+func (tbl *Table) rootBucketIn(tx *Tx) storageBucket {
+	return nonNil(tx.stx.Bucket(tbl.name, ""))
 }
 
-func (tbl *Table) dataBucketIn(tableRootB *bbolt.Bucket) *bbolt.Bucket {
-	return nonNil(tableRootB.Bucket(dataBucket.Raw()))
+func (tbl *Table) dataBucketIn(tx *Tx) storageBucket {
+	return nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 }
 
 func (tbl *Table) ensureCorrectKeyType(keyVal reflect.Value) reflect.Value {

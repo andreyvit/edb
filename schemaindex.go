@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-
-	"go.etcd.io/bbolt"
 )
 
 type Index struct {
 	table    *Table
 	pos      int // index in table.indices, unstable across code changes
 	name     string
-	buck     bucketName
+	buck     string
 	recType  reflect.Type
 	keyEnc   *flatEncoding
 	isUnique bool
@@ -22,9 +20,7 @@ type Index struct {
 	debugScans      bool
 }
 
-func makeIndexBucketName(name string) bucketName {
-	return makeBucketName("i_" + name)
-}
+func indexBucketName(name string) string { return "i_" + name }
 
 type IndexOpt int
 
@@ -38,7 +34,7 @@ func AddIndex[T any](name string, opts ...any) *Index {
 
 	idx := &Index{
 		name:    name,
-		buck:    makeIndexBucketName(name),
+		buck:    indexBucketName(name),
 		recType: recType,
 		keyEnc:  flatEncodingOf(recType),
 	}
@@ -85,8 +81,9 @@ func (idx *Index) Unique() *Index {
 	return idx
 }
 
-func (idx *Index) bucketIn(tableRootB *bbolt.Bucket) *bbolt.Bucket {
-	return nonNil(tableRootB.Bucket(idx.buck.Raw()))
+func (idx *Index) bucketIn(tx *Tx) storageBucket {
+	idx.requireTable()
+	return nonNil(tx.stx.Bucket(idx.table.name, idx.buck))
 }
 
 func (idx *Index) keyTupleToString(indexKeyTup tuple) string {

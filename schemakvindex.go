@@ -9,7 +9,7 @@ type (
 
 type KVIndex struct {
 	name                 string
-	idxBuck              bucketName
+	idxBuck              string
 	table                *KVTable
 	keySample            KVIndexKey
 	indexKeyToPrimaryKey KVIndexKeyToPrimaryKey

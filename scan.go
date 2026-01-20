@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"context"
 	"log/slog"
-
-	"go.etcd.io/bbolt"
 )
 
 const (
@@ -54,7 +52,7 @@ func (rang RawRange) Reversed() RawRange         { rang.Reverse = true; return r
 // 	}
 // }
 
-func (r *RawRange) start(bcur *bbolt.Cursor, logger *slog.Logger) ([]byte, []byte) {
+func (r *RawRange) start(bcur storageCursor, logger *slog.Logger) ([]byte, []byte) {
 	var k, v []byte
 	var skipInitial bool
 	if r.Reverse {
@@ -68,7 +66,7 @@ func (r *RawRange) start(bcur *bbolt.Cursor, logger *slog.Logger) ([]byte, []byt
 			upper = r.Prefix
 		}
 		if upper != nil {
-			k, v = boltSeekLast2(bcur, upper)
+			k, v = bcur.SeekLast(upper)
 			if debugLogRawScans {
 				logger.LogAttrs(context.Background(), slog.LevelDebug, "SEEK to upper", hexAttr("upper", upper), hexAttr("key", k), hexAttr("val", v))
 			}
@@ -128,7 +126,7 @@ func (r *RawRange) start(bcur *bbolt.Cursor, logger *slog.Logger) ([]byte, []byt
 	}
 }
 
-func (r *RawRange) next(bcur *bbolt.Cursor, logger *slog.Logger) ([]byte, []byte) {
+func (r *RawRange) next(bcur storageCursor, logger *slog.Logger) ([]byte, []byte) {
 	var k, v []byte
 	if r.Reverse {
 		k, v = bcur.Prev()
@@ -182,13 +180,13 @@ func (r *RawRange) match(k, v []byte, logger *slog.Logger) bool {
 	return true
 }
 
-func (rang *RawRange) newCursor(bcur *bbolt.Cursor, logger *slog.Logger) *RawRangeCursor {
+func (rang *RawRange) newCursor(bcur storageCursor, logger *slog.Logger) *RawRangeCursor {
 	return &RawRangeCursor{rang: *rang, bcur: bcur, logger: logger}
 }
 
 type RawRangeCursor struct {
 	rang   RawRange
-	bcur   *bbolt.Cursor
+	bcur   storageCursor
 	logger *slog.Logger
 	k, v   []byte
 	init   bool

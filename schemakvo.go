@@ -11,7 +11,6 @@ type KVTable struct {
 	name      string
 	rootModel *kvo.Model
 	keySample KVKey
-	dataBuck  bucketName
 	isRaw     bool
 
 	indices       []*KVIndex
@@ -36,7 +35,6 @@ func DefineKVTable(scm *Schema, name string, rootModel *kvo.Model, keySample KVK
 	tbl := &KVTable{
 		name:          name,
 		rootModel:     rootModel,
-		dataBuck:      makeBucketName(name),
 		indicesByName: make(map[string]*KVIndex),
 		keySample:     keySample,
 	}
@@ -93,7 +91,7 @@ func (b *KVTableBuilder) Tag(tag *Tag) {
 func (b *KVTableBuilder) DefineIndex(name string, keySample KVIndexKey, resolver KVIndexKeyToPrimaryKey, indexer KVIndexer) *KVIndex {
 	idx := &KVIndex{
 		name:                 name,
-		idxBuck:              makeBucketName(b.table.name + "_i_" + name),
+		idxBuck:              b.table.name + "_i_" + name,
 		table:                b.table,
 		keySample:            keySample,
 		indexKeyToPrimaryKey: resolver,

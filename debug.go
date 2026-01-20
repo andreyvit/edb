@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-
-	"go.etcd.io/bbolt"
 )
 
 type DumpFlags uint64
@@ -52,13 +50,11 @@ func (tx *Tx) dumpTable(w *strings.Builder, prefix string, f DumpFlags, tbl *Tab
 		fmt.Fprintf(w, "%s.stats: index_rows = %d, data_size = %d, data_alloc = %d, index_size = %d, index_alloc = %d, total_alloc = %d\n", prefix, s.IndexRows, s.DataSize, s.DataAlloc, s.IndexSize, s.IndexAlloc, s.TotalAlloc())
 	}
 
-	rootB := tbl.rootBucketIn(tx.btx)
-
 	if f.Contains(DumpRows) {
 		if f.Contains(DumpStats) {
 			fmt.Fprintln(w, dumpSep2)
 		}
-		c := tbl.dataBucketIn(rootB).Cursor()
+		c := tbl.dataBucketIn(tx).Cursor()
 		var rowPos int
 		for k, v := c.First(); k != nil; k, v = c.Next() {
 			rowPos++
@@ -68,12 +64,12 @@ func (tx *Tx) dumpTable(w *strings.Builder, prefix string, f DumpFlags, tbl *Tab
 
 	if f.Contains(DumpIndices) {
 		for _, idx := range tbl.indices {
-			tx.dumpIndex(w, prefix, f, idx, ts, rootB)
+			tx.dumpIndex(w, prefix, f, idx, ts)
 		}
 	}
 }
 
-func (tx *Tx) dumpIndex(w *strings.Builder, prefix string, f DumpFlags, idx *Index, ts *tableState, rootB *bbolt.Bucket) {
+func (tx *Tx) dumpIndex(w *strings.Builder, prefix string, f DumpFlags, idx *Index, ts *tableState) {
 	fmt.Fprintln(w, dumpSep2)
 	prefix = prefix + ".i." + idx.ShortName()
 	is := ts.indexStates[idx.pos]
@@ -81,7 +77,7 @@ func (tx *Tx) dumpIndex(w *strings.Builder, prefix string, f DumpFlags, idx *Ind
 	fmt.Fprintf(w, "%s (0x%x)%s\n", prefix, is.IndexOrdinal, map[bool]string{false: " PENDING", true: ""}[is.Built])
 
 	if f.Contains(DumpIndexRows) {
-		c := idx.bucketIn(rootB).Cursor()
+		c := idx.bucketIn(tx).Cursor()
 		var rowPos int
 		for k, v := c.First(); k != nil; k, v = c.Next() {
 			rowPos++

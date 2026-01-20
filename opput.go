@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
-
-	"go.etcd.io/bbolt"
 )
 
 func Put(txh Txish, rows ...any) bool {
@@ -33,8 +31,7 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 	if tx == nil {
 		panic("nil tx")
 	}
-	tableBuck := nonNil(tx.btx.Bucket(tbl.buck.Raw()))
-	dataBuck := nonNil(tableBuck.Bucket(dataBucket.Raw()))
+	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 
 	keyBuf := keyBytesPool.Get().([]byte)
 	keyVal := tbl.RowKeyVal(rowVal)
@@ -96,17 +93,17 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 
 	if oldValueRaw != nil && !isIndexKeySetUnchanged && !tx.reindexing {
 		// delete removed index entries
-		del := prepareToDeleteIndexEntries(tableBuck, ts)
+		del := prepareToDeleteIndexEntries(tx, ts)
 		findRemovedIndexKeys(old.Index, ib.rows, del)
 	}
 
 	// put new index entries (do it even if isIndexKeySetUnchanged, in cases values have changed)
 	var idx *Index
-	var idxBuck *bbolt.Bucket
+	var idxBuck storageBucket
 	for _, ir := range ib.rows {
 		if ir.Index != idx {
 			idx = ir.Index
-			idxBuck = tableBuck.Bucket(idx.buck.Raw())
+			idxBuck = tx.stx.Bucket(tbl.name, idx.buck)
 			if idxBuck == nil {
 				panic(fmt.Errorf("missing bucket for index %v", idx.FullName()))
 			}
@@ -136,12 +133,14 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 		} else if opts.Contains(ChangeFlagIncludeKey) {
 			chg.keyVal = keyVal
 		}
-		if opts.Contains(ChangeFlagIncludeOldRow) {
+		if opts.Contains(ChangeFlagIncludeOldRow) && oldValueRaw != nil {
 			var err error
 			chg.oldRowVal, _, _, err = decodeTableRowFromValue(&old, tbl, keyRaw, tx)
 			if err != nil {
 				chg.oldRowVal = reflect.Value{}
-				tx.db.logf("db: PUT %s/%v: cannot decode old row value: %v", tbl.name, keyRaw, err)
+				if tx.db.logf != nil {
+					tx.db.logf("db: PUT %s/%v: cannot decode old row value: %v", tbl.name, keyRaw, err)
+				}
 			}
 		}
 		tx.changeHandler(tx, &chg)

@@ -175,7 +175,6 @@ func (tx *Tx) getRowValByRawKey(tbl *Table, keyRaw []byte, includeRow bool) (ref
 }
 
 func (tx *Tx) getRawByRawKey(tbl *Table, keyRaw []byte) []byte {
-	tableBuck := nonNil(tx.btx.Bucket(tbl.buck.Raw()))
-	dataBuck := nonNil(tableBuck.Bucket(dataBucket.Raw()))
+	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 	return dataBuck.Get(keyRaw)
 }

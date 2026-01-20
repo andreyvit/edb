@@ -3,8 +3,6 @@ package edb
 import (
 	"bytes"
 	"encoding/binary"
-
-	"go.etcd.io/bbolt"
 )
 
 func appendIndexKeys(buf []byte, rows []IndexRow) []byte {
@@ -64,15 +62,15 @@ func findRemovedIndexKeys(oldData []byte, newRows indexRows, removed func(ord ui
 	})
 }
 
-func prepareToDeleteIndexEntries(tableBuck *bbolt.Bucket, ts *tableState) func(ord uint64, key []byte) {
+func prepareToDeleteIndexEntries(tx *Tx, ts *tableState) func(ord uint64, key []byte) {
 	var idxOrd uint64
-	var idxBuck *bbolt.Bucket
+	var idxBuck storageBucket
 
 	return func(ord uint64, key []byte) {
 		if idxOrd != ord {
 			idxOrd = ord
 			if idx := ts.indexByOrdinal(ord); idx != nil {
-				idxBuck = nonNil(tableBuck.Bucket(idx.buck.Raw()))
+				idxBuck = tx.stx.Bucket(ts.table.name, idx.buck)
 			} else {
 				idxBuck = nil
 			}

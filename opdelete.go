@@ -64,8 +64,7 @@ func (tx *Tx) DeleteByKeyRaw(tbl *Table, keyRaw []byte) bool {
 }
 
 func (tx *Tx) deleteByKeyRaw(tbl *Table, keyRaw []byte, keyValIfKnown reflect.Value) bool {
-	tableBuck := nonNil(tx.btx.Bucket(tbl.buck.Raw()))
-	dataBuck := nonNil(tableBuck.Bucket(dataBucket.Raw()))
+	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 	ts := tx.db.tableState(tbl)
 
 	c := dataBuck.Cursor()
@@ -79,7 +78,7 @@ func (tx *Tx) deleteByKeyRaw(tbl *Table, keyRaw []byte, keyValIfKnown reflect.Va
 
 	tx.markWritten()
 
-	del := prepareToDeleteIndexEntries(tableBuck, ts)
+	del := prepareToDeleteIndexEntries(tx, ts)
 	decodeIndexKeys(old.Index, del)
 
 	if opts := tx.changeOptions[tbl]; opts.Contains(ChangeFlagNotify) && tx.changeHandler != nil {
@@ -122,8 +121,7 @@ func (tx *Tx) UnsafeDeleteByKeyRawSkippingIndex(tbl *Table, keyRaw []byte) bool 
 }
 
 func (tx *Tx) unsafeDeleteByKeyRawSkippingIndex(tbl *Table, keyRaw []byte) bool {
-	tableBuck := nonNil(tx.btx.Bucket(tbl.buck.Raw()))
-	dataBuck := nonNil(tableBuck.Bucket(dataBucket.Raw()))
+	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 
 	c := dataBuck.Cursor()
 	k, _ := c.Seek(keyRaw)

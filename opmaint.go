@@ -1,9 +1,6 @@
 package edb
 
-import "go.etcd.io/bbolt"
-
 func (tx *Tx) Reindex(tbl *Table, idx *Index) {
-	tableBuck := nonNil(tx.btx.Bucket(tbl.buck.Raw()))
 	ts := tx.db.tableState(tbl)
 
 	tx.reindexing = true
@@ -15,11 +12,11 @@ func (tx *Tx) Reindex(tbl *Table, idx *Index) {
 		if idx != nil && idx != is.index {
 			continue
 		}
-		err := tableBuck.DeleteBucket(is.index.buck.Raw())
-		if err != nil && err != bbolt.ErrBucketNotFound {
+		err := tx.stx.DeleteBucket(tbl.name, is.index.buck)
+		if err != nil && err != ErrBucketNotFound {
 			panic(err)
 		}
-		_ = must(tableBuck.CreateBucketIfNotExists(is.index.buck.Raw()))
+		_ = must(tx.stx.CreateBucket(tbl.name, is.index.buck))
 		is.Built = true
 	}
 

@@ -15,7 +15,7 @@ type Tablish interface {
 var indexBuilderPtrType = reflect.TypeOf((*IndexBuilder)(nil))
 var anyType = reflect.TypeOf((*any)(nil)).Elem()
 
-var dataBucket = makeBucketName("data")
+const dataBucketName = "data"
 
 type Schema struct {
 	Name                string
@@ -114,27 +114,13 @@ func (scm *Schema) TableByRow(row any) *Table {
 	}
 }
 
-type bucketName []byte
-
-func makeBucketName(name string) bucketName {
-	return bucketName(name)
-}
-
-func (bn bucketName) String() string {
-	return string(bn)
-}
-
-func (bn bucketName) Raw() []byte {
-	return []byte(bn)
-}
-
 type KVMap struct {
-	buck bucketName
+	name string
 }
 
 func AddKVMap(scm *Schema, name string) *KVMap {
 	mp := &KVMap{
-		buck: makeBucketName(name),
+		name: name,
 	}
 	scm.maps = append(scm.maps, mp)
 	return mp
@@ -156,7 +142,7 @@ type SKey struct {
 }
 
 func (sk *SKey) String() string {
-	return sk.mp.buck.String() + "." + string(sk.keyBytes)
+	return sk.mp.name + "." + string(sk.keyBytes)
 }
 
 func (sk *SKey) Raw() []byte {

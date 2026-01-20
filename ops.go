@@ -14,13 +14,13 @@ func Proto[T any]() any {
 
 func SGetRaw(txh Txish, sk *SKey) []byte {
 	tx := txh.DBTx()
-	buck := tx.btx.Bucket(sk.mp.buck.Raw())
+	buck := nonNil(tx.stx.Bucket(sk.mp.name, ""))
 	return buck.Get(sk.keyBytes)
 }
 
 func SPutRaw(txh Txish, sk *SKey, raw []byte) {
 	tx := txh.DBTx()
-	buck := tx.btx.Bucket(sk.mp.buck.Raw())
+	buck := nonNil(tx.stx.Bucket(sk.mp.name, ""))
 	tx.markWritten()
 	err := buck.Put(sk.keyBytes, raw)
 	if err != nil {
@@ -51,7 +51,6 @@ func SPut[T any](txh Txish, sk *SKey, v *T) {
 
 func CountAll(txh Txish, tbl *Table) int {
 	tx := txh.DBTx()
-	tableBuck := nonNil(tx.btx.Bucket(tbl.buck.Raw()))
-	dataBuck := nonNil(tableBuck.Bucket(dataBucket.Raw()))
-	return dataBuck.Stats().KeyN
+	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
+	return dataBuck.KeyCount()
 }

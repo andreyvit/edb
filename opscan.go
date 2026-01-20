@@ -8,8 +8,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-
-	"go.etcd.io/bbolt"
 )
 
 const (
@@ -346,7 +344,7 @@ type RawCursor interface {
 type RawTableCursor struct {
 	tx       *Tx
 	table    *Table
-	dcur     *bbolt.Cursor
+	dcur     storageCursor
 	prefix   []byte
 	lower    []byte
 	upper    []byte
@@ -384,7 +382,7 @@ func (c *RawTableCursor) Next() bool {
 				upper = c.prefix
 			}
 			if upper != nil {
-				k, v = boltSeekLast2(c.dcur, upper)
+				k, v = c.dcur.SeekLast(upper)
 				if debugLogTableScans {
 					log.Printf("%s::TableScan: SEEK to upper = %x: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, upper, c.prefix, c.reverse, k, v)
 				}
@@ -504,8 +502,7 @@ func (c *RawTableCursor) TryRow() (any, ValueMeta, error) {
 }
 
 func (tx *Tx) newTableCursor(tbl *Table, opt ScanOptions) *RawTableCursor {
-	tableBuck := nonNil(tx.btx.Bucket(tbl.buck.Raw()))
-	buck := nonNil(tableBuck.Bucket(dataBucket.Raw()))
+	buck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 	c := &RawTableCursor{
 		tx:      tx,
 		table:   tbl,
@@ -565,8 +562,8 @@ type RawIndexCursor struct {
 	index      *Index
 	strat      indexScanStrategy
 	tx         *Tx
-	icur       *bbolt.Cursor
-	dbuck      *bbolt.Bucket
+	icur       storageCursor
+	dbuck      storageBucket
 	prefix     []byte
 	resetDone  bool
 	reverse    bool
@@ -648,9 +645,8 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 	if tx.isVerboseLoggingEnabled() {
 		tx.db.logf("db: INDEX_SCAN %s/%v", idx.FullName(), opt.LogString())
 	}
-	tableBuck := nonNil(tx.btx.Bucket(idx.table.buck.Raw()))
-	ibuck := nonNil(tableBuck.Bucket(idx.buck.Raw()))
-	dbuck := nonNil(tableBuck.Bucket(dataBucket.Raw()))
+	ibuck := nonNil(tx.stx.Bucket(idx.table.name, idx.buck))
+	dbuck := nonNil(tx.stx.Bucket(idx.table.name, dataBucketName))
 	var strat indexScanStrategy
 	switch opt.Method {
 	case ScanMethodFull:
@@ -802,17 +798,25 @@ func encodeIndexBoundaryKey(keyVal reflect.Value, idx *Index, cutoffEls int, nev
 }
 
 type indexScanStrategy interface {
-	Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte)
+	Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte)
 }
 
 type fullIndexScanStrategy struct{}
 
-func (_ fullIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
+func (_ fullIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
 	var ik, iv []byte
 	if reset {
-		ik, iv = boltFirstLast(c, reverse)
+		if reverse {
+			ik, iv = c.Last()
+		} else {
+			ik, iv = c.First()
+		}
 	} else {
-		ik, iv = boltAdvance(c, reverse)
+		if reverse {
+			ik, iv = c.Prev()
+		} else {
+			ik, iv = c.Next()
+		}
 	}
 	if ik == nil {
 		return nil, nil, nil, nil
@@ -827,12 +831,20 @@ type exactIndexScanStrategy struct {
 	els    int
 }
 
-func (s *exactIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
+func (s *exactIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
 	var ik, iv []byte
 	if reset {
-		ik, iv = boltSeek(c, s.prefix, reverse)
+		if reverse {
+			ik, iv = c.SeekLast(s.prefix)
+		} else {
+			ik, iv = c.Seek(s.prefix)
+		}
 	} else {
-		ik, iv = boltAdvance(c, reverse)
+		if reverse {
+			ik, iv = c.Prev()
+		} else {
+			ik, iv = c.Next()
+		}
 	}
 	if ik != nil && bytes.HasPrefix(ik, s.prefix) {
 		dk, itup := decodeIndexTableKey(ik, nil, iv, idx)
@@ -847,11 +859,15 @@ type prefixIndexScanStrategy struct {
 	els    int
 }
 
-func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
+func (s *prefixIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
 	prefix := s.prefix
 	var ik, iv []byte
 	if reset {
-		ik, iv = boltSeek(c, prefix, reverse)
+		if reverse {
+			ik, iv = c.SeekLast(prefix)
+		} else {
+			ik, iv = c.Seek(prefix)
+		}
 		if debugLogIndexScans {
 			log.Printf("prefix index scan step: SEEK: prefix = %x, reverse = %v => ik = %x, iv = %x", prefix, reverse, ik, iv)
 		}
@@ -859,7 +875,11 @@ func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx
 		if debugLogIndexScans {
 			log.Printf("prefix index scan step: ADVC: reverse = %v", reverse)
 		}
-		ik, iv = boltAdvance(c, reverse)
+		if reverse {
+			ik, iv = c.Prev()
+		} else {
+			ik, iv = c.Next()
+		}
 	}
 	for ik != nil {
 		if !bytes.HasPrefix(ik, prefix) {
@@ -882,7 +902,11 @@ func (s *prefixIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx
 		if debugLogIndexScans {
 			log.Printf("prefix index scan step: SKIP: ik = %x, iv = %q", ik, iv)
 		}
-		ik, iv = boltAdvance(c, reverse)
+		if reverse {
+			ik, iv = c.Prev()
+		} else {
+			ik, iv = c.Next()
+		}
 	}
 	if debugLogIndexScans {
 		log.Printf("prefix index scan step: EOFd: prefix = %x", prefix)
@@ -899,7 +923,7 @@ type rangeIndexScanStrategy struct {
 	verbose  bool
 }
 
-func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
+func (s *rangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
 	var ik, iv []byte
 	var skippingInitial bool
 	if reset {
@@ -913,7 +937,7 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 				if s.verbose {
 					log.Printf("range index scan step: SEEK_REV: upper = %x", s.upper)
 				}
-				ik, iv = boltSeekLast(c, s.upper)
+				ik, iv = c.SeekLast(s.upper)
 				if !s.upperInc {
 					skippingInitial = true
 				}
@@ -938,7 +962,11 @@ func (s *rangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx 
 		if s.verbose {
 			log.Printf("range index scan step: ADVC: reverse = %v", reverse)
 		}
-		ik, iv = boltAdvance(c, reverse)
+		if reverse {
+			ik, iv = c.Prev()
+		} else {
+			ik, iv = c.Next()
+		}
 	}
 
 	lower, upper := s.lower, s.upper
@@ -1016,7 +1044,7 @@ type rawRangeIndexScanStrategy struct {
 	logger *slog.Logger
 }
 
-func (s *rawRangeIndexScanStrategy) Next(c *bbolt.Cursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
+func (s *rawRangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
 	// slog.LogAttrs(context.Background(), slog.LevelDebug, "rawRangeIndexScanStrategy.Next")
 	var ik, iv []byte
 	if reset {

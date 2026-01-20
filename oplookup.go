@@ -98,8 +98,7 @@ func (tx *Tx) lookupRawKeyByVal(idx *Index, indexKeyVal reflect.Value) []byte {
 	indexKeyBuf := keyBytesPool.Get().([]byte)
 	defer releaseKeyBytes(indexKeyBuf)
 
-	tableBuck := nonNil(tx.btx.Bucket(idx.table.buck.Raw()))
-	idxBuck := nonNil(tableBuck.Bucket(idx.buck.Raw()))
+	idxBuck := nonNil(tx.stx.Bucket(idx.table.name, idx.buck))
 
 	fe := flatEncoder{buf: indexKeyBuf}
 	idx.keyEnc.encodeInto(&fe, indexKeyVal)

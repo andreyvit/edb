@@ -24,43 +24,40 @@ func (ts *TableStats) TotalAlloc() int64 {
 }
 
 func (tx *Tx) TableStats(tbl *Table) TableStats {
-	tableBuck := nonNil(tx.btx.Bucket(tbl.buck.Raw()))
-
-	dataBuck := nonNil(tableBuck.Bucket(dataBucket.Raw()))
+	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 	bs := dataBuck.Stats()
 	result := TableStats{
 		Rows:      int64(bs.KeyN),
-		DataSize:  int64(bs.LeafInuse),
-		DataAlloc: int64(bs.BranchAlloc + bs.LeafAlloc),
+		DataSize:  bs.LeafInuse,
+		DataAlloc: bs.TotalAlloc(),
 	}
 
 	for _, idx := range tbl.indices {
-		indexBuck := nonNil(tableBuck.Bucket(idx.buck.Raw()))
+		indexBuck := nonNil(tx.stx.Bucket(tbl.name, idx.buck))
 		bs = indexBuck.Stats()
 		result.IndexRows += int64(bs.KeyN)
-		result.IndexSize += int64(bs.LeafInuse)
-		result.IndexAlloc += int64(bs.BranchAlloc + bs.LeafAlloc)
+		result.IndexSize += bs.LeafInuse
+		result.IndexAlloc += bs.TotalAlloc()
 	}
 
 	return result
 }
 
 func (tx *Tx) KVTableStats(tbl *KVTable) TableStats {
-	dataBuck := nonNil(tx.btx.Bucket(tbl.dataBuck.Raw()))
-
+	dataBuck := nonNil(tx.stx.Bucket(tbl.name, ""))
 	bs := dataBuck.Stats()
 	result := TableStats{
 		Rows:      int64(bs.KeyN),
-		DataSize:  int64(bs.LeafInuse),
-		DataAlloc: int64(bs.BranchAlloc + bs.LeafAlloc),
+		DataSize:  bs.LeafInuse,
+		DataAlloc: bs.TotalAlloc(),
 	}
 
 	for _, idx := range tbl.indices {
-		indexBuck := nonNil(tx.btx.Bucket(idx.idxBuck.Raw()))
+		indexBuck := nonNil(tx.stx.Bucket(idx.idxBuck, ""))
 		bs = indexBuck.Stats()
 		result.IndexRows += int64(bs.KeyN)
-		result.IndexSize += int64(bs.LeafInuse)
-		result.IndexAlloc += int64(bs.BranchAlloc + bs.LeafAlloc)
+		result.IndexSize += bs.LeafInuse
+		result.IndexAlloc += bs.TotalAlloc()
 	}
 
 	return result

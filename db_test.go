@@ -395,11 +395,17 @@ func TestRawScan(t *testing.T) {
 func setup(t testing.TB, schema *Schema) *DB {
 	t.Helper()
 
-	dbFile := must(os.CreateTemp("", "db_test_*.db"))
-	t.Logf("DB: %s", dbFile.Name())
-	dbFile.Close()
+	var fn string
+	if testing.Short() {
+		fn = InMemory
+	} else {
+		dbFile := must(os.CreateTemp("", "db_test_*.db"))
+		t.Logf("DB: %s", dbFile.Name())
+		dbFile.Close()
+		fn = dbFile.Name()
+	}
 
-	db := must(Open(dbFile.Name(), schema, Options{
+	db := must(Open(fn, schema, Options{
 		IsTesting: true,
 	}))
 	t.Cleanup(db.Close)

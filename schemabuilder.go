@@ -19,7 +19,6 @@ func DefineTable[Row, Key any](scm *Schema, name string, f func(b *TableBuilder[
 		schema:          scm,
 		name:            name,
 		latestSchemaVer: 1,
-		buck:            makeBucketName(name),
 		rowTypePtr:      rowPtrType,
 		rowType:         rowPtrType.Elem(),
 		rowInfo:         reflectTypeWithoutCache(rowPtrType),
