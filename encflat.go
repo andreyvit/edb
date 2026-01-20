@@ -245,7 +245,7 @@ func (enc *flatEncoding) tryTupleToStrings(tup tuple) ([]string, error) {
 			if err != nil {
 				return nil, fmt.Errorf("invalid component %d: %w - in %v", i, err, tup)
 			}
-			result[i] = fmt.Sprint(val.Interface())
+			result[i] = fmt.Sprint(val.Elem().Interface())
 		}
 		// log.Printf("i=%d fc=%T %v => %q", i, fc, fc, result[i])
 	}

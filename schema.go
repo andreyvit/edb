@@ -69,6 +69,7 @@ func (scm *Schema) addTable(tbl *Table) {
 }
 
 func (scm *Schema) addKVTable(tbl *KVTable) {
+	scm.init()
 	lower := strings.ToLower(tbl.name)
 
 	if scm.tablesByLowerName[lower] != nil {

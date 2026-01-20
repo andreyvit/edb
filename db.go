@@ -203,10 +203,11 @@ func (db *DB) doClose() {
 			elapsed := time.Since(start)
 			db.logf("db: bbolt freelist written in %d ms", elapsed.Milliseconds())
 		}
-		f := db.retrieveSafeToQuitCallback()
-		if f != nil {
-			f()
-		}
+	}
+
+	f := db.retrieveSafeToQuitCallback()
+	if f != nil {
+		f()
 	}
 
 	if db.storage != nil {

@@ -60,7 +60,7 @@ func (tx *Tx) DeleteByKeyRaw(tbl *Table, keyRaw []byte) bool {
 			tx.db.logf("db: DELETE.NOOP %s/%x", tbl.name, keyRaw)
 		}
 	}
-	return true
+	return ok
 }
 
 func (tx *Tx) deleteByKeyRaw(tbl *Table, keyRaw []byte, keyValIfKnown reflect.Value) bool {
@@ -117,7 +117,7 @@ func (tx *Tx) UnsafeDeleteByKeyRawSkippingIndex(tbl *Table, keyRaw []byte) bool 
 			tx.db.logf("db: UNSAFE_DELETE_SKIPIDX.NOOP %s/%x", tbl.name, keyRaw)
 		}
 	}
-	return true
+	return ok
 }
 
 func (tx *Tx) unsafeDeleteByKeyRawSkippingIndex(tbl *Table, keyRaw []byte) bool {
