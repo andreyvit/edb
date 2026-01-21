@@ -27,8 +27,8 @@ func newMemStorage() storage {
 
 func (s *memStorage) BeginTx(writable bool) (storageTx, error) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
 	if s.closed {
+		s.mu.Unlock()
 		return nil, fmt.Errorf("storage closed")
 	}
 	if writable {
@@ -36,21 +36,35 @@ func (s *memStorage) BeginTx(writable bool) (storageTx, error) {
 			s.cond.Wait()
 		}
 		if s.closed {
+			s.mu.Unlock()
 			return nil, fmt.Errorf("storage closed")
 		}
 		s.writer = true
 	}
 
-	// Snapshot the entire DB for transactional isolation (simplicity over efficiency).
-	snap := make(map[string]*memBucket, len(s.buckets))
-	for k, b := range s.buckets {
-		snap[k] = b.clone()
+	// Snapshot the current root map pointer for MVCC-style isolation:
+	// - Read-only txs share the snapshot (immutable).
+	// - Writable txs get a shallow map copy + per-bucket copy-on-write.
+	baseBuckets := s.buckets
+	s.mu.Unlock()
+
+	if !writable {
+		return &memTx{
+			writable: false,
+			base:     s,
+			buckets:  baseBuckets,
+		}, nil
 	}
 
+	buckets := make(map[string]*memBucket, len(baseBuckets))
+	for k, b := range baseBuckets {
+		buckets[k] = b
+	}
 	return &memTx{
-		writable: writable,
+		writable: true,
 		base:     s,
-		buckets:  snap,
+		buckets:  buckets,
+		owned:    make(map[string]struct{}),
 	}, nil
 }
 
@@ -69,6 +83,7 @@ type memTx struct {
 	base     *memStorage
 	writable bool
 	buckets  map[string]*memBucket
+	owned    map[string]struct{}
 	closed   bool
 }
 
@@ -89,11 +104,11 @@ func (tx *memTx) Bucket(name, sub string) storageBucket {
 	if tx.closed {
 		panic("tx is closed")
 	}
-	b := tx.buckets[memBucketKey(name, sub)]
-	if b == nil {
+	key := memBucketKey(name, sub)
+	if tx.buckets[key] == nil {
 		return nil
 	}
-	return memBucketHandle{tx: tx, b: b}
+	return memBucketHandle{tx: tx, key: key}
 }
 
 func (tx *memTx) CreateBucket(name, sub string) (storageBucket, error) {
@@ -108,6 +123,9 @@ func (tx *memTx) CreateBucket(name, sub string) (storageBucket, error) {
 	rootKey := memBucketKey(name, "")
 	if tx.buckets[rootKey] == nil {
 		tx.buckets[rootKey] = &memBucket{}
+		if tx.owned != nil {
+			tx.owned[rootKey] = struct{}{}
+		}
 	}
 
 	key := memBucketKey(name, sub)
@@ -115,8 +133,11 @@ func (tx *memTx) CreateBucket(name, sub string) (storageBucket, error) {
 	if b == nil {
 		b = &memBucket{}
 		tx.buckets[key] = b
+		if tx.owned != nil {
+			tx.owned[key] = struct{}{}
+		}
 	}
-	return memBucketHandle{tx: tx, b: b}, nil
+	return memBucketHandle{tx: tx, key: key}, nil
 }
 
 func (tx *memTx) DeleteBucket(name, sub string) error {
@@ -134,6 +155,7 @@ func (tx *memTx) DeleteBucket(name, sub string) error {
 		return ErrBucketNotFound
 	}
 	delete(tx.buckets, key)
+	delete(tx.owned, key)
 	return nil
 }
 
@@ -186,37 +208,50 @@ func (b *memBucket) clone() *memBucket {
 	return out
 }
 
+func (b *memBucket) shallowClone() *memBucket {
+	if b == nil {
+		return nil
+	}
+	return &memBucket{items: slices.Clone(b.items)}
+}
+
 type memKV struct {
 	key   []byte
 	value []byte
 }
 
 type memBucketHandle struct {
-	tx *memTx
-	b  *memBucket
+	tx  *memTx
+	key string
 }
 
 func (b memBucketHandle) Get(key []byte) []byte {
-	i, ok := b.find(key)
+	bucket := b.bucket()
+	if bucket == nil {
+		return nil
+	}
+	i, ok := b.find(bucket, key)
 	if !ok {
 		return nil
 	}
-	return b.b.items[i].value
+	return bucket.items[i].value
 }
 
 func (b memBucketHandle) Put(key, value []byte) error {
 	if !b.tx.writable {
 		return fmt.Errorf("tx not writable")
 	}
-	key = slices.Clone(key)
-	value = slices.Clone(value)
+	bucket := b.tx.ensureBucketOwned(b.key)
+	if bucket == nil {
+		return ErrBucketNotFound
+	}
 
-	i, ok := b.find(key)
+	i, ok := b.find(bucket, key)
 	if ok {
-		b.b.items[i].value = value
+		bucket.items[i].value = slices.Clone(value)
 		return nil
 	}
-	b.b.items = slices.Insert(b.b.items, i, memKV{key: key, value: value})
+	bucket.items = slices.Insert(bucket.items, i, memKV{key: slices.Clone(key), value: slices.Clone(value)})
 	return nil
 }
 
@@ -224,34 +259,53 @@ func (b memBucketHandle) Delete(key []byte) error {
 	if !b.tx.writable {
 		return fmt.Errorf("tx not writable")
 	}
-	i, ok := b.find(key)
+	bucket := b.tx.ensureBucketOwned(b.key)
+	if bucket == nil {
+		return ErrBucketNotFound
+	}
+
+	i, ok := b.find(bucket, key)
 	if !ok {
 		return nil
 	}
-	b.b.items = slices.Delete(b.b.items, i, i+1)
+	bucket.items = slices.Delete(bucket.items, i, i+1)
 	return nil
 }
 
 func (b memBucketHandle) Cursor() storageCursor {
-	return &memCursor{tx: b.tx, b: b.b, pos: -1}
+	return &memCursor{tx: b.tx, bucketKey: b.key, pos: -1}
 }
 
 func (b memBucketHandle) Stats() bucketStats {
+	bucket := b.bucket()
+	if bucket == nil {
+		return bucketStats{}
+	}
 	var inuse int64
-	for _, kv := range b.b.items {
+	for _, kv := range bucket.items {
 		inuse += int64(len(kv.key) + len(kv.value))
 	}
 	return bucketStats{
-		KeyN:      len(b.b.items),
+		KeyN:      len(bucket.items),
 		LeafInuse: inuse,
 		LeafAlloc: inuse,
 	}
 }
 
-func (b memBucketHandle) KeyCount() int { return len(b.b.items) }
+func (b memBucketHandle) KeyCount() int {
+	bucket := b.bucket()
+	if bucket == nil {
+		return 0
+	}
+	return len(bucket.items)
+}
 
-func (b memBucketHandle) find(key []byte) (idx int, ok bool) {
-	items := b.b.items
+func (b memBucketHandle) bucket() *memBucket {
+	return b.tx.buckets[b.key]
+}
+
+func (b memBucketHandle) find(bucket *memBucket, key []byte) (idx int, ok bool) {
+	items := bucket.items
 	i := sort.Search(len(items), func(i int) bool {
 		return bytes.Compare(items[i].key, key) >= 0
 	})
@@ -262,33 +316,35 @@ func (b memBucketHandle) find(key []byte) (idx int, ok bool) {
 }
 
 type memCursor struct {
-	tx  *memTx
-	b   *memBucket
-	pos int
+	tx        *memTx
+	bucketKey string
+	pos       int
 }
 
 func (c *memCursor) First() ([]byte, []byte) {
-	if len(c.b.items) == 0 {
+	items := c.items()
+	if len(items) == 0 {
 		c.pos = 0
 		return nil, nil
 	}
 	c.pos = 0
-	kv := c.b.items[c.pos]
+	kv := items[c.pos]
 	return kv.key, kv.value
 }
 
 func (c *memCursor) Last() ([]byte, []byte) {
-	if len(c.b.items) == 0 {
+	items := c.items()
+	if len(items) == 0 {
 		c.pos = 0
 		return nil, nil
 	}
-	c.pos = len(c.b.items) - 1
-	kv := c.b.items[c.pos]
+	c.pos = len(items) - 1
+	kv := items[c.pos]
 	return kv.key, kv.value
 }
 
 func (c *memCursor) Seek(seek []byte) ([]byte, []byte) {
-	items := c.b.items
+	items := c.items()
 	i := sort.Search(len(items), func(i int) bool {
 		return bytes.Compare(items[i].key, seek) >= 0
 	})
@@ -307,7 +363,7 @@ func (c *memCursor) SeekLast(prefix []byte) ([]byte, []byte) {
 
 	limit := append([]byte(nil), prefix...)
 	if inc(limit) {
-		items := c.b.items
+		items := c.items()
 		i := sort.Search(len(items), func(i int) bool {
 			return bytes.Compare(items[i].key, limit) >= 0
 		})
@@ -329,10 +385,11 @@ func (c *memCursor) Next() ([]byte, []byte) {
 		return c.First()
 	}
 	c.pos++
-	if c.pos >= len(c.b.items) {
+	items := c.items()
+	if c.pos >= len(items) {
 		return nil, nil
 	}
-	kv := c.b.items[c.pos]
+	kv := items[c.pos]
 	return kv.key, kv.value
 }
 
@@ -341,10 +398,11 @@ func (c *memCursor) Prev() ([]byte, []byte) {
 		return nil, nil
 	}
 	c.pos--
-	if c.pos < 0 || c.pos >= len(c.b.items) {
+	items := c.items()
+	if c.pos < 0 || c.pos >= len(items) {
 		return nil, nil
 	}
-	kv := c.b.items[c.pos]
+	kv := items[c.pos]
 	return kv.key, kv.value
 }
 
@@ -352,10 +410,43 @@ func (c *memCursor) Delete() error {
 	if !c.tx.writable {
 		return fmt.Errorf("tx not writable")
 	}
-	if c.pos < 0 || c.pos >= len(c.b.items) {
+	bucket := c.tx.ensureBucketOwned(c.bucketKey)
+	if bucket == nil {
+		return ErrBucketNotFound
+	}
+	if c.pos < 0 || c.pos >= len(bucket.items) {
 		return nil
 	}
-	c.b.items = slices.Delete(c.b.items, c.pos, c.pos+1)
+	bucket.items = slices.Delete(bucket.items, c.pos, c.pos+1)
 	c.pos--
 	return nil
+}
+
+func (c *memCursor) items() []memKV {
+	b := c.tx.buckets[c.bucketKey]
+	if b == nil {
+		return nil
+	}
+	return b.items
+}
+
+func (tx *memTx) ensureBucketOwned(key string) *memBucket {
+	if !tx.writable {
+		return tx.buckets[key]
+	}
+	if tx.owned != nil {
+		if _, ok := tx.owned[key]; ok {
+			return tx.buckets[key]
+		}
+	}
+	b := tx.buckets[key]
+	if b == nil {
+		return nil
+	}
+	nb := b.shallowClone()
+	tx.buckets[key] = nb
+	if tx.owned != nil {
+		tx.owned[key] = struct{}{}
+	}
+	return nb
 }
