@@ -361,10 +361,9 @@ func (tx *Tx) Close() {
 }
 
 func (tx *Tx) release() {
-	if true {
-		// Disabled because we suspected database corruption caused by buffer
-		// reuse. Can only be re-enabled after a LOT of load testing which we
-		// don't even have infra for so far.
+	if !tx.db.reuseTxBuffers {
+		// Disabled by default because we suspected database corruption caused by
+		// buffer reuse.
 		return
 	}
 	if tx.valueBufs != nil {

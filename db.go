@@ -21,6 +21,7 @@ type DB struct {
 	verbose        bool
 	strict         bool
 	captureTxStack bool
+	reuseTxBuffers bool
 
 	tableStates []*tableState
 
@@ -50,6 +51,7 @@ type Options struct {
 
 	NoPersistentFreeList bool
 	CaptureTxStack       bool
+	ReuseTxBuffers       bool
 }
 
 const InMemory = "memory:"
@@ -105,6 +107,7 @@ func openWithStorage(storage storage, schema *Schema, opt Options) (*DB, error) 
 		logf:           opt.Logf,
 		verbose:        opt.Verbose,
 		captureTxStack: opt.CaptureTxStack,
+		reuseTxBuffers: opt.ReuseTxBuffers,
 		tableStates:    make([]*tableState, len(schema.tables)),
 		strict:         opt.IsTesting,
 	}
