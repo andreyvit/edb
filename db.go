@@ -14,12 +14,13 @@ import (
 const debugTrackTxns = true
 
 type DB struct {
-	storage storage
-	bdb     *bbolt.DB
-	schema  *Schema
-	logf    func(format string, args ...any)
-	verbose bool
-	strict  bool
+	storage        storage
+	bdb            *bbolt.DB
+	schema         *Schema
+	logf           func(format string, args ...any)
+	verbose        bool
+	strict         bool
+	captureTxStack bool
 
 	tableStates []*tableState
 
@@ -48,6 +49,7 @@ type Options struct {
 	MmapSize  int
 
 	NoPersistentFreeList bool
+	CaptureTxStack       bool
 }
 
 const InMemory = "memory:"
@@ -98,12 +100,13 @@ func Open(path string, schema *Schema, opt Options) (*DB, error) {
 
 func openWithStorage(storage storage, schema *Schema, opt Options) (*DB, error) {
 	db := &DB{
-		storage:     storage,
-		schema:      schema,
-		logf:        opt.Logf,
-		verbose:     opt.Verbose,
-		tableStates: make([]*tableState, len(schema.tables)),
-		strict:      opt.IsTesting,
+		storage:        storage,
+		schema:         schema,
+		logf:           opt.Logf,
+		verbose:        opt.Verbose,
+		captureTxStack: opt.CaptureTxStack,
+		tableStates:    make([]*tableState, len(schema.tables)),
+		strict:         opt.IsTesting,
 	}
 	db.closeWG.Add(1)
 

@@ -54,7 +54,7 @@ func (db *DB) newTx(stx storageTx, managed bool, memo map[string]any, stack []by
 	} else {
 		ReaderCount.Add(1)
 	}
-	if debugTrackTxns && stack == nil {
+	if debugTrackTxns && db.captureTxStack && stack == nil {
 		stack = debug.Stack()
 	}
 	var btx *bbolt.Tx
@@ -184,7 +184,7 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 		pending := true
 		db.PendingWriterCount.Add(1)
 		var stack []byte
-		if debugTrackTxns {
+		if debugTrackTxns && db.captureTxStack {
 			stack = debug.Stack()
 		}
 		err := db.bdb.Batch(func(btx *bbolt.Tx) error {
