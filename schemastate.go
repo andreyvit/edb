@@ -101,7 +101,11 @@ func prepareTable(tx *Tx, tbl *Table, now time.Time) *tableState {
 func (ts *tableState) migrate(tx *Tx) {
 	tbl := ts.table
 	for _, is := range ts.Indices {
-		if !is.Built && is.index.skipInitialFill {
+		if !is.Built && is.index.initialFillMode == IndexInitialFillModeSkip {
+			// Skip mode only means this index does not request a startup backfill by
+			// itself. If another new index on the same table forces a blocking
+			// reindex, this index can still be populated as part of that table-wide
+			// pass.
 			is.Built = true
 		}
 	}

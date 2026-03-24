@@ -16,15 +16,23 @@ type Index struct {
 	isUnique bool
 	filler   func(row any, ib *IndexBuilder)
 
-	skipInitialFill bool
+	initialFillMode IndexInitialFillMode
 	debugScans      bool
 }
 
 func indexBucketName(name string) string { return "i_" + name }
 
+type IndexInitialFillMode int
+
+const (
+	IndexInitialFillModeSkip IndexInitialFillMode = iota
+	IndexInitialFillModeBlocking
+)
+
 type IndexOpt int
 
 const (
+	// Deprecated: use IndexInitialFillModeSkip.
 	IndexOptSkipInitialFill IndexOpt = iota
 	IndexOptDebugScans
 )
@@ -41,10 +49,17 @@ func AddIndex[T any](name string, opts ...any) *Index {
 
 	for _, opt := range opts {
 		switch opt := opt.(type) {
+		case IndexInitialFillMode:
+			switch opt {
+			case IndexInitialFillModeSkip, IndexInitialFillModeBlocking:
+				idx.initialFillMode = opt
+			default:
+				panic(fmt.Errorf("invalid option %T %v", opt, opt))
+			}
 		case IndexOpt:
 			switch opt {
 			case IndexOptSkipInitialFill:
-				idx.skipInitialFill = true
+				idx.initialFillMode = IndexInitialFillModeSkip
 			case IndexOptDebugScans:
 				idx.debugScans = true
 			default:
