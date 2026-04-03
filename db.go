@@ -274,7 +274,7 @@ func (db *DB) DescribeOpenTxns() string {
 	fmt.Fprintf(&buf, "%d OPEN TRANSACTIONS:\n", len(txns))
 	for _, tx := range txns {
 		ms := now.Sub(tx.startTime).Milliseconds()
-		if ms < 100 {
+		if ms < 100 || len(tx.stack) == 0 {
 			fmt.Fprintf(&buf, "\n---\nopen for %d ms\n", ms)
 		} else {
 			fmt.Fprintf(&buf, "\n---\nopen for %d ms:\n%s", ms, tx.stack)
