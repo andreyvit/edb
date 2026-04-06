@@ -320,18 +320,27 @@ func (tx *Tx) prepareToRead() {
 }
 
 func (tx *Tx) addValueBuf(buf []byte) {
+	if !tx.db.reuseTxBuffers {
+		return
+	}
 	if tx.valueBufs == nil {
 		tx.valueBufs = arrayOfBytesPool.Get().([][]byte)
 	}
 	tx.valueBufs = append(tx.valueBufs, buf)
 }
 func (tx *Tx) addIndexValueBuf(buf []byte) {
+	if !tx.db.reuseTxBuffers {
+		return
+	}
 	if tx.indexValueBufs == nil {
 		tx.indexValueBufs = arrayOfBytesPool.Get().([][]byte)
 	}
 	tx.indexValueBufs = append(tx.indexValueBufs, buf)
 }
 func (tx *Tx) addIndexKeyBuf(buf []byte) {
+	if !tx.db.reuseTxBuffers {
+		return
+	}
 	if tx.indexKeyBufs == nil {
 		tx.indexKeyBufs = arrayOfBytesPool.Get().([][]byte)
 	}
