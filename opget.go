@@ -39,6 +39,13 @@ func GetByKeyRaw[Row any](txh Txish, keyRaw []byte) *Row {
 	return row.(*Row)
 }
 
+
+func GetMeta[Row any](txh Txish, key any) ValueMeta {
+	tx := txh.DBTx()
+	tbl := tx.Schema().TableByRow((*Row)(nil))
+	return tx.GetMeta(tbl, key)
+}
+
 func Exists[Row any](txh Txish, key any) bool {
 	tx := txh.DBTx()
 	tbl := tx.Schema().TableByRow((*Row)(nil))
