@@ -221,18 +221,19 @@ const (
 	ScanMethodFull = ScanMethod(iota)
 	ScanMethodExact
 	ScanMethodRange
-	ScanMethodExactIndexWithIDRange
 )
 
 type ScanOptions struct {
-	Reverse  bool
-	Method   ScanMethod
-	Lower    reflect.Value
-	Upper    reflect.Value
-	LowerInc bool
-	UpperInc bool
-	Els      int
-	Extra    reflect.Value
+	Reverse         bool
+	Method          ScanMethod
+	PrefixValue     reflect.Value
+	PrefixEls       int
+	Lower           reflect.Value
+	Upper           reflect.Value
+	LowerInc        bool
+	UpperInc        bool
+	LowerPrimaryKey reflect.Value
+	UpperPrimaryKey reflect.Value
 }
 
 func (so ScanOptions) Reversed() ScanOptions {
@@ -241,7 +242,37 @@ func (so ScanOptions) Reversed() ScanOptions {
 }
 
 func (so ScanOptions) Prefix(els int) ScanOptions {
-	so.Els = els
+	if !so.Lower.IsValid() {
+		panic("Prefix requires a lower value")
+	}
+	so.PrefixValue = so.Lower
+	so.PrefixEls = els
+	if so.Method == ScanMethodExact {
+		so.Method = ScanMethodFull
+		so.Lower = reflect.Value{}
+		so.Upper = reflect.Value{}
+		so.LowerInc = false
+		so.UpperInc = false
+	}
+	return so
+}
+
+func (so ScanOptions) PrimaryKeyRange(lower, upper any, lowerInc, upperInc bool) ScanOptions {
+	var lowerVal, upperVal reflect.Value
+	if lower != nil {
+		lowerVal = reflect.ValueOf(lower)
+	}
+	if upper != nil {
+		upperVal = reflect.ValueOf(upper)
+	}
+	return so.PrimaryKeyRangeVal(lowerVal, upperVal, lowerInc, upperInc)
+}
+
+func (so ScanOptions) PrimaryKeyRangeVal(lower, upper reflect.Value, lowerInc, upperInc bool) ScanOptions {
+	so.LowerPrimaryKey = lower
+	so.UpperPrimaryKey = upper
+	so.LowerInc = lowerInc
+	so.UpperInc = upperInc
 	return so
 }
 
@@ -274,9 +305,29 @@ func (so ScanOptions) LogString() string {
 	default:
 		buf.WriteString("unknown")
 	}
-	if so.Els != 0 {
+	if so.PrefixValue.IsValid() {
+		buf.WriteString(":prefix:")
+		buf.WriteString(loggableVal(so.PrefixValue))
+		if so.PrefixEls != 0 {
+			buf.WriteByte(':')
+			buf.WriteString(strconv.Itoa(so.PrefixEls))
+		}
+	}
+	if so.LowerPrimaryKey.IsValid() || so.UpperPrimaryKey.IsValid() {
+		buf.WriteString(":primary")
+		if so.LowerInc {
+			buf.WriteByte('[')
+		} else {
+			buf.WriteByte('(')
+		}
+		buf.WriteString(loggableVal(so.LowerPrimaryKey))
 		buf.WriteByte(':')
-		buf.WriteString(strconv.Itoa(so.Els))
+		buf.WriteString(loggableVal(so.UpperPrimaryKey))
+		if so.UpperInc {
+			buf.WriteByte(']')
+		} else {
+			buf.WriteByte(')')
+		}
 	}
 	return buf.String()
 }
@@ -323,7 +374,7 @@ func ExactIDRangeScan(exact, lower, upper any, lowerInc, upperInc bool) ScanOpti
 	return ExactIDRangeScanVal(reflect.ValueOf(exact), lowerVal, upperVal, lowerInc, upperInc)
 }
 func ExactIDRangeScanVal(exact, lower, upper reflect.Value, lowerInc, upperInc bool) ScanOptions {
-	return ScanOptions{Method: ScanMethodExactIndexWithIDRange, Lower: lower, Upper: upper, LowerInc: lowerInc, UpperInc: upperInc, Extra: exact}
+	return ExactScanVal(exact).PrimaryKeyRangeVal(lower, upper, lowerInc, upperInc)
 }
 
 type RawCursor interface {
@@ -383,6 +434,9 @@ func (c *RawTableCursor) Next() bool {
 			}
 			if upper != nil {
 				k, v = c.dcur.SeekLast(upper)
+				if k != nil && !c.upperInc && bytes.Equal(k, upper) {
+					k, v = c.dcur.Prev()
+				}
 				if debugLogTableScans {
 					log.Printf("%s::TableScan: SEEK to upper = %x: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, upper, c.prefix, c.reverse, k, v)
 				}
@@ -399,6 +453,9 @@ func (c *RawTableCursor) Next() bool {
 			}
 			if lower != nil {
 				k, v = c.dcur.Seek(lower)
+				if k != nil && !c.lowerInc && bytes.Equal(k, lower) {
+					k, v = c.dcur.Next()
+				}
 				if debugLogTableScans {
 					log.Printf("%s::TableScan: SEEK to lower = %x: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, lower, c.prefix, c.reverse, k, v)
 				}
@@ -509,6 +566,13 @@ func (tx *Tx) newTableCursor(tbl *Table, opt ScanOptions) *RawTableCursor {
 		dcur:    buck.Cursor(),
 		reverse: opt.Reverse,
 	}
+	if opt.PrefixValue.IsValid() {
+		if at, et := opt.PrefixValue.Type(), tbl.KeyType(); at != et {
+			panic(fmt.Errorf("%s: attempted to scan table using prefix of incorrect type %v, expected %v", tbl.Name(), at, et))
+		}
+		c.prefix, _, _ = encodeTableBoundaryKey(opt.PrefixValue, tbl, opt.PrefixEls)
+		tx.addIndexKeyBuf(c.prefix)
+	}
 	switch opt.Method {
 	case ScanMethodFull:
 		break
@@ -520,7 +584,7 @@ func (tx *Tx) newTableCursor(tbl *Table, opt ScanOptions) *RawTableCursor {
 			panic(fmt.Errorf("%s: attempted to scan table using lower bound of incorrect type %v, expected %v", tbl.Name(), at, et))
 		}
 
-		keyPrefix, _, isFull := encodeTableBoundaryKey(opt.Lower, tbl, opt.Els)
+		keyPrefix, _, isFull := encodeTableBoundaryKey(opt.Lower, tbl, 0)
 		tx.addIndexKeyBuf(keyPrefix)
 
 		if isFull {
@@ -536,9 +600,6 @@ func (tx *Tx) newTableCursor(tbl *Table, opt ScanOptions) *RawTableCursor {
 		if opt.Lower.IsValid() {
 			if at, et := opt.Lower.Type(), tbl.KeyType(); at != et {
 				panic(fmt.Errorf("%s: attempted to scan table using lower bound of incorrect type %v, expected %v", tbl.Name(), at, et))
-			}
-			if !opt.LowerInc {
-				panic("LowerInc=false not supported")
 			}
 			c.lower = tbl.EncodeKeyVal(opt.Lower)
 			c.lowerInc = opt.LowerInc
@@ -648,86 +709,64 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 	ibuck := nonNil(tx.stx.Bucket(idx.table.name, idx.buck))
 	dbuck := nonNil(tx.stx.Bucket(idx.table.name, dataBucketName))
 	var strat indexScanStrategy
-	switch opt.Method {
-	case ScanMethodFull:
-		strat = fullIndexScanStrategy{}
-	case ScanMethodExact:
-		if !opt.Lower.IsValid() {
-			panic(fmt.Errorf("Lower must be specified for ScanMethodExact"))
-		}
-		if at, et := opt.Lower.Type(), idx.keyType(); at != et {
-			panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
-		}
-
-		keyPrefix, keyEls, isFull := encodeIndexBoundaryKey(opt.Lower, idx, opt.Els, false)
-		tx.addIndexKeyBuf(keyPrefix)
-
-		if idx.isUnique && isFull {
-			strat = &exactIndexScanStrategy{keyPrefix, keyEls}
-		} else {
-			strat = &prefixIndexScanStrategy{keyPrefix, keyEls}
-		}
-	case ScanMethodRange:
-		if !opt.Lower.IsValid() && !opt.Upper.IsValid() {
+	if opt.usesRawIndexRange() {
+		strat = tx.newRawRangeIndexScanStrategy(idx, opt)
+	} else {
+		switch opt.Method {
+		case ScanMethodFull:
 			strat = fullIndexScanStrategy{}
-		} else {
-			var lower, upper []byte
-			var els int
+		case ScanMethodExact:
+			if !opt.Lower.IsValid() {
+				panic(fmt.Errorf("Lower must be specified for ScanMethodExact"))
+			}
+			if at, et := opt.Lower.Type(), idx.keyType(); at != et {
+				panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
+			}
 
-			if opt.Lower.IsValid() {
-				if at, et := opt.Lower.Type(), idx.keyType(); at != et {
-					panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
+			keyPrefix, keyEls, isFull := encodeIndexBoundaryKey(opt.Lower, idx, 0, false)
+			tx.addIndexKeyBuf(keyPrefix)
+
+			if idx.isUnique && isFull {
+				strat = &exactIndexScanStrategy{keyPrefix, keyEls}
+			} else {
+				strat = &prefixIndexScanStrategy{keyPrefix, keyEls}
+			}
+		case ScanMethodRange:
+			if !opt.Lower.IsValid() && !opt.Upper.IsValid() {
+				strat = fullIndexScanStrategy{}
+			} else {
+				var lower, upper []byte
+				var els int
+
+				if opt.Lower.IsValid() {
+					if at, et := opt.Lower.Type(), idx.keyType(); at != et {
+						panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
+					}
+
+					lower, els, _ = encodeIndexBoundaryKey(opt.Lower, idx, 0, true)
+					tx.addIndexKeyBuf(lower)
+				}
+				if opt.Upper.IsValid() {
+					if at, et := opt.Upper.Type(), idx.keyType(); at != et {
+						panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
+					}
+
+					var upperEls int
+					upper, upperEls, _ = encodeIndexBoundaryKey(opt.Upper, idx, 0, true)
+					if !opt.Lower.IsValid() {
+						els = upperEls
+					} else if els != upperEls {
+						panic(fmt.Errorf("%s: attempted to scan index using lower and upper boundaries of different prefix sizes (lower %d, upper %d)", idx.FullName(), els, upperEls))
+					}
+					tx.addIndexKeyBuf(upper)
 				}
 
-				lower, els, _ = encodeIndexBoundaryKey(opt.Lower, idx, opt.Els, true)
-				tx.addIndexKeyBuf(lower)
-			}
-			if opt.Upper.IsValid() {
-				if at, et := opt.Upper.Type(), idx.keyType(); at != et {
-					panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
-				}
-
-				var upperEls int
-				upper, upperEls, _ = encodeIndexBoundaryKey(opt.Upper, idx, opt.Els, true)
-				if !opt.Lower.IsValid() {
-					els = upperEls
-				} else if els != upperEls {
-					panic(fmt.Errorf("%s: attempted to scan index using lower and upper boundaries of different prefix sizes (lower %d, upper %d)", idx.FullName(), els, upperEls))
-				}
-				tx.addIndexKeyBuf(upper)
+				strat = &rangeIndexScanStrategy{els, lower, upper, opt.LowerInc, opt.UpperInc, idx.debugScans}
 			}
 
-			strat = &rangeIndexScanStrategy{els, lower, upper, opt.LowerInc, opt.UpperInc, idx.debugScans}
+		default:
+			panic(fmt.Errorf("unsupported scan method %v", opt.Method))
 		}
-
-	case ScanMethodExactIndexWithIDRange:
-		if idx.isUnique {
-			panic("exact-index-id-range method not supported for deprecated unique indices")
-		}
-		tbl := idx.Table()
-
-		var rang RawRange
-		rang.Prefix, _, _ = encodeIndexBoundaryKey(opt.Extra, idx, 0, true)
-
-		if opt.Lower.IsValid() {
-			if at, et := opt.Lower.Type(), tbl.KeyType(); at != et {
-				panic(fmt.Errorf("%s: attempted to scan table using lower bound of incorrect type %v, expected %v", tbl.Name(), at, et))
-			}
-			rang.Lower = encodeIndexFullKey(opt.Extra, opt.Lower, idx)
-			rang.LowerInc = opt.LowerInc
-		}
-		if opt.Upper.IsValid() {
-			if at, et := opt.Upper.Type(), tbl.KeyType(); at != et {
-				panic(fmt.Errorf("%s: attempted to scan table using upper bound of incorrect type %v, expected %v", tbl.Name(), at, et))
-			}
-			rang.Upper = encodeIndexFullKey(opt.Extra, opt.Upper, idx)
-			rang.UpperInc = opt.UpperInc
-		}
-
-		strat = &rawRangeIndexScanStrategy{rang, tx.logger}
-
-	default:
-		panic(fmt.Errorf("unsupported scan method %v", opt.Method))
 	}
 	return &RawIndexCursor{
 		table:   idx.table,
@@ -738,6 +777,104 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 		reverse: opt.Reverse,
 		strat:   strat,
 	}
+}
+
+func (so ScanOptions) usesRawIndexRange() bool {
+	return so.PrefixValue.IsValid() || so.LowerPrimaryKey.IsValid() || so.UpperPrimaryKey.IsValid()
+}
+
+func (tx *Tx) newRawRangeIndexScanStrategy(idx *Index, opt ScanOptions) indexScanStrategy {
+	if idx.isUnique && (opt.LowerPrimaryKey.IsValid() || opt.UpperPrimaryKey.IsValid()) {
+		panic("primary-key range is not supported for deprecated unique indices")
+	}
+	rang, empty := tx.indexScanRawRange(idx, opt)
+	if empty {
+		return emptyIndexScanStrategy{}
+	}
+	return &rawRangeIndexScanStrategy{rang, tx.logger}
+}
+
+func (tx *Tx) indexScanRawRange(idx *Index, opt ScanOptions) (RawRange, bool) {
+	var rang RawRange
+	if opt.PrefixValue.IsValid() {
+		if at, et := opt.PrefixValue.Type(), idx.keyType(); at != et {
+			panic(fmt.Errorf("%s: attempted to scan index using prefix of incorrect type %v, expected %v", idx.FullName(), at, et))
+		}
+		rang.Prefix, _, _ = encodeIndexBoundaryKey(opt.PrefixValue, idx, opt.PrefixEls, true)
+		tx.addIndexKeyBuf(rang.Prefix)
+	}
+	if opt.Method == ScanMethodExact {
+		if !opt.Lower.IsValid() {
+			panic(fmt.Errorf("Lower must be specified for ScanMethodExact"))
+		}
+		if at, et := opt.Lower.Type(), idx.keyType(); at != et {
+			panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
+		}
+		prefix, _, _ := encodeIndexBoundaryKey(opt.Lower, idx, 0, true)
+		tx.addIndexKeyBuf(prefix)
+		rang.Prefix = prefix
+	}
+	if opt.Lower.IsValid() && (opt.Method == ScanMethodRange || opt.LowerPrimaryKey.IsValid()) {
+		lower, inclusive, empty := tx.indexScanRawRangeBound(idx, opt.Lower, opt.LowerPrimaryKey, opt.LowerInc, false)
+		if empty {
+			return RawRange{}, true
+		}
+		rang.Lower = lower
+		rang.LowerInc = inclusive
+	}
+	upperIndex := opt.Upper
+	if !upperIndex.IsValid() && opt.Method == ScanMethodExact {
+		upperIndex = opt.Lower
+	}
+	if upperIndex.IsValid() && (opt.Method == ScanMethodRange || opt.UpperPrimaryKey.IsValid()) {
+		upper, inclusive, empty := tx.indexScanRawRangeBound(idx, upperIndex, opt.UpperPrimaryKey, opt.UpperInc, true)
+		if empty {
+			return RawRange{}, true
+		}
+		rang.Upper = upper
+		rang.UpperInc = inclusive
+	}
+	if opt.LowerPrimaryKey.IsValid() && !opt.Lower.IsValid() {
+		panic("Lower must be specified when LowerPrimaryKey is specified")
+	}
+	if opt.UpperPrimaryKey.IsValid() && !upperIndex.IsValid() {
+		panic("Upper must be specified when UpperPrimaryKey is specified")
+	}
+	return rang, false
+}
+
+func (tx *Tx) indexScanRawRangeBound(idx *Index, indexKey, primaryKey reflect.Value, inclusive, upper bool) ([]byte, bool, bool) {
+	if at, et := indexKey.Type(), idx.keyType(); at != et {
+		panic(fmt.Errorf("%s: attempted to scan index using bound of incorrect type %v, expected %v", idx.FullName(), at, et))
+	}
+	if primaryKey.IsValid() {
+		tbl := idx.Table()
+		if at, et := primaryKey.Type(), tbl.KeyType(); at != et {
+			panic(fmt.Errorf("%s: attempted to scan table using bound of incorrect type %v, expected %v", tbl.Name(), at, et))
+		}
+		raw := encodeIndexFullKey(indexKey, primaryKey, idx)
+		tx.addIndexKeyBuf(raw)
+		return raw, inclusive, false
+	}
+	raw, _, _ := encodeIndexBoundaryKey(indexKey, idx, 0, true)
+	tx.addIndexKeyBuf(raw)
+	if upper && inclusive {
+		next, ok := rawSuccessor(raw)
+		if !ok {
+			return nil, false, false
+		}
+		return next, false, false
+	}
+	if !upper && !inclusive {
+		next, ok := rawSuccessor(raw)
+		return next, true, !ok
+	}
+	return raw, inclusive, false
+}
+
+func rawSuccessor(raw []byte) ([]byte, bool) {
+	next := append([]byte(nil), raw...)
+	return next, inc(next)
 }
 
 func encodeTableBoundaryKey(keyVal reflect.Value, tbl *Table, cutoffEls int) ([]byte, int, bool) {
@@ -799,6 +936,12 @@ func encodeIndexBoundaryKey(keyVal reflect.Value, idx *Index, cutoffEls int, nev
 
 type indexScanStrategy interface {
 	Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte)
+}
+
+type emptyIndexScanStrategy struct{}
+
+func (_ emptyIndexScanStrategy) Next(storageCursor, bool, bool, *Index) ([]byte, []byte, tuple, []byte) {
+	return nil, nil, nil, nil
 }
 
 type fullIndexScanStrategy struct{}
@@ -1048,6 +1191,7 @@ func (s *rawRangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, i
 	// slog.LogAttrs(context.Background(), slog.LevelDebug, "rawRangeIndexScanStrategy.Next")
 	var ik, iv []byte
 	if reset {
+		s.rang.Reverse = reverse
 		ik, iv = s.rang.start(c, s.logger)
 	} else {
 		ik, iv = s.rang.next(c, s.logger)

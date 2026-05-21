@@ -96,6 +96,10 @@ func (idx *Index) Unique() *Index {
 	return idx
 }
 
+func (idx *Index) IsUnique() bool {
+	return idx.isUnique
+}
+
 func (idx *Index) bucketIn(tx *Tx) storageBucket {
 	idx.requireTable()
 	return nonNil(tx.stx.Bucket(idx.table.name, idx.buck))
@@ -120,6 +124,27 @@ func (idx *Index) DecodeIndexKeyValInto(keyVal reflect.Value, tup tuple) {
 	if err != nil {
 		panic(fmt.Errorf("failed to decode %s key: %w", idx.FullName(), err))
 	}
+}
+
+func (idx *Index) DecodeKeyVal(rawKey []byte) reflect.Value {
+	keyVal := reflect.New(idx.recType).Elem()
+	idx.DecodeKeyValInto(keyVal, rawKey)
+	return keyVal
+}
+
+func (idx *Index) DecodeKeyValInto(keyVal reflect.Value, rawKey []byte) {
+	err := idx.TryDecodeKeyValInto(keyVal, rawKey)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (idx *Index) TryDecodeKeyValInto(keyVal reflect.Value, rawKey []byte) error {
+	err := idx.keyEnc.decodeVal(rawKey, keyVal)
+	if err != nil {
+		return fmt.Errorf("failed to decode %s key %q: %w", idx.FullName(), rawKey, err)
+	}
+	return nil
 }
 
 func (idx *Index) parseRawKeyFrom(buf []byte, s string) ([]byte, error) {
