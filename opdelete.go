@@ -95,7 +95,7 @@ func (tx *Tx) deleteByKeyRaw(tbl *Table, keyRaw []byte, keyValIfKnown reflect.Va
 				tx.db.logf("db: DELETE %s/%v: cannot decode old row: %v", tbl.name, keyRaw, err)
 			}
 		} else if opts.Contains(ChangeFlagIncludeKey) {
-			if keyValIfKnown.IsZero() {
+			if !keyValIfKnown.IsValid() || keyValIfKnown.IsZero() {
 				chg.keyVal = tbl.DecodeKeyVal(keyRaw)
 			} else {
 				chg.keyVal = keyValIfKnown
