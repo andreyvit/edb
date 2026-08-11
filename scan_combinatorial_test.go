@@ -17,11 +17,6 @@ type scanEdgeGroupSort struct {
 	Sort  int
 }
 
-type scanEdgeTenantCode struct {
-	Tenant ID
-	Code   string
-}
-
 type scanEdgeCompoundKey struct {
 	A int
 	B int
@@ -33,17 +28,15 @@ type scanEdgeCompoundRow struct {
 }
 
 var (
-	scanEdgeSchema        = &Schema{}
-	scanEdgesByGroup      = AddIndex[string]("group")
-	scanEdgesByGroupSort  = AddIndex[scanEdgeGroupSort]("group_sort")
-	scanEdgesByCode       = AddIndex[string]("code").Unique()
-	scanEdgesByTenantCode = AddIndex[scanEdgeTenantCode]("tenant_code").Unique()
-	scanEdgesTable        = AddTable(scanEdgeSchema, "scan_edges", 1, func(row *scanEdgeRow, ib *IndexBuilder) {
+	scanEdgeSchema       = &Schema{}
+	scanEdgesByGroup     = AddIndex[string]("group")
+	scanEdgesByGroupSort = AddIndex[scanEdgeGroupSort]("group_sort")
+	scanEdgesByCode      = AddIndex[string]("code").Unique()
+	scanEdgesTable       = AddTable(scanEdgeSchema, "scan_edges", 1, func(row *scanEdgeRow, ib *IndexBuilder) {
 		ib.Add(scanEdgesByGroup, row.Group)
 		ib.Add(scanEdgesByGroupSort, scanEdgeGroupSort{Group: row.Group, Sort: row.Sort})
 		ib.Add(scanEdgesByCode, row.Code)
-		ib.Add(scanEdgesByTenantCode, scanEdgeTenantCode{Tenant: 1, Code: row.Code})
-	}, nil, []*Index{scanEdgesByGroup, scanEdgesByGroupSort, scanEdgesByCode, scanEdgesByTenantCode})
+	}, nil, []*Index{scanEdgesByGroup, scanEdgesByGroupSort, scanEdgesByCode})
 	scanEdgeCompoundTable = AddTable[scanEdgeCompoundRow](scanEdgeSchema, "scan_compound_edges", 1, nil, nil, nil)
 )
 
@@ -271,45 +264,6 @@ func TestIndexScan_UniqueScalarBoundaryMatrix(t *testing.T) {
 	runScanEdgeIDCases(t, db, cases, func(tx *Tx, opt ScanOptions) []ID {
 		return AllKeys[ID](IndexScan[scanEdgeRow](tx, scanEdgesByCode, opt).Raw())
 	})
-
-	db.Write(func(tx *Tx) {
-		Put(tx, &scanEdgeRow{ID: 39, Group: "bee", Sort: 2, Code: "c4\x00x"})
-		Put(tx, &scanEdgeRow{ID: 41, Group: "bee", Sort: 2, Code: "c4\x01x"})
-		Put(tx, &scanEdgeRow{ID: 42, Group: "bee", Sort: 2, Code: "c4"})
-	})
-	afterC4Prefix := ExactScan("c4").Prefix(1)
-	afterC4Prefix.Method = ScanMethodRange
-	afterC4Prefix.AfterIndexKey = reflect.ValueOf("c4")
-	beforeC4Prefix := afterC4Prefix.Reversed()
-	beforeC4Prefix.AfterIndexKey = reflect.Value{}
-	beforeC4Prefix.BeforeIndexKey = reflect.ValueOf("c4")
-	cases = []scanEdgeIDCase{
-		{"after NUL suffix", ScanOptions{Method: ScanMethodRange, AfterIndexKey: reflect.ValueOf("c4\x00x")}, scanEdgeIDs(42, 41, 40, 45, 50, 60, 70)},
-		{"before short key", ScanOptions{Reverse: true, Method: ScanMethodRange, BeforeIndexKey: reflect.ValueOf("c4")}, scanEdgeIDs(39, 30, 20, 10)},
-		{"prefix lower exclusive", LowerBoundScan("c4", false).Prefix(1), scanEdgeIDs(39, 41, 40, 45)},
-		{"prefix after short key", afterC4Prefix, scanEdgeIDs(41, 40, 45)},
-		{"prefix before short key", beforeC4Prefix, scanEdgeIDs(39)},
-	}
-	runScanEdgeIDCases(t, db, cases, func(tx *Tx, opt ScanOptions) []ID {
-		return AllKeys[ID](IndexScan[scanEdgeRow](tx, scanEdgesByCode, opt).Raw())
-	})
-
-	afterComposite := ScanOptions{
-		Method:        ScanMethodRange,
-		AfterIndexKey: reflect.ValueOf(scanEdgeTenantCode{Tenant: 1, Code: "c4\x01x"}),
-	}
-	beforeComposite := ScanOptions{
-		Reverse:        true,
-		Method:         ScanMethodRange,
-		BeforeIndexKey: reflect.ValueOf(scanEdgeTenantCode{Tenant: 1, Code: "c4"}),
-	}
-	cases = []scanEdgeIDCase{
-		{"composite after control suffix", afterComposite, scanEdgeIDs(42, 40, 45, 50, 60, 70)},
-		{"composite before short key", beforeComposite, scanEdgeIDs(41, 39, 30, 20, 10)},
-	}
-	runScanEdgeIDCases(t, db, cases, func(tx *Tx, opt ScanOptions) []ID {
-		return AllKeys[ID](IndexScan[scanEdgeRow](tx, scanEdgesByTenantCode, opt).Raw())
-	})
 }
 
 func TestIndexScan_MalformedOptionsPanic(t *testing.T) {
@@ -354,17 +308,6 @@ func TestIndexScan_MalformedOptionsPanic(t *testing.T) {
 		}},
 		{"index unsupported scan method", func(tx *Tx) {
 			_ = IndexScan[scanEdgeRow](tx, scanEdgesByGroup, ScanOptions{Method: ScanMethod(99)})
-		}},
-		{"positioned exact scan", func(tx *Tx) {
-			opt := ExactScan("c10")
-			opt.AfterIndexKey = reflect.ValueOf("c10")
-			_ = IndexScan[scanEdgeRow](tx, scanEdgesByCode, opt)
-		}},
-		{"positioned unsupported scan method", func(tx *Tx) {
-			_ = IndexScan[scanEdgeRow](tx, scanEdgesByCode, ScanOptions{
-				Method:         ScanMethod(99),
-				BeforeIndexKey: reflect.ValueOf("c10"),
-			})
 		}},
 		{"index from another table", func(tx *Tx) {
 			_ = IndexScan[scanEdgeCompoundRow](tx, scanEdgesByGroup, FullScan())

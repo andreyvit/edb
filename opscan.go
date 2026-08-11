@@ -234,8 +234,6 @@ type ScanOptions struct {
 	UpperInc        bool
 	LowerPrimaryKey reflect.Value
 	UpperPrimaryKey reflect.Value
-	AfterIndexKey   reflect.Value
-	BeforeIndexKey  reflect.Value
 }
 
 func (so ScanOptions) Reversed() ScanOptions {
@@ -330,12 +328,6 @@ func (so ScanOptions) LogString() string {
 		} else {
 			buf.WriteByte(')')
 		}
-	}
-	if so.AfterIndexKey.IsValid() || so.BeforeIndexKey.IsValid() {
-		buf.WriteString(":position:")
-		buf.WriteString(loggableVal(so.AfterIndexKey))
-		buf.WriteByte(':')
-		buf.WriteString(loggableVal(so.BeforeIndexKey))
 	}
 	return buf.String()
 }
@@ -717,19 +709,7 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 	ibuck := nonNil(tx.stx.Bucket(idx.table.name, idx.buck))
 	dbuck := nonNil(tx.stx.Bucket(idx.table.name, dataBucketName))
 	var strat indexScanStrategy
-	positioned := opt.AfterIndexKey.IsValid() || opt.BeforeIndexKey.IsValid()
-	if positioned && opt.Method != ScanMethodRange {
-		panic("index-key positions require a range scan")
-	}
-	if positioned && !idx.isUnique {
-		panic("index-key positions are only supported for unique indices")
-	}
-	if idx.isUnique && opt.Method == ScanMethodRange {
-		if opt.LowerPrimaryKey.IsValid() || opt.UpperPrimaryKey.IsValid() {
-			panic("primary-key range is not supported for deprecated unique indices")
-		}
-		strat = tx.newRangeIndexScanStrategy(idx, opt)
-	} else if opt.usesRawIndexRange() {
+	if opt.usesRawIndexRange() {
 		strat = tx.newRawRangeIndexScanStrategy(idx, opt)
 	} else {
 		switch opt.Method {
@@ -755,7 +735,33 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 			if !opt.Lower.IsValid() && !opt.Upper.IsValid() {
 				strat = fullIndexScanStrategy{}
 			} else {
-				strat = tx.newRangeIndexScanStrategy(idx, opt)
+				var lower, upper []byte
+				var els int
+
+				if opt.Lower.IsValid() {
+					if at, et := opt.Lower.Type(), idx.keyType(); at != et {
+						panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
+					}
+
+					lower, els, _ = encodeIndexBoundaryKey(opt.Lower, idx, 0, true)
+					tx.addIndexKeyBuf(lower)
+				}
+				if opt.Upper.IsValid() {
+					if at, et := opt.Upper.Type(), idx.keyType(); at != et {
+						panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
+					}
+
+					var upperEls int
+					upper, upperEls, _ = encodeIndexBoundaryKey(opt.Upper, idx, 0, true)
+					if !opt.Lower.IsValid() {
+						els = upperEls
+					} else if els != upperEls {
+						panic(fmt.Errorf("%s: attempted to scan index using lower and upper boundaries of different prefix sizes (lower %d, upper %d)", idx.FullName(), els, upperEls))
+					}
+					tx.addIndexKeyBuf(upper)
+				}
+
+				strat = &rangeIndexScanStrategy{els, lower, upper, opt.LowerInc, opt.UpperInc, idx.debugScans}
 			}
 
 		default:
@@ -771,67 +777,6 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 		reverse: opt.Reverse,
 		strat:   strat,
 	}
-}
-
-func (tx *Tx) newRangeIndexScanStrategy(idx *Index, opt ScanOptions) indexScanStrategy {
-	var prefix, lower, upper, after, before []byte
-	var els int
-	if opt.PrefixValue.IsValid() {
-		if at, et := opt.PrefixValue.Type(), idx.keyType(); at != et {
-			panic(fmt.Errorf("%s: attempted to scan index using prefix of incorrect type %v, expected %v", idx.FullName(), at, et))
-		}
-		prefix, _, _ = encodeIndexBoundaryKey(opt.PrefixValue, idx, opt.PrefixEls, true)
-		tx.addIndexKeyBuf(prefix)
-	}
-	if opt.Lower.IsValid() {
-		if at, et := opt.Lower.Type(), idx.keyType(); at != et {
-			panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
-		}
-		lower, els, _ = encodeIndexBoundaryKey(opt.Lower, idx, 0, true)
-		tx.addIndexKeyBuf(lower)
-	}
-	if opt.Upper.IsValid() {
-		if at, et := opt.Upper.Type(), idx.keyType(); at != et {
-			panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
-		}
-		var upperEls int
-		upper, upperEls, _ = encodeIndexBoundaryKey(opt.Upper, idx, 0, true)
-		if !opt.Lower.IsValid() {
-			els = upperEls
-		} else if els != upperEls {
-			panic(fmt.Errorf("%s: attempted to scan index using lower and upper boundaries of different prefix sizes (lower %d, upper %d)", idx.FullName(), els, upperEls))
-		}
-		tx.addIndexKeyBuf(upper)
-	}
-	if opt.AfterIndexKey.IsValid() {
-		after = tx.encodeUniqueIndexPosition(idx, opt.AfterIndexKey)
-	}
-	if opt.BeforeIndexKey.IsValid() {
-		before = tx.encodeUniqueIndexPosition(idx, opt.BeforeIndexKey)
-	}
-	return &rangeIndexScanStrategy{
-		els:      els,
-		prefix:   prefix,
-		lower:    lower,
-		upper:    upper,
-		after:    after,
-		before:   before,
-		lowerInc: opt.LowerInc,
-		upperInc: opt.UpperInc,
-		verbose:  idx.debugScans,
-	}
-}
-
-func (tx *Tx) encodeUniqueIndexPosition(idx *Index, val reflect.Value) []byte {
-	if at, et := val.Type(), idx.keyType(); at != et {
-		panic(fmt.Errorf("%s: attempted to position index using key of incorrect type %v, expected %v", idx.FullName(), at, et))
-	}
-	raw, _, full := encodeIndexBoundaryKey(val, idx, 0, false)
-	if !full {
-		panic(fmt.Errorf("%s: unique index position did not encode a complete key", idx.FullName()))
-	}
-	tx.addIndexKeyBuf(raw)
-	return raw
 }
 
 func (so ScanOptions) usesRawIndexRange() bool {
@@ -1114,11 +1059,8 @@ func (s *prefixIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx
 
 type rangeIndexScanStrategy struct {
 	els      int
-	prefix   []byte
 	lower    []byte
 	upper    []byte
-	after    []byte
-	before   []byte
 	lowerInc bool
 	upperInc bool
 	verbose  bool
@@ -1126,41 +1068,52 @@ type rangeIndexScanStrategy struct {
 
 func (s *rangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
 	var ik, iv []byte
+	var skippingInitial bool
 	if reset {
-		ik, iv = s.start(c, reverse)
+		if reverse {
+			if s.upper == nil {
+				if s.verbose {
+					log.Printf("range index scan step: SEEK_LAST")
+				}
+				ik, iv = c.Last()
+			} else {
+				if s.verbose {
+					log.Printf("range index scan step: SEEK_REV: upper = %x", s.upper)
+				}
+				ik, iv = c.SeekLast(s.upper)
+				if !s.upperInc {
+					skippingInitial = true
+				}
+			}
+		} else {
+			if s.lower == nil {
+				if s.verbose {
+					log.Printf("range index scan step: SEEK_FIRST")
+				}
+				ik, iv = c.First()
+			} else {
+				if s.verbose {
+					log.Printf("range index scan step: SEEK_FWD: lower = %x", s.lower)
+				}
+				ik, iv = c.Seek(s.lower)
+				if !s.lowerInc {
+					skippingInitial = true
+				}
+			}
+		}
 	} else {
 		if s.verbose {
 			log.Printf("range index scan step: ADVC: reverse = %v", reverse)
 		}
-		ik, iv = advanceIndexRange(c, reverse)
+		if reverse {
+			ik, iv = c.Prev()
+		} else {
+			ik, iv = c.Next()
+		}
 	}
 
 	lower, upper := s.lower, s.upper
 	for ik != nil {
-		if s.after != nil && bytes.Compare(ik, s.after) <= 0 {
-			if reverse {
-				return nil, nil, nil, nil
-			}
-			ik, iv = advanceIndexRange(c, reverse)
-			continue
-		}
-		if s.before != nil && bytes.Compare(ik, s.before) >= 0 {
-			if !reverse {
-				return nil, nil, nil, nil
-			}
-			ik, iv = advanceIndexRange(c, reverse)
-			continue
-		}
-
-		if s.prefix != nil && !bytes.HasPrefix(ik, s.prefix) {
-			cmp := bytes.Compare(ik, s.prefix)
-			if (!reverse && cmp > 0) || (reverse && cmp < 0) {
-				return nil, nil, nil, nil
-			}
-			ik, iv = advanceIndexRange(c, reverse)
-			continue
-		}
-
 		ikTup := decodeIndexKey(ik, idx)
 		if len(ikTup) < s.els {
 			panic(fmt.Errorf("%s: invalid index key %x: got %d els, wanted at least %d", idx.FullName(), ik, len(ikTup), s.els+1))
@@ -1168,33 +1121,52 @@ func (s *rangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx 
 		relevantLen := ikTup.prefixLen(s.els)
 		relevant := ik[:relevantLen]
 
-		if lower != nil {
-			cmp := bytes.Compare(relevant, lower)
-			if cmp < 0 {
-				if reverse {
-					return nil, nil, nil, nil
+		if skippingInitial {
+			if reverse {
+				if bytes.Equal(relevant, s.upper) {
+					if s.verbose {
+						log.Printf("range index scan step: SKIP_INITIAL_EQ_UPPER: ik = %x, relevant = %x", ik, relevant)
+					}
+					ik, iv = c.Prev()
+					continue
+				} else {
+					skippingInitial = false
 				}
-				ik, iv = advanceIndexRange(c, reverse)
-				continue
-			}
-			if cmp == 0 && !s.lowerInc {
-				ik, iv = advanceIndexRange(c, reverse)
-				continue
+			} else {
+				if bytes.Equal(relevant, s.lower) {
+					if s.verbose {
+						log.Printf("range index scan step: SKIP_INITIAL_EQ_LOWER: ik = %x, relevant = %x", ik, relevant)
+					}
+					ik, iv = c.Next()
+					continue
+				} else {
+					skippingInitial = false
+				}
 			}
 		}
 
-		if upper != nil {
-			cmp := bytes.Compare(relevant, upper)
-			if cmp > 0 {
-				if !reverse && !bytes.HasPrefix(ik, upper) {
+		if reverse {
+			if s.lower != nil {
+				// if debugLogScans {
+				// 	log.Printf("range index scan step: cmp (reverse+lower): ik = %x, relevant = %x, lower = %x", ik, relevant, lower)
+				// }
+				cmp := bytes.Compare(relevant, s.lower)
+				if cmp < 0 || (cmp == 0 && !s.lowerInc) {
+					if s.verbose {
+						log.Printf("range index scan step: BAIL: below lower: ik = %x, lower = %x", ik, lower)
+					}
 					return nil, nil, nil, nil
 				}
-				ik, iv = advanceIndexRange(c, reverse)
-				continue
 			}
-			if cmp == 0 && !s.upperInc {
-				ik, iv = advanceIndexRange(c, reverse)
-				continue
+		} else {
+			if s.upper != nil {
+				cmp := bytes.Compare(relevant, s.upper)
+				if cmp > 0 || (cmp == 0 && !s.upperInc) {
+					if s.verbose {
+						log.Printf("range index scan step: BAIL: above upper: ik = %x, upper = %x", ik, upper)
+					}
+					return nil, nil, nil, nil
+				}
 			}
 		}
 
@@ -1208,61 +1180,6 @@ func (s *rangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx 
 		log.Printf("range index scan step: EOFd")
 	}
 	return nil, nil, nil, nil
-}
-
-func (s *rangeIndexScanStrategy) start(c storageCursor, reverse bool) ([]byte, []byte) {
-	if reverse {
-		if s.before != nil {
-			ik, _ := c.Seek(s.before)
-			if ik == nil {
-				return c.Last()
-			}
-			return c.Prev()
-		}
-		upper := s.upper
-		if s.prefix != nil && (upper == nil || !bytes.HasPrefix(upper, s.prefix) && bytes.Compare(upper, s.prefix) > 0) {
-			upper = s.prefix
-		}
-		if upper == nil {
-			if s.verbose {
-				log.Printf("range index scan step: SEEK_LAST")
-			}
-			return c.Last()
-		}
-		if s.verbose {
-			log.Printf("range index scan step: SEEK_REV: upper = %x", upper)
-		}
-		return c.SeekLast(upper)
-	}
-
-	if s.after != nil {
-		ik, iv := c.Seek(s.after)
-		if bytes.Equal(ik, s.after) {
-			return c.Next()
-		}
-		return ik, iv
-	}
-	lower := s.lower
-	if s.prefix != nil && (lower == nil || bytes.Compare(lower, s.prefix) < 0) {
-		lower = s.prefix
-	}
-	if lower == nil {
-		if s.verbose {
-			log.Printf("range index scan step: SEEK_FIRST")
-		}
-		return c.First()
-	}
-	if s.verbose {
-		log.Printf("range index scan step: SEEK_FWD: lower = %x", lower)
-	}
-	return c.Seek(lower)
-}
-
-func advanceIndexRange(c storageCursor, reverse bool) ([]byte, []byte) {
-	if reverse {
-		return c.Prev()
-	}
-	return c.Next()
 }
 
 type rawRangeIndexScanStrategy struct {
