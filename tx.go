@@ -158,6 +158,12 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 	if db.IsClosed() {
 		panic("database closed")
 	}
+	var managedTxs []*Tx
+	defer func() {
+		for _, tx := range managedTxs {
+			tx.release()
+		}
+	}()
 	if writable {
 		if db.bdb == nil {
 			stx, err := db.storage.BeginTx(true)
@@ -179,13 +185,17 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 		}
 
 		var funcErr error
-		var tx *Tx
 		// var calls int
 		var memo map[string]any
 		// debug.PrintStack()
 		// log.Printf("Tx.BATCH.BEGIN")
 		pending := true
 		db.PendingWriterCount.Add(1)
+		defer func() {
+			if pending {
+				db.PendingWriterCount.Add(-1)
+			}
+		}()
 		var stack []byte
 		if debugTrackTxns && db.captureTxStack {
 			stack = debug.Stack()
@@ -207,7 +217,10 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 			// } else {
 			// 	log.Printf("Tx.START")
 			// }
-			tx = db.newTx(&boltStorageTx{btx: btx}, true, memo, stack)
+			tx := db.newTx(&boltStorageTx{btx: btx}, true, memo, stack)
+			if db.reuseTxBuffers {
+				managedTxs = append(managedTxs, tx)
+			}
 			defer tx.Close()
 			funcErr = safelyCall(f, tx)
 			memo = tx.memo
@@ -219,7 +232,6 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 			}
 		})
 		// log.Printf("Tx.BATCH.END")
-		tx.Close()
 		if err == nil && funcErr != nil {
 			err = funcErr
 		}
@@ -237,6 +249,9 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 
 		return db.bdb.View(func(btx *bbolt.Tx) error {
 			tx := db.newTx(&boltStorageTx{btx: btx}, true, nil, nil)
+			if db.reuseTxBuffers {
+				managedTxs = append(managedTxs, tx)
+			}
 			defer tx.Close()
 			return f(tx)
 		})
@@ -371,14 +386,12 @@ func (tx *Tx) Close() {
 	if !tx.managed {
 		err := tx.stx.Rollback()
 		ensure(err)
+		tx.release()
 	}
-	tx.release()
 }
 
 func (tx *Tx) release() {
 	if !tx.db.reuseTxBuffers {
-		// Disabled by default because we suspected database corruption caused by
-		// buffer reuse.
 		return
 	}
 	if tx.valueBufs != nil {

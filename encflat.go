@@ -1,6 +1,7 @@
 package edb
 
 import (
+	"bytes"
 	"encoding"
 	"encoding/binary"
 	"encoding/hex"
@@ -441,7 +442,7 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 					return appendRaw(buf, v.Bytes())
 				},
 				Decode: func(b []byte, v reflect.Value) error {
-					v.SetBytes(b)
+					v.SetBytes(bytes.Clone(b))
 					return nil
 				},
 				RawParser: func(buf []byte, s string) ([]byte, error) {

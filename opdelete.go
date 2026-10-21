@@ -86,7 +86,7 @@ func (tx *Tx) deleteByKeyRaw(tbl *Table, keyRaw []byte, keyValIfKnown reflect.Va
 		chg := Change{
 			table:  tbl,
 			op:     OpDelete,
-			rawKey: keyRaw,
+			rawKey: bytes.Clone(keyRaw),
 		}
 		if opts.Contains(ChangeFlagIncludeRow) {
 			var err error

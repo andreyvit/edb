@@ -118,7 +118,7 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 		chg := Change{
 			table:  tbl,
 			op:     OpPut,
-			rawKey: keyRaw,
+			rawKey: bytes.Clone(keyRaw),
 		}
 		if opts.Contains(ChangeFlagIncludeMutableRow) {
 			var newVal value

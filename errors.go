@@ -1,6 +1,7 @@
 package edb
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
 	"strings"
@@ -14,7 +15,7 @@ type DataError struct {
 }
 
 func dataErrf(data []byte, off int, err error, format string, args ...any) error {
-	return &DataError{data, off, err, fmt.Sprintf(format, args...)}
+	return &DataError{bytes.Clone(data), off, err, fmt.Sprintf(format, args...)}
 }
 
 func (e *DataError) Unwrap() error {
@@ -54,7 +55,7 @@ func tableErrf(tbl *Table, idx *Index, key []byte, err error, format string, arg
 	if idx != nil {
 		idxName = idx.ShortName()
 	}
-	return &TableError{tbl.Name(), idxName, key, fmt.Sprintf(format, args...), err}
+	return &TableError{tbl.Name(), idxName, bytes.Clone(key), fmt.Sprintf(format, args...), err}
 }
 
 func kvtableErrf(tbl *KVTable, idx any, key []byte, err error, format string, args ...any) error {
@@ -62,7 +63,7 @@ func kvtableErrf(tbl *KVTable, idx any, key []byte, err error, format string, ar
 	// if idx != nil {
 	// 	idxName = idx.ShortName()
 	// }
-	return &TableError{tbl.Name(), idxName, key, fmt.Sprintf(format, args...), err}
+	return &TableError{tbl.Name(), idxName, bytes.Clone(key), fmt.Sprintf(format, args...), err}
 }
 
 func (e *TableError) Unwrap() error {
