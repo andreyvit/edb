@@ -98,8 +98,10 @@ func (tx *Tx) lookupRawKeyByVal(idx *Index, indexKeyVal reflect.Value) []byte {
 
 	fe := flatEncoder{buf: indexKeyBuf.data}
 	idx.keyEnc.encodeInto(&fe, indexKeyVal)
+	indexKeyBuf.data = fe.buf[:0]
 	if idx.isUnique {
 		indexKeyRaw := fe.finalize()
+		indexKeyBuf.data = indexKeyRaw[:0]
 		indexVal := idxBuck.Get(indexKeyRaw)
 		if indexVal == nil {
 			return nil

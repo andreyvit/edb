@@ -121,6 +121,7 @@ func (tx *Tx) getRowValByKeyVal(tbl *Table, keyVal reflect.Value, includeRow boo
 	keyVal = tbl.ensureCorrectKeyType(keyVal)
 	keyBuf := acquireKeyBuffer()
 	keyRaw := tbl.encodeKeyVal(keyBuf.data, keyVal, true)
+	keyBuf.data = keyRaw[:0]
 	defer releaseKeyBuffer(keyBuf)
 	return tx.getRowValByKeyRaw(tbl, keyRaw, includeRow, keyVal.Interface())
 }
@@ -149,6 +150,7 @@ func (tx *Tx) existsByKeyVal(tbl *Table, keyVal reflect.Value) bool {
 	keyVal = tbl.ensureCorrectKeyType(keyVal)
 	keyBuf := acquireKeyBuffer()
 	keyRaw := tbl.encodeKeyVal(keyBuf.data, keyVal, true)
+	keyBuf.data = keyRaw[:0]
 	defer releaseKeyBuffer(keyBuf)
 	found := (tx.getRawByRawKey(tbl, keyRaw) != nil)
 	if tx.db.verbose {

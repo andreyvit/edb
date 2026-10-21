@@ -58,6 +58,8 @@ func (b *IndexBuilder) Add(idx *Index, value any) *IndexRow {
 		valueEnc.begin()
 		valueEnc.append(b.key)
 		valueRaw = valueEnc.finalize()
+		buf.data = valueRaw[:0]
+		valueBuf = buf.data
 	} else {
 		valueRaw = emptyIndexValue
 
@@ -66,8 +68,10 @@ func (b *IndexBuilder) Add(idx *Index, value any) *IndexRow {
 	}
 
 	indexOrd := b.ts.indexOrdinal(idx)
+	keyRaw := keyEnc.finalize()
+	keyBuf.data = keyRaw[:0]
 
-	b.rows = append(b.rows, IndexRow{indexOrd, idx, keyEnc.finalize(), keyBuf.data, valueRaw, valueBuf})
+	b.rows = append(b.rows, IndexRow{indexOrd, idx, keyRaw, keyBuf.data, valueRaw, valueBuf})
 	return &b.rows[len(b.rows)-1]
 }
 

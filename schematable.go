@@ -213,6 +213,7 @@ func (tbl *Table) ParseKeyVal(s string) (reflect.Value, error) {
 	if err != nil {
 		return reflect.Value{}, err
 	}
+	buf.data = raw[:0]
 	return tbl.DecodeKeyVal(raw), nil
 }
 

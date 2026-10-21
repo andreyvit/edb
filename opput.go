@@ -36,6 +36,7 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 	keyBuf := acquireKeyBuffer()
 	keyVal := tbl.RowKeyVal(rowVal)
 	keyRaw := tbl.encodeKeyVal(keyBuf.data, keyVal, false)
+	keyBuf.data = keyRaw[:0]
 	defer releaseKeyBuffer(keyBuf)
 
 	ts := tx.db.tableState(tbl)
@@ -65,6 +66,7 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 	dataBytes := valueRaw[dataOff:]
 	indexOff := len(valueRaw)
 	valueRaw = appendIndexKeys(valueRaw, ib.rows)
+	valueBuf.data = valueRaw[:0]
 	indexBytes := valueRaw[indexOff:]
 
 	isDataUnchanged := bytes.Equal(dataBytes, old.Data)

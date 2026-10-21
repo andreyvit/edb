@@ -2,6 +2,17 @@ package edb
 
 import "sync"
 
+const (
+	indexRowsBufferCapacityInitial  = 256
+	byteBufferListCapacityInitial   = 64
+	keyBufferCapacityInitial        = 256
+	valueBufferCapacityInitial      = 1024
+	indexValueBufferCapacityInitial = 128
+
+	keyBufferCapacityLimit   = 32 * 1024
+	valueBufferCapacityLimit = 64 * 1024
+)
+
 type indexRowBuffers struct {
 	key   *byteBuffer
 	value *byteBuffer
@@ -15,8 +26,8 @@ type indexRowsBuffer struct {
 var indexRowsPool = &sync.Pool{
 	New: func() any {
 		return &indexRowsBuffer{
-			data:    make(indexRows, 0, 256),
-			buffers: make([]indexRowBuffers, 0, 256),
+			data:    make(indexRows, 0, indexRowsBufferCapacityInitial),
+			buffers: make([]indexRowBuffers, 0, indexRowsBufferCapacityInitial),
 		}
 	},
 }
@@ -38,7 +49,7 @@ type byteBufferList struct {
 
 var byteBufferListPool = &sync.Pool{
 	New: func() any {
-		return &byteBufferList{data: make([]*byteBuffer, 0, 1024)}
+		return &byteBufferList{data: make([]*byteBuffer, 0, byteBufferListCapacityInitial)}
 	},
 }
 
@@ -58,7 +69,7 @@ type byteBuffer struct {
 
 var keyBytesPool = &sync.Pool{
 	New: func() any {
-		return &byteBuffer{data: make([]byte, 0, 32768)} // max key size in Bolt
+		return &byteBuffer{data: make([]byte, 0, keyBufferCapacityInitial)}
 	},
 }
 
@@ -67,13 +78,16 @@ func acquireKeyBuffer() *byteBuffer {
 }
 
 func releaseKeyBuffer(buf *byteBuffer) {
+	if cap(buf.data) > keyBufferCapacityLimit {
+		return
+	}
 	buf.data = buf.data[:0]
 	keyBytesPool.Put(buf)
 }
 
 var valueBytesPool = &sync.Pool{
 	New: func() any {
-		return &byteBuffer{data: make([]byte, 0, 65536)}
+		return &byteBuffer{data: make([]byte, 0, valueBufferCapacityInitial)}
 	},
 }
 
@@ -82,13 +96,16 @@ func acquireValueBuffer() *byteBuffer {
 }
 
 func releaseValueBuffer(buf *byteBuffer) {
+	if cap(buf.data) > valueBufferCapacityLimit {
+		return
+	}
 	buf.data = buf.data[:0]
 	valueBytesPool.Put(buf)
 }
 
 var indexValueBytesPool = &sync.Pool{
 	New: func() any {
-		return &byteBuffer{data: make([]byte, 0, 65536)}
+		return &byteBuffer{data: make([]byte, 0, indexValueBufferCapacityInitial)}
 	},
 }
 
@@ -97,6 +114,9 @@ func acquireIndexValueBuffer() *byteBuffer {
 }
 
 func releaseIndexValueBuffer(buf *byteBuffer) {
+	if cap(buf.data) > valueBufferCapacityLimit {
+		return
+	}
 	buf.data = buf.data[:0]
 	indexValueBytesPool.Put(buf)
 }

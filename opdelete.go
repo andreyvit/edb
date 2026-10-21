@@ -39,6 +39,7 @@ func (tx *Tx) DeleteByKeyVal(tbl *Table, keyVal reflect.Value) bool {
 	keyVal = tbl.ensureCorrectKeyType(keyVal)
 	keyBuf := acquireKeyBuffer()
 	keyRaw := tbl.encodeKeyVal(keyBuf.data, keyVal, false)
+	keyBuf.data = keyRaw[:0]
 	defer releaseKeyBuffer(keyBuf)
 	ok := tx.deleteByKeyRaw(tbl, keyRaw, keyVal)
 	if tx.isVerboseLoggingEnabled() {

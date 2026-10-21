@@ -46,6 +46,7 @@ func SPut[T any](txh Txish, sk *SKey, v *T) {
 	valueBuf := acquireValueBuffer()
 	tx.addValueBuf(valueBuf)
 	valueRaw := sk.valueEnc.EncodeValue(valueBuf.data, reflect.ValueOf(v))
+	valueBuf.data = valueRaw[:0]
 	SPutRaw(tx, sk, valueRaw)
 }
 

@@ -158,6 +158,7 @@ func (idx *Index) ParseNakedIndexKeyVal(s string) (reflect.Value, error) {
 	if err != nil {
 		return reflect.Value{}, err
 	}
+	buf.data = raw[:0]
 	keyVal := reflect.New(idx.recType).Elem()
 	err = idx.keyEnc.decodeVal(raw, keyVal)
 	if err != nil {

@@ -892,6 +892,7 @@ func (tx *Tx) encodeIndexFullKey(indexKeyVal, tableKeyVal reflect.Value, idx *In
 	tableKeyBuf := acquireKeyBuffer()
 	tbl := idx.Table()
 	tableKeyRaw := tbl.encodeKeyVal(tableKeyBuf.data, tableKeyVal, false)
+	tableKeyBuf.data = tableKeyRaw[:0]
 	defer releaseKeyBuffer(tableKeyBuf)
 
 	indexKeyBuf := acquireKeyBuffer()
