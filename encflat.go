@@ -111,7 +111,7 @@ type flatComponent struct {
 	Stringer    func(val reflect.Value) string
 	Getters     []func(v reflect.Value, init bool) reflect.Value
 	Decode      func(b []byte, v reflect.Value) error
-	Encode      func(fe *flatEncoder, v reflect.Value)
+	Encode      func(buf []byte, v reflect.Value) []byte
 }
 
 func (fc *flatComponent) valueIn(val reflect.Value, init bool) reflect.Value {
@@ -156,7 +156,7 @@ func (enc *flatEncoding) encodeInto(fe *flatEncoder, val reflect.Value) {
 	for _, fc := range enc.components {
 		fe.begin()
 		cval := fc.valueIn(val, false)
-		fc.Encode(fe, cval)
+		fe.buf = fc.Encode(fe.buf, cval)
 	}
 }
 
@@ -168,7 +168,8 @@ func (enc *flatEncoding) decodePtr(buf []byte, ptrVal reflect.Value) error {
 }
 
 func (enc *flatEncoding) decodeVal(buf []byte, val reflect.Value) error {
-	tup, err := decodeTuple(buf)
+	var tupBuf [16][]byte
+	tup, err := decodeTupleInto(tupBuf[:0], buf)
 	if err != nil {
 		return err
 	}
@@ -268,7 +269,7 @@ func (enc *flatEncoding) stringsToRawKey(buf []byte, strs []string) ([]byte, err
 			if err != nil {
 				return nil, fmt.Errorf("invalid component %d %q: %w", i, strs[i], err)
 			}
-			fc.Encode(&fe, val.Elem())
+			fe.buf = fc.Encode(fe.buf, val.Elem())
 		} else {
 			fe.buf, err = fc.RawParser(fe.buf, strs[i])
 			if err != nil {
@@ -283,9 +284,9 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 	if typ == timeType {
 		f(&flatComponent{
 			Type: typ,
-			Encode: func(fe *flatEncoder, v reflect.Value) {
+			Encode: func(buf []byte, v reflect.Value) []byte {
 				value := v.Interface().(time.Time)
-				fe.buf = appendUint64(fe.buf, uint64(value.Unix()))
+				return appendUint64(buf, uint64(value.Unix()))
 			},
 			Decode: func(b []byte, v reflect.Value) error {
 				if len(b) == 8 {
@@ -302,8 +303,8 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 	if typ.ConvertibleTo(flatMarshallableType) {
 		f(&flatComponent{
 			Type: typ,
-			Encode: func(fe *flatEncoder, v reflect.Value) {
-				fe.buf = v.Interface().(FlatMarshallable).MarshalFlat(fe.buf)
+			Encode: func(buf []byte, v reflect.Value) []byte {
+				return v.Interface().(FlatMarshallable).MarshalFlat(buf)
 			},
 			Decode: func(b []byte, v reflect.Value) error {
 				return v.Interface().(FlatMarshallable).UnmarshalFlat(b)
@@ -314,7 +315,7 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 	if reflect.PointerTo(typ).ConvertibleTo(binaryMarshallableType) {
 		f(&flatComponent{
 			Type: typ,
-			Encode: func(fe *flatEncoder, v reflect.Value) {
+			Encode: func(buf []byte, v reflect.Value) []byte {
 				marshaler, ok := v.Interface().(encoding.BinaryMarshaler)
 				if !ok {
 					if !v.CanAddr() {
@@ -328,7 +329,7 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 				if err != nil {
 					panic(fmt.Errorf("%T.MarshalBinary: %w", v.Interface(), err))
 				}
-				fe.append(data)
+				return appendRaw(buf, data)
 			},
 			Decode: func(b []byte, v reflect.Value) error {
 				return v.Addr().Interface().(encoding.BinaryUnmarshaler).UnmarshalBinary(b)
@@ -340,11 +341,11 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 	case reflect.String:
 		f(&flatComponent{
 			Type: typ,
-			Encode: func(fe *flatEncoder, v reflect.Value) {
-				fe.buf = appendString(fe.buf, v.String())
+			Encode: func(buf []byte, v reflect.Value) []byte {
+				return appendString(buf, v.String())
 			},
 			Decode: func(b []byte, v reflect.Value) error {
-				v.Set(reflect.ValueOf(string(b)))
+				v.SetString(string(b))
 				return nil
 			},
 			RawParser: func(buf []byte, s string) ([]byte, error) {
@@ -363,13 +364,12 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 			// RawStringer: func(b []byte) string {
 
 			// },
-			Encode: func(fe *flatEncoder, v reflect.Value) {
-				fe.buf = appendUint64(fe.buf, v.Uint())
+			Encode: func(buf []byte, v reflect.Value) []byte {
+				return appendUint64(buf, v.Uint())
 			},
 			Decode: func(b []byte, v reflect.Value) error {
 				if len(b) == 8 {
-					value := binary.BigEndian.Uint64(b)
-					v.Set(reflect.ValueOf(value).Convert(typ))
+					v.SetUint(binary.BigEndian.Uint64(b))
 					return nil
 				} else {
 					return fmt.Errorf("invalid int length: got %d bytes, valued %d", len(b), 8)
@@ -386,13 +386,12 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 	case reflect.Int, reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8:
 		f(&flatComponent{
 			Type: typ,
-			Encode: func(fe *flatEncoder, v reflect.Value) {
-				fe.buf = appendUint64(fe.buf, uint64(v.Int()))
+			Encode: func(buf []byte, v reflect.Value) []byte {
+				return appendUint64(buf, uint64(v.Int()))
 			},
 			Decode: func(b []byte, v reflect.Value) error {
 				if len(b) == 8 {
-					value := int64(binary.BigEndian.Uint64(b))
-					v.Set(reflect.ValueOf(value).Convert(typ))
+					v.SetInt(int64(binary.BigEndian.Uint64(b)))
 					return nil
 				} else {
 					return fmt.Errorf("invalid int length: got %d bytes, valued %d", len(b), 8)
@@ -438,11 +437,11 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 		if typ == byteArrayType {
 			f(&flatComponent{
 				Type: typ,
-				Encode: func(fe *flatEncoder, v reflect.Value) {
-					fe.buf = appendRaw(fe.buf, v.Convert(byteArrayType).Interface().([]byte))
+				Encode: func(buf []byte, v reflect.Value) []byte {
+					return appendRaw(buf, v.Bytes())
 				},
 				Decode: func(b []byte, v reflect.Value) error {
-					v.Set(reflect.ValueOf(b))
+					v.SetBytes(b)
 					return nil
 				},
 				RawParser: func(buf []byte, s string) ([]byte, error) {
@@ -463,8 +462,8 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 		if typ.Elem() == byteType {
 			f(&flatComponent{
 				Type: typ,
-				Encode: func(fe *flatEncoder, v reflect.Value) {
-					fe.buf = appendRawVal(fe.buf, v)
+				Encode: func(buf []byte, v reflect.Value) []byte {
+					return appendRawVal(buf, v)
 				},
 				Decode: func(b []byte, v reflect.Value) error {
 					if len(b) != v.Len() {

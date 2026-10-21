@@ -56,6 +56,10 @@ func (tup tuple) prefixLen(n int) int {
 }
 
 func decodeTuple(raw []byte) (tuple, error) {
+	return decodeTupleInto(nil, raw)
+}
+
+func decodeTupleInto(tup tuple, raw []byte) (tuple, error) {
 	if len(raw) == 0 {
 		return nil, nil
 	}
@@ -69,7 +73,11 @@ func decodeTuple(raw []byte) (tuple, error) {
 		return nil, fmt.Errorf("invalid tuple: component count %d exceeds available data", c)
 	}
 
-	lens := make([]uint32, c)
+	var lensBuf [16]uint32
+	lens := lensBuf[:]
+	if int(c) > len(lens) {
+		lens = make([]uint32, c)
+	}
 	for i := int(c) - 2; i >= 0; i-- {
 		lens[i], raw = decodeRuvarint(raw)
 		// log.Printf("lens[%d] = %d", i, lens[i])
@@ -83,7 +91,11 @@ func decodeTuple(raw []byte) (tuple, error) {
 		return nil, fmt.Errorf("invalid tuple: sum of explicit lens %d is greater than total data len %d", explicitLen, len(raw))
 	}
 
-	tup := make(tuple, c)
+	if int(c) > cap(tup) {
+		tup = make(tuple, c)
+	} else {
+		tup = tup[:c]
+	}
 	for i := uint32(0); i < c-1; i++ {
 		tup[i], raw = raw[:lens[i]], raw[lens[i]:]
 	}
@@ -111,10 +123,19 @@ func (tup tuple) encode(buf []byte) []byte {
 type tupleEncoder struct {
 	startOffPlus1 int
 	lens          []int
+	lensInline    [8]int
+	lensCount     int
 }
 
 func (tb *tupleEncoder) count() int {
-	return len(tb.lens) + 1
+	return tb.lensCount + 1
+}
+
+func (tb *tupleEncoder) lengths() []int {
+	if tb.lensCount <= len(tb.lensInline) {
+		return tb.lensInline[:tb.lensCount]
+	}
+	return tb.lens
 }
 
 func (tb *tupleEncoder) begin(buf []byte) {
@@ -123,13 +144,22 @@ func (tb *tupleEncoder) begin(buf []byte) {
 		panic("tupleEncoder finalized")
 	} else if off != 0 {
 		itemLen := len(buf) + 1 - off
-		tb.lens = append(tb.lens, itemLen)
+		if tb.lensCount < len(tb.lensInline) {
+			tb.lensInline[tb.lensCount] = itemLen
+		} else {
+			if tb.lensCount == len(tb.lensInline) {
+				tb.lens = make([]int, len(tb.lensInline), 2*len(tb.lensInline))
+				copy(tb.lens, tb.lensInline[:])
+			}
+			tb.lens = append(tb.lens, itemLen)
+		}
+		tb.lensCount++
 	}
 	tb.startOffPlus1 = len(buf) + 1
 }
 
 func (tb *tupleEncoder) finalize(buf []byte) []byte {
-	for _, v := range tb.lens {
+	for _, v := range tb.lengths() {
 		if uint64(v) > math.MaxUint32 {
 			panic(fmt.Errorf("tuple component length out of range: %d", v))
 		}
@@ -145,7 +175,7 @@ func (tb *tupleEncoder) finalize(buf []byte) []byte {
 
 func (tb *tupleEncoder) prefixLen(n int) int {
 	var total int
-	for _, len := range tb.lens[:n] {
+	for _, len := range tb.lengths()[:n] {
 		total += len
 	}
 	return total

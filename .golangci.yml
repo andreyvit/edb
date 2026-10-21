@@ -82,7 +82,7 @@ linters:
       - linters: ["gosec"]
         path: "^encflat\\.go$"
         text: "^G115: integer overflow conversion (int64 -> uint64|uint64 -> int64)$"
-        source: "^\\s*(fe\\.buf = appendUint64\\(fe\\.buf, uint64\\(value\\.Unix\\(\\)\\)\\)|v\\.Set\\(reflect\\.ValueOf\\(time\\.Unix\\(int64\\(value\\), 0\\)\\)\\)|fe\\.buf = appendUint64\\(fe\\.buf, uint64\\(v\\.Int\\(\\)\\)\\)|value := int64\\(binary\\.BigEndian\\.Uint64\\(b\\)\\)|return appendUint64\\(buf, uint64\\(v\\)\\), nil)\\s*$"
+        source: "^\\s*(return appendUint64\\(buf, uint64\\(value\\.Unix\\(\\)\\)\\)|v\\.Set\\(reflect\\.ValueOf\\(time\\.Unix\\(int64\\(value\\), 0\\)\\)\\)|return appendUint64\\(buf, uint64\\(v\\.Int\\(\\)\\)\\)|v\\.SetInt\\(int64\\(binary\\.BigEndian\\.Uint64\\(b\\)\\)\\)|return appendUint64\\(buf, uint64\\(v\\)\\), nil)\\s*$"
       - linters: ["gosec"]
         path: "^encflat\\.go$"
         text: "^G602: slice index out of range$"

@@ -2,9 +2,10 @@ package edb
 
 import (
 	"bytes"
+	"cmp"
 	"fmt"
 	"reflect"
-	"sort"
+	"slices"
 )
 
 type IndexRow struct {
@@ -81,7 +82,7 @@ func (b *IndexBuilder) release(tx *Tx) {
 }
 
 func (b *IndexBuilder) finalize() {
-	sort.Sort(b.rows)
+	slices.SortFunc(b.rows, compareIndexRows)
 }
 
 type indexRows []IndexRow
@@ -89,9 +90,12 @@ type indexRows []IndexRow
 func (a indexRows) Len() int      { return len(a) }
 func (a indexRows) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a indexRows) Less(i, j int) bool {
-	lp, rp := a[i].Index.pos, a[j].Index.pos
-	if lp != rp {
-		return lp < rp
+	return compareIndexRows(a[i], a[j]) < 0
+}
+
+func compareIndexRows(a, b IndexRow) int {
+	if order := cmp.Compare(a.Index.pos, b.Index.pos); order != 0 {
+		return order
 	}
-	return bytes.Compare(a[i].KeyRaw, a[j].KeyRaw) < 0
+	return bytes.Compare(a.KeyRaw, b.KeyRaw)
 }
