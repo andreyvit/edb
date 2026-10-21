@@ -43,9 +43,9 @@ func SGet[T any](txh Txish, sk *SKey, v *T) bool {
 
 func SPut[T any](txh Txish, sk *SKey, v *T) {
 	tx := txh.DBTx()
-	valueBuf := valueBytesPool.Get().([]byte)
+	valueBuf := acquireValueBuffer()
 	tx.addValueBuf(valueBuf)
-	valueRaw := sk.valueEnc.EncodeValue(valueBuf, reflect.ValueOf(v))
+	valueRaw := sk.valueEnc.EncodeValue(valueBuf.data, reflect.ValueOf(v))
 	SPutRaw(tx, sk, valueRaw)
 }
 

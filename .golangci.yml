@@ -64,7 +64,6 @@ linters:
     staticcheck:
       checks:
         - SA*
-        - "-SA6002"
   exclusions:
     generated: strict
     rules:

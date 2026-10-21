@@ -33,10 +33,10 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 	}
 	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 
-	keyBuf := keyBytesPool.Get().([]byte)
+	keyBuf := acquireKeyBuffer()
 	keyVal := tbl.RowKeyVal(rowVal)
-	keyRaw := tbl.encodeKeyVal(keyBuf, keyVal, false)
-	defer keyBytesPool.Put(keyBuf[:0])
+	keyRaw := tbl.encodeKeyVal(keyBuf.data, keyVal, false)
+	defer releaseKeyBuffer(keyBuf)
 
 	ts := tx.db.tableState(tbl)
 	ib := makeIndexBuilder(ts, keyRaw)
@@ -57,9 +57,9 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 	oldModCount := old.ModCount
 	newSchemaVer, newModCount := oldSchemaVer, oldModCount
 
-	valueBuf := valueBytesPool.Get().([]byte)
+	valueBuf := acquireValueBuffer()
 	tx.addValueBuf(valueBuf)
-	valueRaw := reserveValueHeader(valueBuf)
+	valueRaw := reserveValueHeader(valueBuf.data)
 	dataOff := len(valueRaw)
 	valueRaw = tbl.encodeRowVal(valueRaw, rowVal)
 	dataBytes := valueRaw[dataOff:]

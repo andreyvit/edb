@@ -39,7 +39,6 @@ func GetByKeyRaw[Row any](txh Txish, keyRaw []byte) *Row {
 	return row.(*Row)
 }
 
-
 func GetMeta[Row any](txh Txish, key any) ValueMeta {
 	tx := txh.DBTx()
 	tbl := tx.Schema().TableByRow((*Row)(nil))
@@ -120,9 +119,9 @@ func (tx *Tx) Exists(tbl *Table, key any) bool {
 
 func (tx *Tx) getRowValByKeyVal(tbl *Table, keyVal reflect.Value, includeRow bool) (reflect.Value, ValueMeta, error) {
 	keyVal = tbl.ensureCorrectKeyType(keyVal)
-	keyBuf := keyBytesPool.Get().([]byte)
-	keyRaw := tbl.encodeKeyVal(keyBuf, keyVal, true)
-	defer keyBytesPool.Put(keyBuf[:0])
+	keyBuf := acquireKeyBuffer()
+	keyRaw := tbl.encodeKeyVal(keyBuf.data, keyVal, true)
+	defer releaseKeyBuffer(keyBuf)
 	return tx.getRowValByKeyRaw(tbl, keyRaw, includeRow, keyVal.Interface())
 }
 
@@ -148,9 +147,9 @@ func (tx *Tx) getRowValByKeyRaw(tbl *Table, keyRaw []byte, includeRow bool, keyV
 
 func (tx *Tx) existsByKeyVal(tbl *Table, keyVal reflect.Value) bool {
 	keyVal = tbl.ensureCorrectKeyType(keyVal)
-	keyBuf := keyBytesPool.Get().([]byte)
-	keyRaw := tbl.encodeKeyVal(keyBuf, keyVal, true)
-	defer keyBytesPool.Put(keyBuf[:0])
+	keyBuf := acquireKeyBuffer()
+	keyRaw := tbl.encodeKeyVal(keyBuf.data, keyVal, true)
+	defer releaseKeyBuffer(keyBuf)
 	found := (tx.getRawByRawKey(tbl, keyRaw) != nil)
 	if tx.db.verbose {
 		tx.db.logf("db: EXISTS.%s %s/%v", map[bool]string{false: "NO", true: "YES"}[found], tbl.name, keyVal.Interface())

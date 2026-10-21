@@ -36,9 +36,12 @@ type Tx struct {
 
 	memo map[string]any
 
-	indexKeyBufs   [][]byte
-	valueBufs      [][]byte
-	indexValueBufs [][]byte
+	indexKeyBufs        []*byteBuffer
+	valueBufs           []*byteBuffer
+	indexValueBufs      []*byteBuffer
+	indexKeyBufsOwner   *byteBufferList
+	valueBufsOwner      *byteBufferList
+	indexValueBufsOwner *byteBufferList
 
 	changeHandler func(tx *Tx, chg *Change)
 	changeOptions map[*Table]ChangeFlags
@@ -319,30 +322,33 @@ func (tx *Tx) prepareToRead() {
 	}
 }
 
-func (tx *Tx) addValueBuf(buf []byte) {
+func (tx *Tx) addValueBuf(buf *byteBuffer) {
 	if !tx.db.reuseTxBuffers {
 		return
 	}
 	if tx.valueBufs == nil {
-		tx.valueBufs = arrayOfBytesPool.Get().([][]byte)
+		tx.valueBufsOwner = acquireByteBufferList()
+		tx.valueBufs = tx.valueBufsOwner.data
 	}
 	tx.valueBufs = append(tx.valueBufs, buf)
 }
-func (tx *Tx) addIndexValueBuf(buf []byte) {
+func (tx *Tx) addIndexValueBuf(buf *byteBuffer) {
 	if !tx.db.reuseTxBuffers {
 		return
 	}
 	if tx.indexValueBufs == nil {
-		tx.indexValueBufs = arrayOfBytesPool.Get().([][]byte)
+		tx.indexValueBufsOwner = acquireByteBufferList()
+		tx.indexValueBufs = tx.indexValueBufsOwner.data
 	}
 	tx.indexValueBufs = append(tx.indexValueBufs, buf)
 }
-func (tx *Tx) addIndexKeyBuf(buf []byte) {
+func (tx *Tx) addIndexKeyBuf(buf *byteBuffer) {
 	if !tx.db.reuseTxBuffers {
 		return
 	}
 	if tx.indexKeyBufs == nil {
-		tx.indexKeyBufs = arrayOfBytesPool.Get().([][]byte)
+		tx.indexKeyBufsOwner = acquireByteBufferList()
+		tx.indexKeyBufs = tx.indexKeyBufsOwner.data
 	}
 	tx.indexKeyBufs = append(tx.indexKeyBufs, buf)
 }
@@ -376,28 +382,31 @@ func (tx *Tx) release() {
 		return
 	}
 	if tx.valueBufs != nil {
-		for i, buf := range tx.valueBufs {
-			valueBytesPool.Put(buf[:0])
-			tx.valueBufs[i] = nil
+		for _, buf := range tx.valueBufs {
+			releaseValueBuffer(buf)
 		}
-		arrayOfBytesPool.Put(tx.valueBufs[:0])
+		tx.valueBufsOwner.data = tx.valueBufs
+		releaseByteBufferList(tx.valueBufsOwner)
 		tx.valueBufs = nil
+		tx.valueBufsOwner = nil
 	}
 	if tx.indexValueBufs != nil {
-		for i, buf := range tx.indexValueBufs {
-			indexValueBytesPool.Put(buf[:0])
-			tx.indexValueBufs[i] = nil
+		for _, buf := range tx.indexValueBufs {
+			releaseIndexValueBuffer(buf)
 		}
-		arrayOfBytesPool.Put(tx.indexValueBufs[:0])
+		tx.indexValueBufsOwner.data = tx.indexValueBufs
+		releaseByteBufferList(tx.indexValueBufsOwner)
 		tx.indexValueBufs = nil
+		tx.indexValueBufsOwner = nil
 	}
 	if tx.indexKeyBufs != nil {
-		for i, buf := range tx.indexKeyBufs {
-			keyBytesPool.Put(buf[:0])
-			tx.indexKeyBufs[i] = nil
+		for _, buf := range tx.indexKeyBufs {
+			releaseKeyBuffer(buf)
 		}
-		arrayOfBytesPool.Put(tx.indexKeyBufs[:0])
+		tx.indexKeyBufsOwner.data = tx.indexKeyBufs
+		releaseByteBufferList(tx.indexKeyBufsOwner)
 		tx.indexKeyBufs = nil
+		tx.indexKeyBufsOwner = nil
 	}
 }
 

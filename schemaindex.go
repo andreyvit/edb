@@ -152,9 +152,9 @@ func (idx *Index) parseRawKeyFrom(buf []byte, s string) ([]byte, error) {
 }
 
 func (idx *Index) ParseNakedIndexKeyVal(s string) (reflect.Value, error) {
-	buf := keyBytesPool.Get().([]byte)
-	defer releaseKeyBytes(buf)
-	raw, err := idx.parseRawKeyFrom(buf, s)
+	buf := acquireKeyBuffer()
+	defer releaseKeyBuffer(buf)
+	raw, err := idx.parseRawKeyFrom(buf.data, s)
 	if err != nil {
 		return reflect.Value{}, err
 	}

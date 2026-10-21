@@ -91,12 +91,12 @@ func (tx *Tx) lookupRawKeyByVal(idx *Index, indexKeyVal reflect.Value) []byte {
 		panic(fmt.Errorf("%s: attempted to index by incorrect type %v, expected %v", idx.FullName(), at, et))
 	}
 
-	indexKeyBuf := keyBytesPool.Get().([]byte)
-	defer releaseKeyBytes(indexKeyBuf)
+	indexKeyBuf := acquireKeyBuffer()
+	defer releaseKeyBuffer(indexKeyBuf)
 
 	idxBuck := nonNil(tx.stx.Bucket(idx.table.name, idx.buck))
 
-	fe := flatEncoder{buf: indexKeyBuf}
+	fe := flatEncoder{buf: indexKeyBuf.data}
 	idx.keyEnc.encodeInto(&fe, indexKeyVal)
 	if idx.isUnique {
 		indexKeyRaw := fe.finalize()

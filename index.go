@@ -19,15 +19,15 @@ type IndexRow struct {
 type IndexBuilder struct {
 	ts      *tableState
 	rows    indexRows
-	rowsBuf indexRows
+	rowsBuf *indexRowsBuffer
 	key     []byte
 }
 
 func makeIndexBuilder(ts *tableState, keyRaw []byte) IndexBuilder {
-	indexRowsBuf := indexRowsPool.Get().(indexRows)
+	indexRowsBuf := acquireIndexRowsBuffer()
 	return IndexBuilder{
 		ts:      ts,
-		rows:    indexRowsBuf,
+		rows:    indexRowsBuf.data,
 		rowsBuf: indexRowsBuf,
 		key:     keyRaw,
 	}
@@ -42,14 +42,17 @@ func (b *IndexBuilder) Add(idx *Index, value any) *IndexRow {
 		panic(fmt.Errorf("%s: attempted to add index entry with incorrect type %v, expected %v", idx.FullName(), at, et))
 	}
 
-	keyBuf := keyBytesPool.Get().([]byte)
-	keyEnc := flatEncoder{buf: keyBuf}
+	keyBuf := acquireKeyBuffer()
+	b.rowsBuf.buffers = append(b.rowsBuf.buffers, indexRowBuffers{key: keyBuf})
+	keyEnc := flatEncoder{buf: keyBuf.data}
 	idx.keyEnc.encodeInto(&keyEnc, valueVal)
 
 	var valueRaw []byte
 	var valueBuf []byte
 	if idx.isUnique {
-		valueBuf = indexValueBytesPool.Get().([]byte)
+		buf := acquireIndexValueBuffer()
+		b.rowsBuf.buffers[len(b.rowsBuf.buffers)-1].value = buf
+		valueBuf = buf.data
 		valueEnc := flatEncoder{buf: valueBuf}
 		valueEnc.begin()
 		valueEnc.append(b.key)
@@ -63,18 +66,18 @@ func (b *IndexBuilder) Add(idx *Index, value any) *IndexRow {
 
 	indexOrd := b.ts.indexOrdinal(idx)
 
-	b.rows = append(b.rows, IndexRow{indexOrd, idx, keyEnc.finalize(), keyBuf, valueRaw, valueBuf})
+	b.rows = append(b.rows, IndexRow{indexOrd, idx, keyEnc.finalize(), keyBuf.data, valueRaw, valueBuf})
 	return &b.rows[len(b.rows)-1]
 }
 
 func (b *IndexBuilder) release(tx *Tx) {
-	for _, row := range b.rows {
-		keyBytesPool.Put(row.KeyBuf[:0])
-		if row.ValueBuf != nil {
-			tx.addIndexValueBuf(row.ValueBuf)
+	for _, buffers := range b.rowsBuf.buffers {
+		releaseKeyBuffer(buffers.key)
+		if buffers.value != nil {
+			tx.addIndexValueBuf(buffers.value)
 		}
 	}
-	indexRowsPool.Put(b.rowsBuf[:0])
+	releaseIndexRowsBuffer(b.rowsBuf)
 }
 
 func (b *IndexBuilder) finalize() {

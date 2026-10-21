@@ -207,9 +207,9 @@ func (tbl *Table) parseRawKeyFrom(buf []byte, s string) ([]byte, error) {
 }
 
 func (tbl *Table) ParseKeyVal(s string) (reflect.Value, error) {
-	buf := keyBytesPool.Get().([]byte)
-	defer releaseKeyBytes(buf)
-	raw, err := tbl.parseRawKeyFrom(buf, s)
+	buf := acquireKeyBuffer()
+	defer releaseKeyBuffer(buf)
+	raw, err := tbl.parseRawKeyFrom(buf.data, s)
 	if err != nil {
 		return reflect.Value{}, err
 	}

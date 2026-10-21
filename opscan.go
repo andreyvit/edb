@@ -570,8 +570,7 @@ func (tx *Tx) newTableCursor(tbl *Table, opt ScanOptions) *RawTableCursor {
 		if at, et := opt.PrefixValue.Type(), tbl.KeyType(); at != et {
 			panic(fmt.Errorf("%s: attempted to scan table using prefix of incorrect type %v, expected %v", tbl.Name(), at, et))
 		}
-		c.prefix, _, _ = encodeTableBoundaryKey(opt.PrefixValue, tbl, opt.PrefixEls)
-		tx.addIndexKeyBuf(c.prefix)
+		c.prefix, _, _ = tx.encodeTableBoundaryKey(opt.PrefixValue, tbl, opt.PrefixEls)
 	}
 	switch opt.Method {
 	case ScanMethodFull:
@@ -584,8 +583,7 @@ func (tx *Tx) newTableCursor(tbl *Table, opt ScanOptions) *RawTableCursor {
 			panic(fmt.Errorf("%s: attempted to scan table using lower bound of incorrect type %v, expected %v", tbl.Name(), at, et))
 		}
 
-		keyPrefix, _, isFull := encodeTableBoundaryKey(opt.Lower, tbl, 0)
-		tx.addIndexKeyBuf(keyPrefix)
+		keyPrefix, _, isFull := tx.encodeTableBoundaryKey(opt.Lower, tbl, 0)
 
 		if isFull {
 			c.lower = keyPrefix
@@ -723,8 +721,7 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 				panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
 			}
 
-			keyPrefix, keyEls, isFull := encodeIndexBoundaryKey(opt.Lower, idx, 0, false)
-			tx.addIndexKeyBuf(keyPrefix)
+			keyPrefix, keyEls, isFull := tx.encodeIndexBoundaryKey(opt.Lower, idx, 0, false)
 
 			if idx.isUnique && isFull {
 				strat = &exactIndexScanStrategy{keyPrefix, keyEls}
@@ -743,8 +740,7 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 						panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
 					}
 
-					lower, els, _ = encodeIndexBoundaryKey(opt.Lower, idx, 0, true)
-					tx.addIndexKeyBuf(lower)
+					lower, els, _ = tx.encodeIndexBoundaryKey(opt.Lower, idx, 0, true)
 				}
 				if opt.Upper.IsValid() {
 					if at, et := opt.Upper.Type(), idx.keyType(); at != et {
@@ -752,13 +748,12 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 					}
 
 					var upperEls int
-					upper, upperEls, _ = encodeIndexBoundaryKey(opt.Upper, idx, 0, true)
+					upper, upperEls, _ = tx.encodeIndexBoundaryKey(opt.Upper, idx, 0, true)
 					if !opt.Lower.IsValid() {
 						els = upperEls
 					} else if els != upperEls {
 						panic(fmt.Errorf("%s: attempted to scan index using lower and upper boundaries of different prefix sizes (lower %d, upper %d)", idx.FullName(), els, upperEls))
 					}
-					tx.addIndexKeyBuf(upper)
 				}
 
 				strat = &rangeIndexScanStrategy{els, lower, upper, opt.LowerInc, opt.UpperInc, idx.debugScans}
@@ -800,8 +795,7 @@ func (tx *Tx) indexScanRawRange(idx *Index, opt ScanOptions) (RawRange, bool) {
 		if at, et := opt.PrefixValue.Type(), idx.keyType(); at != et {
 			panic(fmt.Errorf("%s: attempted to scan index using prefix of incorrect type %v, expected %v", idx.FullName(), at, et))
 		}
-		rang.Prefix, _, _ = encodeIndexBoundaryKey(opt.PrefixValue, idx, opt.PrefixEls, true)
-		tx.addIndexKeyBuf(rang.Prefix)
+		rang.Prefix, _, _ = tx.encodeIndexBoundaryKey(opt.PrefixValue, idx, opt.PrefixEls, true)
 	}
 	if opt.Method == ScanMethodExact {
 		if !opt.Lower.IsValid() {
@@ -810,8 +804,7 @@ func (tx *Tx) indexScanRawRange(idx *Index, opt ScanOptions) (RawRange, bool) {
 		if at, et := opt.Lower.Type(), idx.keyType(); at != et {
 			panic(fmt.Errorf("%s: attempted to scan index using lower bound of incorrect type %v, expected %v", idx.FullName(), at, et))
 		}
-		prefix, _, _ := encodeIndexBoundaryKey(opt.Lower, idx, 0, true)
-		tx.addIndexKeyBuf(prefix)
+		prefix, _, _ := tx.encodeIndexBoundaryKey(opt.Lower, idx, 0, true)
 		rang.Prefix = prefix
 	}
 	if opt.Lower.IsValid() && (opt.Method == ScanMethodRange || opt.LowerPrimaryKey.IsValid()) {
@@ -852,12 +845,10 @@ func (tx *Tx) indexScanRawRangeBound(idx *Index, indexKey, primaryKey reflect.Va
 		if at, et := primaryKey.Type(), tbl.KeyType(); at != et {
 			panic(fmt.Errorf("%s: attempted to scan table using bound of incorrect type %v, expected %v", tbl.Name(), at, et))
 		}
-		raw := encodeIndexFullKey(indexKey, primaryKey, idx)
-		tx.addIndexKeyBuf(raw)
+		raw := tx.encodeIndexFullKey(indexKey, primaryKey, idx)
 		return raw, inclusive, false
 	}
-	raw, _, _ := encodeIndexBoundaryKey(indexKey, idx, 0, true)
-	tx.addIndexKeyBuf(raw)
+	raw, _, _ := tx.encodeIndexBoundaryKey(indexKey, idx, 0, true)
 	if upper && inclusive {
 		next, ok := rawSuccessor(raw)
 		if !ok {
@@ -877,9 +868,10 @@ func rawSuccessor(raw []byte) ([]byte, bool) {
 	return next, inc(next)
 }
 
-func encodeTableBoundaryKey(keyVal reflect.Value, tbl *Table, cutoffEls int) ([]byte, int, bool) {
-	keyBuf := keyBytesPool.Get().([]byte)
-	fe := flatEncoder{buf: keyBuf}
+func (tx *Tx) encodeTableBoundaryKey(keyVal reflect.Value, tbl *Table, cutoffEls int) ([]byte, int, bool) {
+	keyBuf := acquireKeyBuffer()
+	tx.addIndexKeyBuf(keyBuf)
+	fe := flatEncoder{buf: keyBuf.data}
 	tbl.keyEnc.encodeInto(&fe, keyVal)
 
 	keyEls, isFull := fe.count(), true
@@ -888,31 +880,35 @@ func encodeTableBoundaryKey(keyVal reflect.Value, tbl *Table, cutoffEls int) ([]
 	}
 
 	if isFull {
-		return fe.finalize(), keyEls, true
+		keyBuf.data = fe.finalize()
 	} else {
 		n := fe.prefixLen(keyEls)
-		return fe.buf[:n], keyEls, false
+		keyBuf.data = fe.buf[:n]
 	}
+	return keyBuf.data, keyEls, isFull
 }
 
-func encodeIndexFullKey(indexKeyVal, tableKeyVal reflect.Value, idx *Index) []byte {
-	tableKeyBuf := keyBytesPool.Get().([]byte)
+func (tx *Tx) encodeIndexFullKey(indexKeyVal, tableKeyVal reflect.Value, idx *Index) []byte {
+	tableKeyBuf := acquireKeyBuffer()
 	tbl := idx.Table()
-	tableKeyRaw := tbl.encodeKeyVal(tableKeyBuf, tableKeyVal, false)
-	defer keyBytesPool.Put(tableKeyBuf[:0])
+	tableKeyRaw := tbl.encodeKeyVal(tableKeyBuf.data, tableKeyVal, false)
+	defer releaseKeyBuffer(tableKeyBuf)
 
-	indexKeyBuf := keyBytesPool.Get().([]byte)
-	keyEnc := flatEncoder{buf: indexKeyBuf}
+	indexKeyBuf := acquireKeyBuffer()
+	tx.addIndexKeyBuf(indexKeyBuf)
+	keyEnc := flatEncoder{buf: indexKeyBuf.data}
 	idx.keyEnc.encodeInto(&keyEnc, indexKeyVal)
 	keyEnc.begin()
 	keyEnc.buf = appendRaw(keyEnc.buf, tableKeyRaw)
 
-	return keyEnc.finalize()
+	indexKeyBuf.data = keyEnc.finalize()
+	return indexKeyBuf.data
 }
 
-func encodeIndexBoundaryKey(keyVal reflect.Value, idx *Index, cutoffEls int, neverFinalize bool) ([]byte, int, bool) {
-	indexKeyBuf := keyBytesPool.Get().([]byte)
-	fe := flatEncoder{buf: indexKeyBuf}
+func (tx *Tx) encodeIndexBoundaryKey(keyVal reflect.Value, idx *Index, cutoffEls int, neverFinalize bool) ([]byte, int, bool) {
+	indexKeyBuf := acquireKeyBuffer()
+	tx.addIndexKeyBuf(indexKeyBuf)
+	fe := flatEncoder{buf: indexKeyBuf.data}
 	idx.keyEnc.encodeInto(&fe, keyVal)
 
 	keyEls, isFull := fe.count(), true
@@ -920,18 +916,18 @@ func encodeIndexBoundaryKey(keyVal reflect.Value, idx *Index, cutoffEls int, nev
 		keyEls, isFull = cutoffEls, false
 	}
 
+	indexKeyBuf.data = fe.buf
 	if idx.isUnique && isFull {
 		if neverFinalize {
-			return fe.buf, keyEls, false
+			isFull = false
 		} else {
-			return fe.finalize(), keyEls, true
+			indexKeyBuf.data = fe.finalize()
 		}
-	} else if isFull {
-		return fe.buf, keyEls, true
-	} else {
+	} else if !isFull {
 		n := fe.prefixLen(keyEls)
-		return fe.buf[:n], keyEls, false
+		indexKeyBuf.data = fe.buf[:n]
 	}
+	return indexKeyBuf.data, keyEls, isFull
 }
 
 type indexScanStrategy interface {

@@ -37,9 +37,9 @@ func (tx *Tx) DeleteByKey(tbl *Table, key any) bool {
 
 func (tx *Tx) DeleteByKeyVal(tbl *Table, keyVal reflect.Value) bool {
 	keyVal = tbl.ensureCorrectKeyType(keyVal)
-	keyBuf := keyBytesPool.Get().([]byte)
-	keyRaw := tbl.encodeKeyVal(keyBuf, keyVal, false)
-	defer keyBytesPool.Put(keyBuf[:0])
+	keyBuf := acquireKeyBuffer()
+	keyRaw := tbl.encodeKeyVal(keyBuf.data, keyVal, false)
+	defer releaseKeyBuffer(keyBuf)
 	ok := tx.deleteByKeyRaw(tbl, keyRaw, keyVal)
 	if tx.isVerboseLoggingEnabled() {
 		if ok {
