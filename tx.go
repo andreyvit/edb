@@ -37,6 +37,7 @@ type Tx struct {
 	memo map[string]any
 
 	indexKeyBufs        []*byteBuffer
+	indexKeyBufBytes    int
 	valueBufs           []*byteBuffer
 	indexValueBufs      []*byteBuffer
 	indexKeyBufsOwner   *byteBufferList
@@ -347,6 +348,7 @@ func (tx *Tx) addValueBuf(buf *byteBuffer) {
 	}
 	tx.valueBufs = append(tx.valueBufs, buf)
 }
+
 func (tx *Tx) addIndexValueBuf(buf *byteBuffer) {
 	if !tx.db.reuseTxBuffers {
 		return
@@ -358,9 +360,10 @@ func (tx *Tx) addIndexValueBuf(buf *byteBuffer) {
 	tx.indexValueBufs = append(tx.indexValueBufs, buf)
 }
 func (tx *Tx) addIndexKeyBuf(buf *byteBuffer) {
-	if !tx.db.reuseTxBuffers {
+	if !tx.db.reuseTxBuffers || cap(buf.data) > keyBufferCapacityLimit || cap(buf.data) > txIndexKeyBufferBytesLimit-tx.indexKeyBufBytes {
 		return
 	}
+	tx.indexKeyBufBytes += cap(buf.data)
 	if tx.indexKeyBufs == nil {
 		tx.indexKeyBufsOwner = acquireByteBufferList()
 		tx.indexKeyBufs = tx.indexKeyBufsOwner.data
@@ -420,6 +423,7 @@ func (tx *Tx) release() {
 		releaseByteBufferList(tx.indexKeyBufsOwner)
 		tx.indexKeyBufs = nil
 		tx.indexKeyBufsOwner = nil
+		tx.indexKeyBufBytes = 0
 	}
 }
 

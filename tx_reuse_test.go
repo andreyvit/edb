@@ -218,8 +218,12 @@ func TestTxReuseBuffersGrowthAndNoopWrites(t *testing.T) {
 			if !Put(tx, row) {
 				t.Fatalf("round %d row %d was not modified", round, i)
 			}
+			values, indexValues := len(tx.valueBufs), len(tx.indexValueBufs)
 			if Put(tx, row) {
 				t.Fatalf("round %d row %d no-op changed data", round, i)
+			}
+			if len(tx.valueBufs) != values || len(tx.indexValueBufs) != indexValues {
+				t.Fatalf("round %d row %d no-op retained buffers", round, i)
 			}
 			cursors[i] = ExactIndexScan[txReuseGrowthRow](tx, index, row.Entries[0])
 		}
@@ -304,8 +308,8 @@ func TestTxReuseBuffersEncodingFailure(t *testing.T) {
 	if !errors.As(err, &panicErr) || !strings.Contains(err.Error(), "chan int") {
 		t.Fatalf("error = %v, wanted encoding panic", err)
 	}
-	if values == 0 || indexValues == 0 {
-		t.Fatalf("encoding panic did not track buffers: values=%d indexValues=%d", values, indexValues)
+	if values != 0 || indexValues != 0 {
+		t.Fatalf("encoding panic retained buffers: values=%d indexValues=%d", values, indexValues)
 	}
 	assertTxReuseReleased(t, captured)
 	row := &txReuseEncodingRow{Key: 2, Value: "valid"}

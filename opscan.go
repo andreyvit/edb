@@ -870,7 +870,6 @@ func rawSuccessor(raw []byte) ([]byte, bool) {
 
 func (tx *Tx) encodeTableBoundaryKey(keyVal reflect.Value, tbl *Table, cutoffEls int) ([]byte, int, bool) {
 	keyBuf := acquireKeyBuffer()
-	tx.addIndexKeyBuf(keyBuf)
 	fe := flatEncoder{buf: keyBuf.data}
 	tbl.keyEnc.encodeInto(&fe, keyVal)
 
@@ -885,6 +884,7 @@ func (tx *Tx) encodeTableBoundaryKey(keyVal reflect.Value, tbl *Table, cutoffEls
 		n := fe.prefixLen(keyEls)
 		keyBuf.data = fe.buf[:n]
 	}
+	tx.addIndexKeyBuf(keyBuf)
 	return keyBuf.data, keyEls, isFull
 }
 
@@ -896,19 +896,18 @@ func (tx *Tx) encodeIndexFullKey(indexKeyVal, tableKeyVal reflect.Value, idx *In
 	defer releaseKeyBuffer(tableKeyBuf)
 
 	indexKeyBuf := acquireKeyBuffer()
-	tx.addIndexKeyBuf(indexKeyBuf)
 	keyEnc := flatEncoder{buf: indexKeyBuf.data}
 	idx.keyEnc.encodeInto(&keyEnc, indexKeyVal)
 	keyEnc.begin()
 	keyEnc.buf = appendRaw(keyEnc.buf, tableKeyRaw)
 
 	indexKeyBuf.data = keyEnc.finalize()
+	tx.addIndexKeyBuf(indexKeyBuf)
 	return indexKeyBuf.data
 }
 
 func (tx *Tx) encodeIndexBoundaryKey(keyVal reflect.Value, idx *Index, cutoffEls int, neverFinalize bool) ([]byte, int, bool) {
 	indexKeyBuf := acquireKeyBuffer()
-	tx.addIndexKeyBuf(indexKeyBuf)
 	fe := flatEncoder{buf: indexKeyBuf.data}
 	idx.keyEnc.encodeInto(&fe, keyVal)
 
@@ -928,6 +927,7 @@ func (tx *Tx) encodeIndexBoundaryKey(keyVal reflect.Value, idx *Index, cutoffEls
 		n := fe.prefixLen(keyEls)
 		indexKeyBuf.data = fe.buf[:n]
 	}
+	tx.addIndexKeyBuf(indexKeyBuf)
 	return indexKeyBuf.data, keyEls, isFull
 }
 

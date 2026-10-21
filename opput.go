@@ -41,7 +41,7 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 
 	ts := tx.db.tableState(tbl)
 	ib := makeIndexBuilder(ts, keyRaw)
-	defer ib.release(tx)
+	defer ib.release()
 	tbl.indexer(rowVal.Interface(), &ib)
 	ib.finalize()
 
@@ -59,7 +59,11 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 	newSchemaVer, newModCount := oldSchemaVer, oldModCount
 
 	valueBuf := acquireValueBuffer()
-	tx.addValueBuf(valueBuf)
+	defer func() {
+		if valueBuf != nil {
+			releaseValueBuffer(valueBuf)
+		}
+	}()
 	valueRaw := reserveValueHeader(valueBuf.data)
 	dataOff := len(valueRaw)
 	valueRaw = tbl.encodeRowVal(valueRaw, rowVal)
@@ -84,6 +88,8 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 		newModCount++
 	}
 	valueRaw = putValueHeader(valueRaw, vfDefault, newSchemaVer, newModCount, indexOff)
+	tx.addValueBuf(valueBuf)
+	valueBuf = nil
 	tx.markWritten()
 
 	// log.Printf("PUT into %s: %x => %x (%s)", tbl.Name(), keyRaw, valueRaw, valueRaw)
@@ -100,6 +106,7 @@ func (tx *Tx) PutVal(tbl *Table, rowVal reflect.Value) (oldMeta, newMeta ValueMe
 	}
 
 	// put new index entries (do it even if isIndexKeySetUnchanged, in cases values have changed)
+	ib.transferValuesTo(tx)
 	var idx *Index
 	var idxBuck storageBucket
 	for _, ir := range ib.rows {

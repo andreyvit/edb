@@ -9,8 +9,11 @@ const (
 	valueBufferCapacityInitial      = 1024
 	indexValueBufferCapacityInitial = 128
 
-	keyBufferCapacityLimit   = 32 * 1024
-	valueBufferCapacityLimit = 64 * 1024
+	keyBufferCapacityLimit       = 32 * 1024
+	valueBufferCapacityLimit     = 64 * 1024
+	byteBufferListCapacityLimit  = 4096
+	indexRowsBufferCapacityLimit = 4096
+	txIndexKeyBufferBytesLimit   = 64 * 1024
 )
 
 type indexRowBuffers struct {
@@ -37,6 +40,9 @@ func acquireIndexRowsBuffer() *indexRowsBuffer {
 }
 
 func releaseIndexRowsBuffer(buf *indexRowsBuffer) {
+	if cap(buf.data) > indexRowsBufferCapacityLimit || cap(buf.buffers) > indexRowsBufferCapacityLimit {
+		return
+	}
 	clear(buf.data[:min(len(buf.buffers), cap(buf.data))])
 	clear(buf.buffers)
 	buf.buffers = buf.buffers[:0]
@@ -58,6 +64,9 @@ func acquireByteBufferList() *byteBufferList {
 }
 
 func releaseByteBufferList(buf *byteBufferList) {
+	if cap(buf.data) > byteBufferListCapacityLimit {
+		return
+	}
 	clear(buf.data)
 	buf.data = buf.data[:0]
 	byteBufferListPool.Put(buf)

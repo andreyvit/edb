@@ -131,9 +131,9 @@ func (c *integrityChecker) checkTableRow(tbl *Table, keyRaw, valueRaw []byte, ex
 
 	ts := c.tx.db.tableState(tbl)
 	ib := makeIndexBuilder(ts, keyRaw)
+	defer ib.release()
 	tbl.indexer(rowVal.Interface(), &ib)
 	ib.finalize()
-	defer ib.release(c.tx)
 
 	wantedIndexData := appendIndexKeys(nil, ib.rows)
 	if !bytes.Equal(vle.Index, wantedIndexData) {

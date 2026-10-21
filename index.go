@@ -75,11 +75,21 @@ func (b *IndexBuilder) Add(idx *Index, value any) *IndexRow {
 	return &b.rows[len(b.rows)-1]
 }
 
-func (b *IndexBuilder) release(tx *Tx) {
+func (b *IndexBuilder) transferValuesTo(tx *Tx) {
+	for i := range b.rowsBuf.buffers {
+		buffers := &b.rowsBuf.buffers[i]
+		if buffers.value != nil {
+			tx.addIndexValueBuf(buffers.value)
+			buffers.value = nil
+		}
+	}
+}
+
+func (b *IndexBuilder) release() {
 	for _, buffers := range b.rowsBuf.buffers {
 		releaseKeyBuffer(buffers.key)
 		if buffers.value != nil {
-			tx.addIndexValueBuf(buffers.value)
+			releaseIndexValueBuffer(buffers.value)
 		}
 	}
 	releaseIndexRowsBuffer(b.rowsBuf)
