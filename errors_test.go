@@ -1,6 +1,7 @@
 package edb
 
 import (
+	"bytes"
 	"errors"
 	"strings"
 	"testing"
@@ -36,6 +37,41 @@ func TestDataError_ErrorAndUnwrap(t *testing.T) {
 	})
 }
 
+func TestDataError_OwnsData(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		data []byte
+	}{
+		{name: "nil"},
+		{name: "empty", data: []byte{}},
+		{name: "binary", data: []byte{0x00, 0x7f, 0xff}},
+		{name: "large", data: bytes.Repeat([]byte{0x01, 0x00, 0xff}, 80)},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			input := bytes.Clone(tc.data)
+			inner := errors.New("inner")
+			err := dataErrf(input, 0, inner, "retained data")
+			var dataErr *DataError
+			if !errors.As(err, &dataErr) {
+				t.Fatalf("error type = %T, want *DataError", err)
+			}
+			text := err.Error()
+			for i := range input {
+				input[i] = 0xa5
+			}
+			if !bytes.Equal(dataErr.Data, tc.data) || (dataErr.Data == nil) != (tc.data == nil) {
+				t.Fatalf("retained data = %#v, want %#v", dataErr.Data, tc.data)
+			}
+			if got := err.Error(); got != text {
+				t.Fatalf("retained error = %q, want %q", got, text)
+			}
+			if !errors.Is(err, inner) {
+				t.Fatal("retained error lost its cause")
+			}
+		})
+	}
+}
+
 func TestTableError_ErrorAndUnwrap(t *testing.T) {
 	inner := errors.New("inner")
 	err := tableErrf(usersTable, usersByEmail, []byte("k"), inner, "oops %d", 1)
@@ -56,6 +92,54 @@ func TestTableError_ErrorAndUnwrap(t *testing.T) {
 	s = err.Error()
 	if !strings.Contains(s, "kubets") || !strings.Contains(s, "\"k\"") || !strings.Contains(s, "oops") {
 		t.Fatalf("kvtableErrf Error() = %q, wanted kubets/key/msg", s)
+	}
+}
+
+func TestTableError_OwnsKey(t *testing.T) {
+	for _, constructor := range []struct {
+		name      string
+		makeError func([]byte, error) error
+	}{
+		{"table", func(key []byte, inner error) error {
+			return tableErrf(usersTable, usersByEmail, key, inner, "retained key")
+		}},
+		{"kv", func(key []byte, inner error) error {
+			return kvtableErrf(kubets, nil, key, inner, "retained key")
+		}},
+	} {
+		t.Run(constructor.name, func(t *testing.T) {
+			for _, tc := range []struct {
+				name string
+				key  []byte
+			}{
+				{name: "nil"},
+				{name: "empty", key: []byte{}},
+				{name: "binary", key: []byte{0x00, 0x22, 0x7f, 0xff}},
+			} {
+				t.Run(tc.name, func(t *testing.T) {
+					input := bytes.Clone(tc.key)
+					inner := errors.New("inner")
+					err := constructor.makeError(input, inner)
+					var tableErr *TableError
+					if !errors.As(err, &tableErr) {
+						t.Fatalf("error type = %T, want *TableError", err)
+					}
+					text := err.Error()
+					for i := range input {
+						input[i] = 0xa5
+					}
+					if !bytes.Equal(tableErr.Key, tc.key) || (tableErr.Key == nil) != (tc.key == nil) {
+						t.Fatalf("retained key = %#v, want %#v", tableErr.Key, tc.key)
+					}
+					if got := err.Error(); got != text {
+						t.Fatalf("retained error = %q, want %q", got, text)
+					}
+					if !errors.Is(err, inner) {
+						t.Fatal("retained error lost its cause")
+					}
+				})
+			}
+		})
 	}
 }
 
