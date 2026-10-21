@@ -155,9 +155,7 @@ func NewIntType[T IntegerValue](name string, formatter func(fc *FmtContext, v T)
 	return NewScalarType[T](name, func(fc *FmtContext, v uint64) string {
 		return formatter(fc, conv.ScalarToValue(v))
 	}, func(lhs, rhs uint64) uint64 {
-		return uint64(
-			int64(conv.ScalarToValue(lhs)) -
-				int64(conv.ScalarToValue(rhs)))
+		return uint64(int64(conv.ScalarToValue(lhs)) - int64(conv.ScalarToValue(rhs)))
 	}, func(lhs, rhs uint64) uint64 {
 		return conv.ValueToScalar(
 			T(int64(conv.ScalarToValue(lhs))) +

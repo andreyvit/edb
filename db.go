@@ -202,12 +202,16 @@ func (db *DB) doClose() {
 		// Write freelist to make startup fast.
 		db.bdb.NoFreelistSync = false
 		start := time.Now()
-		db.bdb.Update(func(*bbolt.Tx) error {
+		err := db.bdb.Update(func(*bbolt.Tx) error {
 			return nil
 		})
 		if db.logf != nil {
 			elapsed := time.Since(start)
-			db.logf("db: bbolt freelist written in %d ms", elapsed.Milliseconds())
+			if err != nil {
+				db.logf("db: writing bbolt freelist failed: %v", err)
+			} else {
+				db.logf("db: bbolt freelist written in %d ms", elapsed.Milliseconds())
+			}
 		}
 	}
 

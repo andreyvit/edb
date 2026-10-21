@@ -2,6 +2,7 @@ package kvo
 
 import (
 	"iter"
+	"math"
 	"sort"
 )
 
@@ -116,6 +117,9 @@ func (rec *MutableRecord) Pack() ImmutableRecordData {
 	}
 	origN := orig.ObjectCount()
 	n := len(rec.objects)
+	if uint64(n) > math.MaxUint32 || n > math.MaxInt/8-1 {
+		panic("record object count out of bounds")
+	}
 	totalCount := 1 + n
 	for i, o := range rec.objects {
 		if o == nil {
@@ -123,10 +127,17 @@ func (rec *MutableRecord) Pack() ImmutableRecordData {
 				panic("unreachable")
 			}
 			_, _, size := unpackKindOffsetSize(orig.objectOffsetSizeUnchecked(i))
-			totalCount += int((size + 7) / 8)
+			words := objectWordCount(size)
+			if words > math.MaxInt/8-totalCount {
+				panic("record size out of bounds")
+			}
+			totalCount += words
 		} else if o == tombstone {
 			// skip
 		} else {
+			if len(o.data) > math.MaxInt/8-totalCount || len(o.orig) > math.MaxInt/8-totalCount-len(o.data) {
+				panic("record size out of bounds")
+			}
 			totalCount += len(o.data) + len(o.orig) // overestimate
 		}
 	}
@@ -137,14 +148,14 @@ func (rec *MutableRecord) Pack() ImmutableRecordData {
 	for i, o := range rec.objects {
 		if o == nil {
 			kind, off, size := unpackKindOffsetSize(orig.objectOffsetSizeUnchecked(i))
-			res[1+i] = packKindOffsetSize(kind, uint32(next), size)
-			next += copy(res[next:], orig[off:off+(size+7)/8])
+			res[1+i] = packKindOffsetSize(kind, objectOffset(next), size)
+			next += copy(res[next:], orig[int(off):int(off)+objectWordCount(size)])
 		} else if o == tombstone {
 			// skip
 		} else {
 			switch o.kind {
 			case objectKindString, objectKindRaw:
-				res[1+i] = packKindOffsetSize(o.kind, uint32(next), o.size)
+				res[1+i] = packKindOffsetSize(o.kind, objectOffset(next), o.size)
 				next += copy(res[next:], o.data)
 			case objectKindMap:
 				reserved := res[next : next+len(o.data)+len(o.orig)]
@@ -193,15 +204,29 @@ func (rec *MutableRecord) Pack() ImmutableRecordData {
 
 				sort.Sort(keysThenValues(reserved[:2*totalKeyCount]))
 
-				res[1+i] = packKindOffsetSize(o.kind, uint32(next), uint32(totalKeyCount*16))
+				if totalKeyCount > math.MaxUint32/16 {
+					panic("map size out of bounds")
+				}
+				res[1+i] = packKindOffsetSize(o.kind, objectOffset(next), uint32(totalKeyCount)*16)
 				next += 2 * totalKeyCount
 			default:
-				res[1+i] = packKindOffsetSize(o.kind, uint32(next), uint32(len(o.data)*8))
+				words := len(o.data)
+				if words > math.MaxUint32/8 {
+					panic("object size out of bounds")
+				}
+				res[1+i] = packKindOffsetSize(o.kind, objectOffset(next), uint32(words)*8)
 				next += copy(res[next:], o.data)
 			}
 		}
 	}
 	return res[:next]
+}
+
+func objectOffset(next int) uint32 {
+	if next > 0x0FFF_FFFF {
+		panic("object offset out of bounds")
+	}
+	return uint32(next)
 }
 
 // MutableMap allows mutating a map within a MutableRecord.
@@ -246,7 +271,7 @@ func (m MutableMap) GetAnyMap(key uint64) AnyMap {
 	if value == 0 {
 		return ImmutableMap{valueType, m.rec.original, nil}
 	} else {
-		updated, orig := m.rec.getObject(int(value))
+		updated, orig := m.rec.getObject(objectIndex(value))
 		if updated != nil {
 			return MutableMap{m.rec, updated, valueType}
 		} else {
@@ -280,7 +305,7 @@ func (m MutableMap) UpdateMap(key uint64) MutableMap {
 		m.obj.MapSet(key, child.obj.Ref())
 		return child
 	} else {
-		child, isNew := m.rec.lookupObject(int(value))
+		child, isNew := m.rec.lookupObject(objectIndex(value))
 		if isNew {
 			if m.obj.MapSet(key, child.Ref()) {
 				m.rec.markModified()

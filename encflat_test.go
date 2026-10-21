@@ -43,8 +43,6 @@ func TestMarshalFlat(t *testing.T) {
 				decoded := decodedVal.Elem().Interface()
 				if !reflect.DeepEqual(decoded, test.input) {
 					t.Errorf("** UnmarshalFlat(%s) = %v, wanted %v", aStr, decoded, test.input)
-				} else {
-					// t.Logf("✓ UnmarshalFlat(%s) = %v", aStr, decoded)
 				}
 			}
 		}

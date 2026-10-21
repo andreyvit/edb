@@ -14,8 +14,16 @@ func TestOptionsHas(t *testing.T) {
 
 func TestMmapAndMunmap(t *testing.T) {
 	f := must(os.CreateTemp("", "mmap_test_*"))
-	defer os.Remove(f.Name())
-	defer f.Close()
+	defer func() {
+		if err := os.Remove(f.Name()); err != nil {
+			t.Errorf("Remove: %v", err)
+		}
+	}()
+	defer func() {
+		if err := f.Close(); err != nil {
+			t.Errorf("Close: %v", err)
+		}
+	}()
 
 	const size = 4096
 	if err := f.Truncate(size); err != nil {
@@ -40,8 +48,16 @@ func TestMmapAndMunmap(t *testing.T) {
 
 func TestMmap_PanicsOnNonZeroOffset(t *testing.T) {
 	f := must(os.CreateTemp("", "mmap_test_*"))
-	defer os.Remove(f.Name())
-	defer f.Close()
+	defer func() {
+		if err := os.Remove(f.Name()); err != nil {
+			t.Errorf("Remove: %v", err)
+		}
+	}()
+	defer func() {
+		if err := f.Close(); err != nil {
+			t.Errorf("Close: %v", err)
+		}
+	}()
 
 	defer func() {
 		if recover() == nil {
@@ -57,4 +73,3 @@ func must[T any](v T, err error) T {
 	}
 	return v
 }
-

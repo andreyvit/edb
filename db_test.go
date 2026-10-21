@@ -261,6 +261,7 @@ func TestDBCompositeKey(t *testing.T) {
 		isempty(t, All(IndexScan[Widget](tx, widgetsByCD, ExactScan(CD{6, 0}))))
 
 		rows = All(IndexScan[Widget](tx, widgetsByCD, ExactScan(CD{3, 0}).Prefix(1)))
+		deepEqual(t, rows, []*Widget{u4, u3, u5, u1})
 		isempty(t, All(IndexScan[Widget](tx, widgetsByCD, ExactScan(CD{2, 0}).Prefix(1))))
 
 		// AB
@@ -401,7 +402,9 @@ func setup(t testing.TB, schema *Schema) *DB {
 	} else {
 		dbFile := must(os.CreateTemp("", "db_test_*.db"))
 		t.Logf("DB: %s", dbFile.Name())
-		dbFile.Close()
+		if err := dbFile.Close(); err != nil {
+			t.Fatalf("Close: %v", err)
+		}
 		fn = dbFile.Name()
 	}
 

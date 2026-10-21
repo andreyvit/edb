@@ -1,0 +1,126 @@
+version: "2"
+
+run:
+  timeout: 5m
+  relative-path-mode: gomod
+  modules-download-mode: readonly
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+linters:
+  default: none
+  enable:
+    - bidichk
+    - bodyclose
+    - durationcheck
+    - errcheck
+    - errchkjson
+    - errorlint
+    - exhaustive
+    - gosec
+    - govet
+    - ineffassign
+    - loggercheck
+    - makezero
+    - nilerr
+    - rowserrcheck
+    - spancheck
+    - sqlclosecheck
+    - staticcheck
+    - tparallel
+  settings:
+    bodyclose:
+      check-consumption: true
+    errcheck:
+      check-type-assertions: false
+      check-blank: false
+      disable-default-exclusions: false
+    errchkjson:
+      check-error-free-encoding: true
+    exhaustive:
+      check:
+        - switch
+        - mapliteral
+    gosec:
+      config:
+        global:
+          nosec: false
+          show-ignored: false
+          audit: false
+    govet:
+      disable:
+        - inline
+      enable:
+        - nilness
+        - unusedwrite
+    ineffassign:
+      check-escaping-errors: true
+    loggercheck:
+      require-string-key: true
+    makezero:
+      always: false
+    staticcheck:
+      checks:
+        - SA*
+        - "-SA6002"
+  exclusions:
+    generated: strict
+    rules:
+      - linters: ["gosec"]
+        path: "^storage_bolt\\.go$"
+        text: "^G103: Use of unsafe calls should be audited$"
+        source: '^\s*return unsafe\.Slice\(unsafe\.StringData\(s\), len\(s\)\)\s*$'
+      - linters: ["exhaustive"]
+        path: "^encflat\\.go$"
+        text: "^missing cases in expression switch: reflect\\."
+        source: "^\\s*(switch typ\\.Kind\\(\\) \\{)\\s*$"
+      - linters: ["gosec"]
+        path: "^encflat\\.go$"
+        text: "^G115: integer overflow conversion uint(16|32|64) -> byte$"
+        source: "^\\s*(buf\\[off\\+1\\] = byte\\(v >> 48\\)|buf\\[off\\+2\\] = byte\\(v >> 40\\)|buf\\[off\\+3\\] = byte\\(v >> 32\\)|buf\\[off\\+4\\] = byte\\(v >> 24\\)|buf\\[off\\+5\\] = byte\\(v >> 16\\)|buf\\[off\\+6\\] = byte\\(v >> 8\\)|buf\\[off\\+7\\] = byte\\(v\\)|buf\\[off\\+1\\] = byte\\(v >> 16\\)|buf\\[off\\+2\\] = byte\\(v >> 8\\)|buf\\[off\\+3\\] = byte\\(v\\)|buf\\[off\\+1\\] = byte\\(v\\))\\s*$"
+      - linters: ["gosec"]
+        path: "^encflat\\.go$"
+        text: "^G115: integer overflow conversion (int64 -> uint64|uint64 -> int64)$"
+        source: "^\\s*(fe\\.buf = appendUint64\\(fe\\.buf, uint64\\(value\\.Unix\\(\\)\\)\\)|v\\.Set\\(reflect\\.ValueOf\\(time\\.Unix\\(int64\\(value\\), 0\\)\\)\\)|fe\\.buf = appendUint64\\(fe\\.buf, uint64\\(v\\.Int\\(\\)\\)\\)|value := int64\\(binary\\.BigEndian\\.Uint64\\(b\\)\\)|return appendUint64\\(buf, uint64\\(v\\)\\), nil)\\s*$"
+      - linters: ["gosec"]
+        path: "^encflat\\.go$"
+        text: "^G602: slice index out of range$"
+        source: "^\\s*(err = fc\\.Decode\\(tup\\[i\\], val\\.Elem\\(\\)\\)|result\\[i\\], err = fc\\.RawStringer\\(tup\\[i\\]\\)|err := fc\\.Parser\\(strs\\[i\\], val\\)|return nil, fmt\\.Errorf\\(\"invalid component %d %q: %w\", i, strs\\[i\\], err\\)|fe\\.buf, err = fc\\.RawParser\\(fe\\.buf, strs\\[i\\]\\))\\s*$"
+      - linters: ["gosec"]
+        path: "^encvalue\\.go$"
+        text: "^G115: integer overflow conversion int -> uint64$"
+        source: "^\\s*(n = binary\\.PutUvarint\\(buf\\[off:\\], uint64\\((dataSize|indexSize)\\)\\))\\s*$"
+      - linters: ["gosec"]
+        path: "^kvo/encoding\\.go$"
+        text: "^G115: integer overflow conversion uint64 -> uint32$"
+        source: "^\\s*(wh, wl := uint32\\(w>>32\\), uint32\\(w\\))\\s*$"
+      - linters: ["gosec"]
+        path: "^kvo/immutable\\.go$"
+        text: "^G103: Use of unsafe calls should be audited$"
+        source: "^\\s*(if uintptr\\(unsafe\\.Pointer\\(\\&data\\[0\\]\\)\\)%unsafe\\.Alignof\\(uint64\\(0\\)\\) != 0 \\{|return ImmutableRecordData\\(unsafe\\.Slice\\(\\(\\*uint64\\)\\(unsafe\\.Pointer\\(\\&data\\[0\\]\\)\\), len\\(data\\)/8\\)\\)|return unsafe\\.Slice\\(\\(\\*byte\\)\\(unsafe\\.Pointer\\(\\&r\\[0\\]\\)\\), len\\(r\\)\\*8\\)|return unsafe\\.Slice\\(\\(\\*byte\\)\\(unsafe\\.Pointer\\(\\&r\\[i\\]\\)\\), n\\))\\s*$"
+      - linters: ["gosec"]
+        path: "^kvo/scalartime\\.go$"
+        text: "^G115: integer overflow conversion uint64 -> int64$"
+        source: "^\\s*(return time\\.UnixMicro\\(int64\\(u\\) \\- TimeOffsetMicros\\))\\s*$"
+      - linters: ["gosec"]
+        path: "^kvo/type\\.go$"
+        text: "^G115: integer overflow conversion (uint64 -> int64|int64 -> uint64)$"
+        source: "^\\s*(return uint64\\(int64\\(lhs\\) \\* rhs\\) // TODO|return uint64\\(int64\\(conv\\.ScalarToValue\\(lhs\\)\\) \\- int64\\(conv\\.ScalarToValue\\(rhs\\)\\)\\)|return sign\\(int64\\(delta\\)\\)|return uint64\\(int64\\(\\(newValue\\)\\) \\- int64\\(\\(oldValue\\)\\)\\)|return uint64\\(int64\\(\\(value\\)\\) \\+ int64\\(delta\\)\\))\\s*$"
+      - linters: ["gosec"]
+        path: "^opkv_index_test\\.go$"
+        text: "^G602: slice index out of range$"
+        source: "^\\s*(r\\.Set\\(kvs\\[i\\], kvs\\[i\\+1\\]\\))\\s*$"
+      - linters: ["gosec"]
+        path: "^enctuple\\.go$"
+        text: "^G115: integer overflow conversion int -> uint(32|64)$"
+        source: "^\\s*(if uint64\\((v|count)\\) > math\\.MaxUint32 \\{|buf = appendRuvarint\\(buf, uint32\\((v|count)\\)\\))\\s*$"
+      - linters: ["gosec"]
+        path: "^kvo/mutable\\.go$"
+        text: "^G115: integer overflow conversion int -> uint32$"
+        source: "^\\s*return uint32\\(next\\)\\s*$"
+      - linters: ["gosec"]
+        path: "^kvo/mutable\\.go$"
+        text: "^G115: integer overflow conversion int -> uint64$"
+        source: "^\\s*return uint64\\(o\\.i\\)\\s*$"

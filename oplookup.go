@@ -81,11 +81,7 @@ func (tx *Tx) LookupVal(idx *Index, indexKeyVal reflect.Value) (reflect.Value, V
 		panic(fmt.Errorf("data error in %s: index entry points to missing record %x", idx.FullName(), keyRaw))
 	}
 	if tx.isVerboseLoggingEnabled() {
-		if keyRaw != nil {
-			tx.db.logf("db: LOOKUP %s/%v => %v", idx.FullName(), loggableVal(indexKeyVal), loggableRowVal(idx.table, row))
-		} else {
-			tx.db.logf("db: LOOKUP.NOTFOUND %s/%v", idx.FullName(), loggableVal(indexKeyVal))
-		}
+		tx.db.logf("db: LOOKUP %s/%v => %v", idx.FullName(), loggableVal(indexKeyVal), loggableRowVal(idx.table, row))
 	}
 	return row, rowMeta
 }

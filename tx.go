@@ -442,5 +442,9 @@ func Memo[T any](txish Txish, key string, f func() (T, error)) (T, error) {
 	v, err := tx.Memo(key, func() (any, error) {
 		return f()
 	})
+	if v == nil {
+		var zero T
+		return zero, err
+	}
 	return v.(T), err
 }

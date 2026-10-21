@@ -3,6 +3,7 @@
 package mmap
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"syscall"
@@ -28,15 +29,15 @@ func mmap(f *os.File, size int, opt Options) ([]byte, error) {
 
 	if opt.Has(SequentialAccess) {
 		err = unix.Madvise(b, syscall.MADV_SEQUENTIAL)
-		if err != nil && err != syscall.ENOSYS {
+		if err != nil && !errors.Is(err, syscall.ENOSYS) {
 			// Ignore not implemented error in kernel because it still works.
-			return nil, fmt.Errorf("madvise(MADV_SEQUENTIAL): %w", err)
+			return nil, errors.Join(fmt.Errorf("madvise(MADV_SEQUENTIAL): %w", err), unix.Munmap(b))
 		}
 	} else if opt.Has(RandomAccess) {
 		err = unix.Madvise(b, syscall.MADV_RANDOM)
-		if err != nil && err != syscall.ENOSYS {
+		if err != nil && !errors.Is(err, syscall.ENOSYS) {
 			// Ignore not implemented error in kernel because it still works.
-			return nil, fmt.Errorf("madvise(MADV_SEQUENTIAL): %w", err)
+			return nil, errors.Join(fmt.Errorf("madvise(MADV_RANDOM): %w", err), unix.Munmap(b))
 		}
 	}
 

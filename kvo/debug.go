@@ -58,6 +58,8 @@ func dump(buf *strings.Builder, fc *FmtContext, m AnyMap) {
 			buf.WriteString(vt.FormatValue(fc, v))
 		case ValueKindMap:
 			dump(buf, fc, m.GetAnyMap(k))
+		case ValueKindUnknown, ValueKindScalarData, ValueKindPIIData:
+			buf.WriteString("<unsupported>")
 		}
 	}
 	buf.WriteByte('}')

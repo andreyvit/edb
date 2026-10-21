@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -64,6 +65,10 @@ func decodeTuple(raw []byte) (tuple, error) {
 		return nil, nil
 	}
 
+	if uint64(c)-1 > uint64(len(raw)) || uint64(c) > uint64(math.MaxInt) {
+		return nil, fmt.Errorf("invalid tuple: component count %d exceeds available data", c)
+	}
+
 	lens := make([]uint32, c)
 	for i := int(c) - 2; i >= 0; i-- {
 		lens[i], raw = decodeRuvarint(raw)
@@ -78,16 +83,11 @@ func decodeTuple(raw []byte) (tuple, error) {
 		return nil, fmt.Errorf("invalid tuple: sum of explicit lens %d is greater than total data len %d", explicitLen, len(raw))
 	}
 
-	starts := make([]uint32, c+1)
-	for i := uint32(0); i < c-1; i++ {
-		starts[i+1] = starts[i] + lens[i]
-	}
-	starts[c] = uint32(len(raw))
-
 	tup := make(tuple, c)
-	for i := uint32(0); i < c; i++ {
-		tup[i] = raw[starts[i]:starts[i+1]]
+	for i := uint32(0); i < c-1; i++ {
+		tup[i], raw = raw[:lens[i]], raw[lens[i]:]
 	}
+	tup[c-1] = raw
 	return tup, nil
 }
 
@@ -130,9 +130,16 @@ func (tb *tupleEncoder) begin(buf []byte) {
 
 func (tb *tupleEncoder) finalize(buf []byte) []byte {
 	for _, v := range tb.lens {
+		if uint64(v) > math.MaxUint32 {
+			panic(fmt.Errorf("tuple component length out of range: %d", v))
+		}
 		buf = appendRuvarint(buf, uint32(v))
 	}
-	buf = appendRuvarint(buf, uint32(tb.count()))
+	count := tb.count()
+	if uint64(count) > math.MaxUint32 {
+		panic(fmt.Errorf("tuple component count out of range: %d", count))
+	}
+	buf = appendRuvarint(buf, uint32(count))
 	return buf
 }
 
@@ -168,8 +175,8 @@ func decodeRuvarint(buf []byte) (uint32, []byte) {
 	for i := 0; i < c; i++ {
 		vb[i] = buf[n-i-1]
 	}
-	v, vn := binary.Uvarint(vb[:])
-	if vn < 0 {
+	v, vn := binary.Uvarint(vb[:c])
+	if vn <= 0 || v > math.MaxUint32 {
 		panic(fmt.Errorf("invalid ruvarint in %x", buf))
 	}
 	return uint32(v), buf[:n-vn]

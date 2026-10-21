@@ -2,6 +2,7 @@ package edb
 
 import (
 	"bytes"
+	"errors"
 	"unsafe"
 
 	"go.etcd.io/bbolt"
@@ -77,8 +78,8 @@ func (tx *boltStorageTx) DeleteBucket(name, sub string) error {
 	if root == nil {
 		return ErrBucketNotFound
 	}
-	err := root.DeleteBucket(unsafeBytesFromString(sub))
-	if err == bbolt.ErrBucketNotFound {
+	err := root.DeleteBucket([]byte(sub))
+	if errors.Is(err, bbolt.ErrBucketNotFound) {
 		return ErrBucketNotFound
 	}
 	return err
@@ -88,7 +89,7 @@ func (tx *boltStorageTx) Commit() error { return tx.btx.Commit() }
 
 func (tx *boltStorageTx) Rollback() error {
 	err := tx.btx.Rollback()
-	if err == bbolt.ErrTxClosed {
+	if errors.Is(err, bbolt.ErrTxClosed) {
 		return nil
 	}
 	return err

@@ -1,6 +1,7 @@
 package edb
 
 import (
+	"errors"
 	"log"
 	"reflect"
 	"time"
@@ -157,7 +158,7 @@ func (ts *tableState) save(tx *Tx) {
 
 func dropDeletedIndex(tx *Tx, tbl *Table, name string) {
 	err := tx.stx.DeleteBucket(tbl.name, indexBucketName(name))
-	if err == ErrBucketNotFound {
+	if errors.Is(err, ErrBucketNotFound) {
 		return
 	}
 	ensure(err)

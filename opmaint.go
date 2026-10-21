@@ -1,5 +1,7 @@
 package edb
 
+import "errors"
+
 func (tx *Tx) Reindex(tbl *Table, idx *Index) {
 	ts := tx.db.tableState(tbl)
 
@@ -13,7 +15,7 @@ func (tx *Tx) Reindex(tbl *Table, idx *Index) {
 			continue
 		}
 		err := tx.stx.DeleteBucket(tbl.name, is.index.buck)
-		if err != nil && err != ErrBucketNotFound {
+		if err != nil && !errors.Is(err, ErrBucketNotFound) {
 			panic(err)
 		}
 		_ = must(tx.stx.CreateBucket(tbl.name, is.index.buck))

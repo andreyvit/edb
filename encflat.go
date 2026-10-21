@@ -223,14 +223,14 @@ func (enc *flatEncoding) tryTupleToStrings(tup tuple) ([]string, error) {
 		var err error
 		if fc.Stringer != nil {
 			val := reflect.New(fc.Type)
-			err = fc.Decode(tup[i], val.Elem())
 			if fc.Decode == nil {
 				return nil, fmt.Errorf("no Decode for %v", fc.Type)
 			}
+			err = fc.Decode(tup[i], val.Elem())
 			if err != nil {
 				return nil, fmt.Errorf("invalid component %d: %w - in %v", i, err, tup)
 			}
-			result[i] = fc.Stringer(val)
+			result[i] = fc.Stringer(val.Elem())
 		} else if fc.RawStringer != nil {
 			result[i], err = fc.RawStringer(tup[i])
 			if err != nil {
@@ -315,7 +315,16 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 		f(&flatComponent{
 			Type: typ,
 			Encode: func(fe *flatEncoder, v reflect.Value) {
-				data, err := v.Interface().(encoding.BinaryMarshaler).MarshalBinary()
+				marshaler, ok := v.Interface().(encoding.BinaryMarshaler)
+				if !ok {
+					if !v.CanAddr() {
+						addr := reflect.New(typ)
+						addr.Elem().Set(v)
+						v = addr.Elem()
+					}
+					marshaler = v.Addr().Interface().(encoding.BinaryMarshaler)
+				}
+				data, err := marshaler.MarshalBinary()
 				if err != nil {
 					panic(fmt.Errorf("%T.MarshalBinary: %w", v.Interface(), err))
 				}

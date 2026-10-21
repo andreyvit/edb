@@ -1129,8 +1129,6 @@ func (s *rangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx 
 					}
 					ik, iv = c.Prev()
 					continue
-				} else {
-					skippingInitial = false
 				}
 			} else {
 				if bytes.Equal(relevant, s.lower) {
@@ -1139,8 +1137,6 @@ func (s *rangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx 
 					}
 					ik, iv = c.Next()
 					continue
-				} else {
-					skippingInitial = false
 				}
 			}
 		}

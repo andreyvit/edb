@@ -150,13 +150,12 @@ func (vle *value) decode(data []byte, isMemento bool) error {
 		}
 		vle.Data = data
 	} else {
-		expectedSize := dataSize + indexSize
-		if uint64(len(data)) != expectedSize {
-			return dataErrf(orig, len(data)-len(orig), nil, "invalid value: got %d bytes for data+index, expected %d bytes", len(data), expectedSize)
+		if dataSize > uint64(len(data)) || indexSize != uint64(len(data))-dataSize {
+			return dataErrf(orig, len(data)-len(orig), nil, "invalid value: data size %d and index size %d do not match remaining %d bytes", dataSize, indexSize, len(data))
 		}
 
 		vle.Data, data = data[:dataSize], data[dataSize:]
-		vle.Index, data = data[:indexSize], data[indexSize:]
+		vle.Index = data[:indexSize]
 	}
 	return nil
 }

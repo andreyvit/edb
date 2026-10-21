@@ -26,7 +26,9 @@ func TestDB_BoltSizeDescribeOpenTxnsAndSafeToQuit(t *testing.T) {
 
 	t.Run("bolt", func(t *testing.T) {
 		dbFile := must(os.CreateTemp("", "db_misc_*.db"))
-		dbFile.Close()
+		if err := dbFile.Close(); err != nil {
+			t.Fatalf("Close: %v", err)
+		}
 		db := must(Open(dbFile.Name(), basicSchema, Options{IsTesting: true}))
 
 		if db.Bolt() == nil {

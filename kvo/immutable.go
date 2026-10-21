@@ -3,6 +3,7 @@ package kvo
 import (
 	"fmt"
 	"iter"
+	"math"
 	"sort"
 	"unsafe"
 )
@@ -96,7 +97,7 @@ func (m ImmutableMap) GetMap(key uint64) ImmutableMap {
 	if raw == 0 {
 		return ImmutableMap{valueType, m.rec, nil}
 	} else {
-		return ImmutableMap{valueType, m.rec, m.rec.Object(int(raw))}
+		return ImmutableMap{valueType, m.rec, m.rec.Object(objectIndex(raw))}
 	}
 }
 func (m ImmutableMap) GetAnyMap(key uint64) AnyMap {
@@ -159,6 +160,9 @@ func (r ImmutableRecordData) HexString() string {
 }
 
 func (r ImmutableRecordData) Bytes() []byte {
+	if len(r) == 0 {
+		return nil
+	}
 	return unsafe.Slice((*byte)(unsafe.Pointer(&r[0])), len(r)*8)
 }
 
@@ -167,7 +171,7 @@ func (r ImmutableRecordData) Uints() []uint64 {
 }
 
 func (r ImmutableRecordData) bytes(i, n int) []byte {
-	if i+(n+7)/8 > len(r) {
+	if i < 0 || i >= len(r) || n < 0 || n/8+(n%8+7)/8 > len(r)-i {
 		panic("out of bounds")
 	}
 	return unsafe.Slice((*byte)(unsafe.Pointer(&r[i])), n)
@@ -176,10 +180,10 @@ func (r ImmutableRecordData) word(off int) uint64 {
 	return r[off]
 }
 func (r ImmutableRecordData) ObjectCount() int {
-	return int(r.word(0) & 0xFFFF_FFFF)
+	return objectIndex(r.word(0) & 0xFFFF_FFFF)
 }
 func (r ImmutableRecordData) objectOffsetSize(i int) uint64 {
-	if n := r.ObjectCount(); i > n {
+	if n := r.ObjectCount(); i < 0 || i >= n {
 		panic(fmt.Sprintf("object index out of bounds (i = %d, len = %d)", i, n))
 	}
 	return r.objectOffsetSizeUnchecked(i)
@@ -187,6 +191,17 @@ func (r ImmutableRecordData) objectOffsetSize(i int) uint64 {
 func (r ImmutableRecordData) objectOffsetSizeUnchecked(i int) uint64 {
 	return r.word(1 + i)
 }
+func objectIndex(ref uint64) int {
+	if ref > min(math.MaxInt, math.MaxUint32) {
+		panic("object index out of bounds")
+	}
+	return int(ref)
+}
+
+func objectWordCount(size uint32) int {
+	return int(size/8) + int((size%8+7)/8)
+}
+
 func (r ImmutableRecordData) Object(i int) ImmutableObjectData {
 	o, _, _ := r.object(i)
 	return o
@@ -200,7 +215,7 @@ func (r ImmutableRecordData) RootObject() ImmutableObjectData {
 func (r ImmutableRecordData) object(i int) (ImmutableObjectData, byte, uint32) {
 	kind, off, size := unpackKindOffsetSize(r.objectOffsetSize(i))
 	start := int(off)
-	end := start + int((size+7)/8)
+	end := start + objectWordCount(size)
 	return ImmutableObjectData(r[start:end]), kind, size
 }
 

@@ -17,7 +17,11 @@ func TestRawRangeCursor_BoundsPrefixAndReverse(t *testing.T) {
 	ensure(wtx.Commit())
 
 	rtx := must(s.BeginTx(false))
-	defer rtx.Rollback()
+	defer func() {
+		if err := rtx.Rollback(); err != nil {
+			t.Errorf("Rollback: %v", err)
+		}
+	}()
 	rbuck := nonNil(rtx.Bucket("b", ""))
 	logger := slog.Default()
 
@@ -66,7 +70,11 @@ func TestRawRangeCursor_PrefixMismatchPanics(t *testing.T) {
 	ensure(wtx.Commit())
 
 	rtx := must(s.BeginTx(false))
-	defer rtx.Rollback()
+	defer func() {
+		if err := rtx.Rollback(); err != nil {
+			t.Errorf("Rollback: %v", err)
+		}
+	}()
 	rbuck := nonNil(rtx.Bucket("b", ""))
 	logger := slog.Default()
 
@@ -84,4 +92,3 @@ func mustPut(t *testing.T, buck storageBucket, k, v []byte) {
 	t.Helper()
 	ensure(buck.Put(k, v))
 }
-
