@@ -1,7 +1,9 @@
 package kvo
 
 import (
+	"errors"
 	"fmt"
+	"reflect"
 )
 
 type Schema struct {
@@ -125,11 +127,12 @@ type ModelDefinition struct {
 }
 
 type Model struct {
-	schema     *Schema
-	code       uint64
-	name       string
-	props      []*PropInstance
-	entityType *EntityType
+	schema        *Schema
+	code          uint64
+	name          string
+	props         []*PropInstance
+	entityType    *EntityType
+	nativeStructs map[reflect.Type]*NativeStruct
 
 	densePropCount int
 	flexPropCount  int
@@ -139,6 +142,7 @@ type Model struct {
 }
 
 type PropInstance struct {
+	Flags    PropFlag
 	Prop     PropImpl
 	Dense    bool
 	Required bool
@@ -172,6 +176,7 @@ func NewModel(schema *Schema, entityType *EntityType, build func(b *ModelBuilder
 	build(&b)
 
 	model.fixedWords = 1 + model.densePropCount
+	model.initNativeStructs()
 
 	entityType.model = model
 
@@ -252,9 +257,20 @@ type PropFlag int
 
 func (PropFlag) markerIsPropOption() {}
 
+// ErrPropOption identifies an invalid property option, a schema declaration error.
+var ErrPropOption = errors.New("kvo: invalid property option")
+
 const (
 	PropDense PropFlag = 1 << iota
 	PropRequired
+	// Compact selects Compact storage for this child and its descendants.
+	Compact
+	// PresenceIsSignificant keeps an explicitly stored zero distinct from absence.
+	PresenceIsSignificant
+	// KeepDictionaryZeroValues retains zero-valued entries in this dictionary.
+	// It applies to string- and numeric-keyed Map properties, not to the
+	// presence of the property itself or to nested dictionaries in its values.
+	KeepDictionaryZeroValues
 )
 
 type LocalID uint64
@@ -271,16 +287,21 @@ func (b *ModelBuilder) Prop(propCode PropCode, opts ...any) {
 	for _, opt := range opts {
 		switch opt := opt.(type) {
 		case PropFlag:
-			switch opt {
-			case PropDense:
-				pi.Dense = true
-			case PropRequired:
-				pi.Required = true
+			if opt & ^(PropDense|PropRequired|Compact|PresenceIsSignificant|KeepDictionaryZeroValues) != 0 {
+				panic(fmt.Errorf("%w: unexpected prop flags %d", ErrPropOption, opt))
 			}
+			pi.Flags |= opt
+			pi.Dense = pi.Flags&PropDense != 0
+			pi.Required = pi.Flags&PropRequired != 0
 		case LocalID:
 			pi.LocalID = opt
 		default:
 			panic(fmt.Errorf("unexpected prop option %T", opt))
+		}
+	}
+	if pi.Flags&KeepDictionaryZeroValues != 0 {
+		if _, ok := prop.AnyType().(*MapType); !ok {
+			panic(fmt.Errorf("%w: %s: KeepDictionaryZeroValues requires a Map property", ErrPropOption, name))
 		}
 	}
 	b.model.props = append(b.model.props, pi)
@@ -303,3 +324,8 @@ func (b *ModelBuilder) Prop(propCode PropCode, opts ...any) {
 }
 
 // func NewScalarProp[T any](name string)
+
+// PropFlags returns the model-specific options for a declared property.
+func (model *Model) PropFlags(key PropCode) PropFlag {
+	return model.mustPropInstanceByCode(key).Flags
+}

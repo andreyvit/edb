@@ -2,6 +2,7 @@ package kvo
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 	"time"
 )
@@ -13,6 +14,7 @@ var lastTypeCode uint16 = 9 // 0..9 are reserved
 const (
 	typeCodeNone = 0
 	typeCodeMap  = 1
+	typeCodeList = 2
 )
 
 func allocateTypeCode() typeCodeSet {
@@ -81,6 +83,7 @@ type WordAdder = func(lhs, rhs uint64) uint64
 type WordSigner = func(v uint64) int
 
 type WordType struct {
+	nativeType reflect.Type
 	name       string
 	codeSet    typeCodeSet
 	formatter  WordFormatter
@@ -88,6 +91,8 @@ type WordType struct {
 	subtractor WordSubtractor
 	signer     WordSigner
 }
+
+func (typ *WordType) NativeType() reflect.Type { return typ.nativeType }
 
 func (typ *WordType) Name() string                                { return typ.name }
 func (typ *WordType) String() string                              { return typ.name }
@@ -123,6 +128,7 @@ func (typ *WordType) Neg(v uint64) uint64 {
 
 func NewScalarType[T any](name string, formatter WordFormatter, subtractor WordSubtractor, adder WordAdder, signer WordSigner) *WordType {
 	return &WordType{
+		nativeType: reflect.TypeFor[T](),
 		name:       name,
 		codeSet:    allocateTypeCode(),
 		formatter:  formatter,
@@ -188,9 +194,10 @@ func NewFloatType[T FloatValue](name string, formatter func(fc *FmtContext, v T)
 
 func NewScalarSubtype[T any](name string, base *WordType) *WordType {
 	return &WordType{
-		name:      name,
-		codeSet:   allocateTypeCode(),
-		formatter: base.formatter,
+		nativeType: reflect.TypeFor[T](),
+		name:       name,
+		codeSet:    allocateTypeCode(),
+		formatter:  base.formatter,
 	}
 }
 
@@ -207,17 +214,20 @@ func NewUnknownTypeWithErrorCode(errorCode string) *WordType {
 }
 
 type EntityType struct {
-	name    string
-	codeSet typeCodeSet
-	schema  *Schema
-	model   *Model
+	nativeTypes []reflect.Type
+	name        string
+	codeSet     typeCodeSet
+	schema      *Schema
+	model       *Model
 }
 
-func NewEntityType(schema *Schema, name string) *EntityType {
+func NewEntityType(schema *Schema, name string, nativeTypes ...reflect.Type) *EntityType {
+	nativeTypes = checkNativeTypes(nativeTypes)
 	return &EntityType{
-		schema:  schema,
-		name:    name,
-		codeSet: allocateTypeCode(),
+		nativeTypes: nativeTypes,
+		schema:      schema,
+		name:        name,
+		codeSet:     allocateTypeCode(),
 	}
 }
 
@@ -309,32 +319,39 @@ func reportCannotAccessKey(typ AnyType, key uint64) {
 	panic(fmt.Sprintf("type %s does not allow key %d", typ.Name(), key))
 }
 
-type MachineStringType struct {
-	name    string
-	codeSet typeCodeSet
+// ScalarDataType describes a string or byte slice; both are bounded byte spans.
+type ScalarDataType struct {
+	nativeType reflect.Type
+	name       string
+	codeSet    typeCodeSet
 }
 
-func (typ *MachineStringType) Name() string                    { return typ.name }
-func (typ *MachineStringType) String() string                  { return typ.name }
-func (typ *MachineStringType) Schema() *Schema                 { return nil }
-func (typ *MachineStringType) ValueKind() ValueKind            { return ValueKindScalarData }
-func (typ *MachineStringType) ItemType() AnyType               { return nil }
-func (typ *MachineStringType) typeCodeSet() typeCodeSet        { return typ.codeSet }
-func (typ *MachineStringType) Model() *Model                   { return nil }
-func (typ *MachineStringType) MapKeyType() AnyType             { return nil }
-func (typ *MachineStringType) MapProp(key uint64) PropImpl     { return nil }
-func (typ *MachineStringType) MapValueType(key uint64) AnyType { return nil }
-func (typ *MachineStringType) FormatValue(fc *FmtContext, value uint64) string {
+type MachineStringType = ScalarDataType
+
+func (typ *ScalarDataType) NativeType() reflect.Type { return typ.nativeType }
+
+func (typ *ScalarDataType) Name() string                    { return typ.name }
+func (typ *ScalarDataType) String() string                  { return typ.name }
+func (typ *ScalarDataType) Schema() *Schema                 { return nil }
+func (typ *ScalarDataType) ValueKind() ValueKind            { return ValueKindScalarData }
+func (typ *ScalarDataType) ItemType() AnyType               { return nil }
+func (typ *ScalarDataType) typeCodeSet() typeCodeSet        { return typ.codeSet }
+func (typ *ScalarDataType) Model() *Model                   { return nil }
+func (typ *ScalarDataType) MapKeyType() AnyType             { return nil }
+func (typ *ScalarDataType) MapProp(key uint64) PropImpl     { return nil }
+func (typ *ScalarDataType) MapValueType(key uint64) AnyType { return nil }
+func (typ *ScalarDataType) FormatValue(fc *FmtContext, value uint64) string {
 	panic("unsupported")
 }
-func (typ *MachineStringType) Sub(lhs, rhs uint64) uint64 { panic("unsupported") }
-func (typ *MachineStringType) Add(lhs, rhs uint64) uint64 { panic("unsupported") }
-func (typ *MachineStringType) Sign(v uint64) int          { panic("unsupported") }
+func (typ *ScalarDataType) Sub(lhs, rhs uint64) uint64 { panic("unsupported") }
+func (typ *ScalarDataType) Add(lhs, rhs uint64) uint64 { panic("unsupported") }
+func (typ *ScalarDataType) Sign(v uint64) int          { panic("unsupported") }
 
 func NewMachineStringType[T ~string](name string) *MachineStringType {
-	return &MachineStringType{
-		name:    name,
-		codeSet: allocateTypeCode(),
+	return &ScalarDataType{
+		nativeType: reflect.TypeFor[T](),
+		name:       name,
+		codeSet:    allocateTypeCode(),
 	}
 }
 
@@ -378,3 +395,37 @@ var (
 
 	TMachineString = NewMachineStringType[string]("string")
 )
+
+// NewBytesType declares binary data separately from text, without a new wire tag.
+func NewBytesType[T ~[]byte](name string) *ScalarDataType {
+	return &ScalarDataType{name: name, codeSet: allocateTypeCode(), nativeType: reflect.TypeFor[T]()}
+}
+
+var TBytes = NewBytesType[[]byte]("bytes")
+
+// ListType is schema metadata for positional values. The legacy Immutable codec
+// does not acquire List encoding support by declaring this type.
+type ListType struct {
+	itemType AnyType
+	codeSet  typeCodeSet
+}
+
+func ListOf(itemType AnyType) *ListType {
+	cs := typeCodeSet{typeCodeList}
+	cs.append(itemType.typeCodeSet())
+	return &ListType{itemType: itemType, codeSet: cs}
+}
+func (typ *ListType) Name() string                           { return "[]" + typ.itemType.Name() }
+func (typ *ListType) String() string                         { return typ.Name() }
+func (typ *ListType) Schema() *Schema                        { return typ.itemType.Schema() }
+func (typ *ListType) ValueKind() ValueKind                   { return ValueKindList }
+func (typ *ListType) ItemType() AnyType                      { return typ.itemType }
+func (typ *ListType) typeCodeSet() typeCodeSet               { return typ.codeSet }
+func (typ *ListType) Model() *Model                          { return nil }
+func (typ *ListType) MapKeyType() AnyType                    { return nil }
+func (typ *ListType) MapProp(uint64) PropImpl                { return nil }
+func (typ *ListType) MapValueType(uint64) AnyType            { return nil }
+func (typ *ListType) FormatValue(*FmtContext, uint64) string { panic("unsupported") }
+func (typ *ListType) Sub(uint64, uint64) uint64              { panic("unsupported") }
+func (typ *ListType) Add(uint64, uint64) uint64              { panic("unsupported") }
+func (typ *ListType) Sign(uint64) int                        { panic("unsupported") }
