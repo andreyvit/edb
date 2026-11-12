@@ -1,0 +1,31 @@
+<section class="{{.Palette.Section}}">
+<header><h2>{{.Screen.Heading}}</h2><p>{{.Screen.Caption}}</p></header>
+<div class="comparison hidden md:grid" style="grid-template-columns: 2fr repeat({{len .Plans}}, minmax(0, 1fr))">
+<div class="corner">Compare editions</div>
+{{range .Plans}}
+<div class="plan-heading flex flex-col items-center gap-3{{if .Current}} is-current ring-2{{end}}" data-key="{{.Key}}">
+<span class="subtitle">{{.Subtitle}}</span>
+<img src="{{.Icon.URL}}" alt="{{.Icon.Alt}}" width="48" height="48">
+<h3>{{.Name}}</h3><p class="threshold">{{.Threshold}}</p><a href="{{.URL}}" class="rounded px-4 py-2">Explore</a>
+</div>
+{{end}}
+{{range .Features}}<div class="feature-title border-b px-4 py-3">{{.Title}}</div>{{range .Cells}}{{template "cell" .}}{{end}}{{end}}
+</div>
+<div class="comparison-cards md:hidden flex gap-5 overflow-x-auto">
+{{range .Plans}}
+<article class="plan-card rounded border p-5{{if .Current}} is-current ring-2{{end}}" data-key="{{.Key}}">
+<header><img src="{{.Icon.URL}}" alt="{{.Icon.Alt}}" width="48" height="48"><h3>{{.Name}}</h3><p>{{.Threshold}}</p></header>
+<ul class="features divide-y">
+{{range .Features}}<li class="flex items-center justify-between py-2"><span class="label">{{.Title}}</span>{{range .Cells}}{{template "cell" .}}{{end}}</li>{{end}}
+</ul>
+<a href="{{.URL}}" class="block rounded px-4 py-2 text-center">Choose edition</a>
+</article>
+{{end}}
+</div>
+<style>.plan-card.is-current { border-color: {{.Palette.Accent}}; }</style>
+</section>
+{{define "cell"}}
+<div class="feature-value flex justify-center px-4 py-3{{if .Current}} is-current font-semibold{{end}}">
+{{if .Included}}<svg width="20" height="20" viewbox="0 0 20 20" aria-label="Included"><path d="M3 10l4 4 10-9" fill="none" stroke="currentColor"></path></svg>{{else if .Text}}{{.Text}}{{else}}<span aria-label="Unavailable">—</span>{{end}}
+</div>
+{{end}}

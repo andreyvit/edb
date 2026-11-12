@@ -1,0 +1,58 @@
+func Comparison(
+    b *gox.Builder,
+    screen *Screen,
+    palette *Palette,
+    plans []*Plan,
+    features []*Feature,
+) {
+    cell := func(value *Cell) {
+        <div class="feature-value flex justify-center px-4 py-3">
+            if value.Current { class("is-current font-semibold") }
+            if value.Included {
+                <svg width="20" height="20" viewbox="0 0 20 20" aria-label="Included"><path d="M3 10l4 4 10-9" fill="none" stroke="currentColor"></path></svg>
+            } else if value.Text != "" {
+                value.Text
+            } else {
+                <span aria-label="Unavailable">{"—"}</span>
+            }
+        </div>
+    }
+    <section class={palette.Section}>
+        <header><h2>{screen.Heading}</h2><p>{screen.Caption}</p></header>
+        <div class="comparison hidden md:grid" style="grid-template-columns: 2fr repeat({len(plans)}, minmax(0, 1fr))">
+            <div class="corner">{"Compare editions"}</div>
+            for _, plan := range plans {
+                <div class="plan-heading flex flex-col items-center gap-3" data-key={plan.Key}>
+                    if plan.Current { class("is-current ring-2") }
+                    <span class="subtitle">{plan.Subtitle}</span>
+                    <img src={plan.Icon.URL} alt={plan.Icon.Alt} width="48" height="48">
+                    <h3>{plan.Name}</h3>
+                    <p class="threshold">{plan.Threshold}</p>
+                    <a href={plan.URL} class="rounded px-4 py-2">{"Explore"}</a>
+                </div>
+            }
+            for _, feature := range features {
+                <div class="feature-title border-b px-4 py-3">{feature.Title}</div>
+                for _, value := range feature.Cells { cell(value) }
+            }
+        </div>
+        <div class="comparison-cards md:hidden flex gap-5 overflow-x-auto">
+            for _, plan := range plans {
+                <article class="plan-card rounded border p-5" data-key={plan.Key}>
+                    if plan.Current { class("is-current ring-2") }
+                    <header><img src={plan.Icon.URL} alt={plan.Icon.Alt} width="48" height="48"><h3>{plan.Name}</h3><p>{plan.Threshold}</p></header>
+                    <ul class="features divide-y">
+                        for _, feature := range plan.Features {
+                            <li class="flex items-center justify-between py-2">
+                                <span class="label">{feature.Title}</span>
+                                for _, value := range feature.Cells { cell(value) }
+                            </li>
+                        }
+                    </ul>
+                    <a href={plan.URL} class="block rounded px-4 py-2 text-center">{"Choose edition"}</a>
+                </article>
+            }
+        </div>
+        <style>.plan-card.is-current { border-color: {=palette.Accent}; }</style>
+    </section>
+}

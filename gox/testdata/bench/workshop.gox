@@ -1,0 +1,76 @@
+func Workshop(
+    b *gox.Builder,
+    screen *Screen,
+    palette *Palette,
+    tiles []*Tile,
+) {
+    field := func(input *Field, disabled bool) {
+        <label class="field flex flex-col gap-1">
+            <span class="text-xs">{input.Label}</span>
+            <input type="text" name={input.Key} value={input.Value} placeholder={input.Hint} disabled={disabled} class="border rounded px-3 py-2">
+        </label>
+    }
+    <section class={palette.Section} data-view={screen.Key}>
+        <header><h2>{screen.Heading}</h2><p>{screen.Caption}</p></header>
+        <div class="layout grid gap-5">
+            for _, item := range tiles {
+                <article class="tile flex flex-col rounded border" data-key={item.Key} aria-labelledby={"tile-"+item.Key}>
+                    class(palette.Tile)
+                    tileState(item.Complete, item.Disabled)
+                    if item.Icon != nil {
+                        <img src={item.Icon.URL} alt={item.Icon.Alt} width="64" height="64" class="object-contain">
+                    }
+                    <h3 id={"tile-"+item.Key}>{item.Title}</h3>
+                    if item.Complete {
+                        <span class="status text-xs">{"Finished"}</span>
+                    }
+                    <strong class="amount">{fmt.Sprintf("%d credits", item.Amount)}</strong>
+                    <p class="description">{item.Description}</p>
+                    <form action={item.URL} method="post" data-controller="entry-editor">
+                        if item.Mode == "fields" {
+                            <div class="fields flex gap-3">
+                                for _, input := range item.Fields {
+                                    field(input, item.Disabled || screen.ReadOnly)
+                                }
+                            </div>
+                        } else if item.Mode == "choices" {
+                            <fieldset class="choices grid gap-2">
+                                for _, choice := range item.Choices {
+                                    <label class="choice flex gap-2">
+                                        <input type="checkbox" name={"choice["+choice.Key+"]"} checked={choice.Checked} disabled={item.Disabled || screen.ReadOnly}>
+                                        <span>{choice.Label}</span>
+                                    </label>
+                                }
+                            </fieldset>
+                        } else if item.Mode == "link" {
+                            <a href={item.URL} class="details underline" rel="noopener">{"View details"}</a>
+                        }
+                        if item.Consent != "" {
+                            <label class="consent flex gap-2"><input type="checkbox" name="consent" checked={item.Complete}><span>{item.Consent}</span></label>
+                        }
+                        if item.Error != "" {
+                            <div role="alert" class="error text-red-700">{item.Error}</div>
+                        }
+                        <Action item={item}>
+                            <slot-body>{item.CTA}</slot-body>
+                            <slot-after>
+                                if item.Complete {
+                                    <span aria-hidden="true">{"✓"}</span>
+                                } else {
+                                    <span aria-hidden="true">{"→"}</span>
+                                }
+                            </slot-after>
+                        </Action>
+                    </form>
+                </article>
+            }
+        </div>
+        <footer><a href={screen.SignIn}>{"Manage profile"}</a></footer>
+        <script type="application/json">{"key":{=screen.Key},"readOnly":{=screen.ReadOnly}}</script>
+    </section>
+}
+
+func tileState(b *gox.Builder, complete, disabled bool) {
+    if complete { b.Class("is-complete") }
+    if disabled { b.Class("is-muted"); b.Attr("aria-disabled",true) }
+}

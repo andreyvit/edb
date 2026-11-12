@@ -1,0 +1,12 @@
+func CustomerCard(b *gox.Builder, customer *m.Customer) {
+    <section class="loyalty-card">
+        <h2>{customer.first_name}</h2>
+        <p>
+            customer.points_earned - customer.points_redeemed
+            " points available"
+        </p>
+        for _, tag := range customer.tags {
+            <span class="tag">{tag}</span>
+        }
+    </section>
+}

@@ -1,0 +1,216 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkEVM/Price-18    	    8805	     20561 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Scan-18     	   48703	      3692 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Fib-18      	    4268	     42203 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Sieve-18    	    1963	     92127 ns/op	    5376 B/op	       1 allocs/op
+BenchmarkEVM/Mandelbrot-18         	    1003	    178152 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/General-18         	   45361	      3896 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/Direct-18          	   59499	      3025 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/General-18     	   23412	      7833 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/Direct-18      	   33663	      5368 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/General-18          	   19441	      9288 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/Direct-18           	   28962	      6181 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/General-18     	   23718	      7504 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/Direct-18      	   32715	      5580 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/General-18            	   20121	      8962 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/Direct-18             	   22176	      8088 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Digest-18                    	   34688	      5198 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Tariff-18                    	   29656	      6041 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Histogram-18                 	   27279	      6728 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkOptimizer/Queue-18                     	   13219	     13445 ns/op	    4944 B/op	       2 allocs/op
+BenchmarkOptimizer/Channels-18                  	    9441	     18250 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Rounds-18                    	   16376	     11011 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Stencil-18                   	   12458	     14406 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkEVM/Price-18    	    8835	     20295 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Scan-18     	   48412	      3688 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Fib-18      	    4200	     42599 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Sieve-18    	    1981	     90812 ns/op	    5378 B/op	       1 allocs/op
+BenchmarkEVM/Mandelbrot-18         	    1003	    179893 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/General-18         	   45922	      3961 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/Direct-18          	   59301	      3058 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/General-18     	   23364	      7661 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/Direct-18      	   33417	      5377 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/General-18          	   19434	      9238 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/Direct-18           	   28891	      6200 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/General-18     	   23853	      7500 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/Direct-18      	   32580	      5577 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/General-18            	   20426	      8840 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/Direct-18             	   22322	      8046 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Digest-18                    	   35215	      5084 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Tariff-18                    	   30037	      6035 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Histogram-18                 	   28027	      6419 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkOptimizer/Queue-18                     	   13258	     13614 ns/op	    4944 B/op	       2 allocs/op
+BenchmarkOptimizer/Channels-18                  	   10000	     18358 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Rounds-18                    	   16395	     10867 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Stencil-18                   	   12463	     14479 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkEVM/Price-18    	    8491	     20832 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Scan-18     	   48337	      3732 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Fib-18      	    4172	     43200 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Sieve-18    	    1960	     91252 ns/op	    5376 B/op	       1 allocs/op
+BenchmarkEVM/Mandelbrot-18         	    1008	    178298 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/General-18         	   47096	      3888 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/Direct-18          	   59802	      2983 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/General-18     	   23788	      7611 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/Direct-18      	   33242	      5447 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/General-18          	   19468	      9230 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/Direct-18           	   29120	      6193 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/General-18     	   23947	      7455 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/Direct-18      	   32486	      5551 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/General-18            	   19952	      8996 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/Direct-18             	   22437	      8093 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Digest-18                    	   34663	      5097 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Tariff-18                    	   30033	      5974 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Histogram-18                 	   28083	      7969 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkOptimizer/Queue-18                     	   13412	     13330 ns/op	    4944 B/op	       2 allocs/op
+BenchmarkOptimizer/Channels-18                  	    9799	     18696 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Rounds-18                    	   16446	     10954 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Stencil-18                   	   12288	     14678 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkEVM/Price-18    	    8560	     20319 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Scan-18     	   48054	      3719 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Fib-18      	    4203	     42507 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Sieve-18    	    1945	     91656 ns/op	    5376 B/op	       1 allocs/op
+BenchmarkEVM/Mandelbrot-18         	    1003	    178795 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/General-18         	   46567	      3873 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/Direct-18          	   59774	      3065 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/General-18     	   23562	      7679 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/Direct-18      	   33420	      5404 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/General-18          	   19434	      9623 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/Direct-18           	   26858	      6367 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/General-18     	   24082	      7353 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/Direct-18      	   32739	      5488 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/General-18            	   20268	      9020 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/Direct-18             	   22191	      8038 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Digest-18                    	   35106	      5154 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Tariff-18                    	   29811	      6036 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Histogram-18                 	   27919	      6421 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkOptimizer/Queue-18                     	   13384	     13421 ns/op	    4944 B/op	       2 allocs/op
+BenchmarkOptimizer/Channels-18                  	    9607	     18047 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Rounds-18                    	   16502	     11066 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Stencil-18                   	   12069	     14658 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkEVM/Price-18    	    8781	     20604 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Scan-18     	   48547	      3693 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Fib-18      	    4206	     42341 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Sieve-18    	    2004	     90407 ns/op	    5376 B/op	       1 allocs/op
+BenchmarkEVM/Mandelbrot-18         	    1000	    178929 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/General-18         	   46096	      3907 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/Direct-18          	   59192	      3052 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/General-18     	   22970	      7853 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/Direct-18      	   34081	      5275 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/General-18          	   19778	      9207 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/Direct-18           	   29046	      6221 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/General-18     	   24081	      7396 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/Direct-18      	   32301	      5586 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/General-18            	   19983	      9039 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/Direct-18             	   22300	      8055 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Digest-18                    	   35266	      5085 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Tariff-18                    	   29816	      6053 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Histogram-18                 	   27218	      6533 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkOptimizer/Queue-18                     	   13255	     13469 ns/op	    4944 B/op	       2 allocs/op
+BenchmarkOptimizer/Channels-18                  	    9367	     18049 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Rounds-18                    	   16509	     10972 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Stencil-18                   	   12495	     14748 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkEVM/Price-18    	    8284	     20767 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Scan-18     	   47694	      3744 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Fib-18      	    4246	     42613 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Sieve-18    	    2017	     90987 ns/op	    5376 B/op	       1 allocs/op
+BenchmarkEVM/Mandelbrot-18         	     997	    178479 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/General-18         	   46365	      3886 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/Direct-18          	   59258	      3035 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/General-18     	   23424	      7624 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/Direct-18      	   33690	      5346 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/General-18          	   19880	      9091 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/Direct-18           	   29199	      6136 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/General-18     	   23832	      7550 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/Direct-18      	   32674	      5513 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/General-18            	   19774	      9023 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/Direct-18             	   22395	      8056 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Digest-18                    	   35125	      5082 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Tariff-18                    	   29899	      5990 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Histogram-18                 	   27574	      6432 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkOptimizer/Queue-18                     	   13434	     13253 ns/op	    4944 B/op	       2 allocs/op
+BenchmarkOptimizer/Channels-18                  	   10000	     18165 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Rounds-18                    	   16420	     10898 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Stencil-18                   	   12351	     14552 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkEVM/Price-18    	    8905	     20308 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Scan-18     	   48355	      3678 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Fib-18      	    4329	     41569 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Sieve-18    	    1980	     90608 ns/op	    5376 B/op	       1 allocs/op
+BenchmarkEVM/Mandelbrot-18         	    1014	    176831 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/General-18         	   44912	      4031 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/Direct-18          	   59184	      3037 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/General-18     	   23079	      7795 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/Direct-18      	   33837	      5320 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/General-18          	   19713	      9315 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/Direct-18           	   29041	      6218 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/General-18     	   23362	      7733 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/Direct-18      	   32863	      5453 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/General-18            	   19983	      9098 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/Direct-18             	   22378	      8066 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Digest-18                    	   34616	      5124 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Tariff-18                    	   29908	      6018 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Histogram-18                 	   27733	      6515 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkOptimizer/Queue-18                     	   13291	     13559 ns/op	    4944 B/op	       2 allocs/op
+BenchmarkOptimizer/Channels-18                  	   10000	     18156 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Rounds-18                    	   16694	     10753 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Stencil-18                   	   12388	     14337 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkEVM/Price-18    	    8686	     20215 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Scan-18     	   48330	      3695 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Fib-18      	    4305	     41989 ns/op	       0 B/op	       0 allocs/op
+BenchmarkEVM/Sieve-18    	    2019	     90631 ns/op	    5376 B/op	       1 allocs/op
+BenchmarkEVM/Mandelbrot-18         	     993	    180240 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/General-18         	   46350	      3861 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Predicate/Direct-18          	   59652	      3027 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/General-18     	   23778	      7651 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/PointerGetter/Direct-18      	   33758	      5406 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/General-18          	   19729	      9138 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/TagCheck/Direct-18           	   28687	      6260 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/General-18     	   24038	      7456 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/CachedContext/Direct-18      	   32234	      5488 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/General-18            	   20389	      8758 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSmallHost/Cursor/Direct-18             	   22341	      8125 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Digest-18                    	   34785	      5107 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Tariff-18                    	   29804	      6057 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Histogram-18                 	   27705	      6426 ns/op	    1152 B/op	       1 allocs/op
+BenchmarkOptimizer/Queue-18                     	   13279	     13485 ns/op	    4944 B/op	       2 allocs/op
+BenchmarkOptimizer/Channels-18                  	    9966	     18149 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Rounds-18                    	   16286	     10977 ns/op	       0 B/op	       0 allocs/op
+BenchmarkOptimizer/Stencil-18                   	   12460	     14620 ns/op	       0 B/op	       0 allocs/op
+PASS

@@ -1,0 +1,136 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/etemplate
+cpu: Apple M5 Max
+BenchmarkApplication/workshop/12/GoX-18     	    2665	     89440 ns/op	   35003 B/op	     522 allocs/op
+BenchmarkApplication/workshop/12/GoTemplate-18         	    2016	    126539 ns/op	   68931 B/op	    2230 allocs/op
+BenchmarkApplication/workshop/48/GoX-18                	     684	    349284 ns/op	  139074 B/op	    2106 allocs/op
+BenchmarkApplication/workshop/48/GoTemplate-18         	     484	    493488 ns/op	  272009 B/op	    8766 allocs/op
+BenchmarkApplication/journal/12/GoX-18                 	    4736	     49317 ns/op	   16393 B/op	     246 allocs/op
+BenchmarkApplication/journal/12/GoTemplate-18          	    3696	     67100 ns/op	   35689 B/op	    1071 allocs/op
+BenchmarkApplication/journal/48/GoX-18                 	    1264	    183696 ns/op	   61750 B/op	     933 allocs/op
+BenchmarkApplication/journal/48/GoTemplate-18          	     949	    257367 ns/op	  138762 B/op	    4146 allocs/op
+BenchmarkApplication/comparison/12/GoX-18              	    6036	     40232 ns/op	   21875 B/op	     125 allocs/op
+BenchmarkApplication/comparison/12/GoTemplate-18       	    3603	     68111 ns/op	   48417 B/op	    1136 allocs/op
+BenchmarkApplication/comparison/48/GoX-18              	    1930	    122125 ns/op	   68037 B/op	     229 allocs/op
+BenchmarkApplication/comparison/48/GoTemplate-18       	    1184	    204462 ns/op	  153984 B/op	    3244 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/etemplate
+cpu: Apple M5 Max
+BenchmarkApplication/workshop/12/GoX-18     	    2445	     94230 ns/op	   35008 B/op	     522 allocs/op
+BenchmarkApplication/workshop/12/GoTemplate-18         	    1826	    132102 ns/op	   68932 B/op	    2230 allocs/op
+BenchmarkApplication/workshop/48/GoX-18                	     675	    351575 ns/op	  139466 B/op	    2106 allocs/op
+BenchmarkApplication/workshop/48/GoTemplate-18         	     472	    496252 ns/op	  271992 B/op	    8766 allocs/op
+BenchmarkApplication/journal/12/GoX-18                 	    4602	     48909 ns/op	   16393 B/op	     246 allocs/op
+BenchmarkApplication/journal/12/GoTemplate-18          	    3704	     67334 ns/op	   35688 B/op	    1071 allocs/op
+BenchmarkApplication/journal/48/GoX-18                 	    1320	    182370 ns/op	   61746 B/op	     933 allocs/op
+BenchmarkApplication/journal/48/GoTemplate-18          	     921	    261312 ns/op	  138756 B/op	    4145 allocs/op
+BenchmarkApplication/comparison/12/GoX-18              	    6013	     39623 ns/op	   21875 B/op	     125 allocs/op
+BenchmarkApplication/comparison/12/GoTemplate-18       	    3787	     65031 ns/op	   48417 B/op	    1136 allocs/op
+BenchmarkApplication/comparison/48/GoX-18              	    2001	    117424 ns/op	   67924 B/op	     229 allocs/op
+BenchmarkApplication/comparison/48/GoTemplate-18       	    1233	    195991 ns/op	  153975 B/op	    3244 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/etemplate
+cpu: Apple M5 Max
+BenchmarkApplication/workshop/12/GoX-18     	    2570	     94662 ns/op	   34999 B/op	     522 allocs/op
+BenchmarkApplication/workshop/12/GoTemplate-18         	    1888	    135275 ns/op	   68931 B/op	    2230 allocs/op
+BenchmarkApplication/workshop/48/GoX-18                	     608	    367582 ns/op	  139514 B/op	    2106 allocs/op
+BenchmarkApplication/workshop/48/GoTemplate-18         	     462	    514137 ns/op	  272037 B/op	    8766 allocs/op
+BenchmarkApplication/journal/12/GoX-18                 	    4594	     49644 ns/op	   16378 B/op	     246 allocs/op
+BenchmarkApplication/journal/12/GoTemplate-18          	    3637	     68175 ns/op	   35690 B/op	    1071 allocs/op
+BenchmarkApplication/journal/48/GoX-18                 	    1258	    183725 ns/op	   61758 B/op	     933 allocs/op
+BenchmarkApplication/journal/48/GoTemplate-18          	     940	    259808 ns/op	  138759 B/op	    4146 allocs/op
+BenchmarkApplication/comparison/12/GoX-18              	    6286	     38526 ns/op	   21875 B/op	     125 allocs/op
+BenchmarkApplication/comparison/12/GoTemplate-18       	    3727	     65856 ns/op	   48416 B/op	    1136 allocs/op
+BenchmarkApplication/comparison/48/GoX-18              	    2008	    118483 ns/op	   68033 B/op	     229 allocs/op
+BenchmarkApplication/comparison/48/GoTemplate-18       	    1221	    192918 ns/op	  153981 B/op	    3244 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/etemplate
+cpu: Apple M5 Max
+BenchmarkApplication/workshop/12/GoX-18     	    2631	     88924 ns/op	   34999 B/op	     522 allocs/op
+BenchmarkApplication/workshop/12/GoTemplate-18         	    1993	    126156 ns/op	   68929 B/op	    2230 allocs/op
+BenchmarkApplication/workshop/48/GoX-18                	     685	    348857 ns/op	  139463 B/op	    2106 allocs/op
+BenchmarkApplication/workshop/48/GoTemplate-18         	     477	    494414 ns/op	  271994 B/op	    8766 allocs/op
+BenchmarkApplication/journal/12/GoX-18                 	    4794	     49206 ns/op	   16393 B/op	     246 allocs/op
+BenchmarkApplication/journal/12/GoTemplate-18          	    3666	     67270 ns/op	   35689 B/op	    1071 allocs/op
+BenchmarkApplication/journal/48/GoX-18                 	    1296	    182429 ns/op	   61748 B/op	     933 allocs/op
+BenchmarkApplication/journal/48/GoTemplate-18          	     938	    257709 ns/op	  138753 B/op	    4145 allocs/op
+BenchmarkApplication/comparison/12/GoX-18              	    6063	     39012 ns/op	   21875 B/op	     125 allocs/op
+BenchmarkApplication/comparison/12/GoTemplate-18       	    3756	     65113 ns/op	   48417 B/op	    1136 allocs/op
+BenchmarkApplication/comparison/48/GoX-18              	    2007	    118049 ns/op	   67922 B/op	     229 allocs/op
+BenchmarkApplication/comparison/48/GoTemplate-18       	    1232	    192582 ns/op	  153981 B/op	    3244 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/etemplate
+cpu: Apple M5 Max
+BenchmarkApplication/workshop/12/GoX-18     	    2700	     88523 ns/op	   35002 B/op	     522 allocs/op
+BenchmarkApplication/workshop/12/GoTemplate-18         	    1974	    126376 ns/op	   68934 B/op	    2230 allocs/op
+BenchmarkApplication/workshop/48/GoX-18                	     697	    351008 ns/op	  139081 B/op	    2106 allocs/op
+BenchmarkApplication/workshop/48/GoTemplate-18         	     486	    496190 ns/op	  272008 B/op	    8766 allocs/op
+BenchmarkApplication/journal/12/GoX-18                 	    4784	     49099 ns/op	   16391 B/op	     246 allocs/op
+BenchmarkApplication/journal/12/GoTemplate-18          	    3703	     67374 ns/op	   35689 B/op	    1071 allocs/op
+BenchmarkApplication/journal/48/GoX-18                 	    1290	    183464 ns/op	   61747 B/op	     933 allocs/op
+BenchmarkApplication/journal/48/GoTemplate-18          	     918	    260521 ns/op	  138754 B/op	    4145 allocs/op
+BenchmarkApplication/comparison/12/GoX-18              	    6062	     39083 ns/op	   21862 B/op	     125 allocs/op
+BenchmarkApplication/comparison/12/GoTemplate-18       	    3696	     65382 ns/op	   48416 B/op	    1136 allocs/op
+BenchmarkApplication/comparison/48/GoX-18              	    1999	    121956 ns/op	   67921 B/op	     229 allocs/op
+BenchmarkApplication/comparison/48/GoTemplate-18       	    1192	    199270 ns/op	  153978 B/op	    3244 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/etemplate
+cpu: Apple M5 Max
+BenchmarkApplication/workshop/12/GoX-18     	    2742	     89952 ns/op	   35001 B/op	     522 allocs/op
+BenchmarkApplication/workshop/12/GoTemplate-18         	    1927	    130765 ns/op	   68939 B/op	    2230 allocs/op
+BenchmarkApplication/workshop/48/GoX-18                	     648	    351903 ns/op	  139492 B/op	    2106 allocs/op
+BenchmarkApplication/workshop/48/GoTemplate-18         	     486	    500448 ns/op	  272032 B/op	    8766 allocs/op
+BenchmarkApplication/journal/12/GoX-18                 	    5246	     50299 ns/op	   16390 B/op	     246 allocs/op
+BenchmarkApplication/journal/12/GoTemplate-18          	    3548	     69382 ns/op	   35688 B/op	    1071 allocs/op
+BenchmarkApplication/journal/48/GoX-18                 	    1234	    188617 ns/op	   61747 B/op	     933 allocs/op
+BenchmarkApplication/journal/48/GoTemplate-18          	     897	    275342 ns/op	  138761 B/op	    4146 allocs/op
+BenchmarkApplication/comparison/12/GoX-18              	    5728	     40442 ns/op	   21877 B/op	     125 allocs/op
+BenchmarkApplication/comparison/12/GoTemplate-18       	    3591	     69230 ns/op	   48417 B/op	    1136 allocs/op
+BenchmarkApplication/comparison/48/GoX-18              	    1971	    122223 ns/op	   68036 B/op	     229 allocs/op
+BenchmarkApplication/comparison/48/GoTemplate-18       	    1170	    202567 ns/op	  153983 B/op	    3244 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/etemplate
+cpu: Apple M5 Max
+BenchmarkApplication/workshop/12/GoX-18     	    2638	     88619 ns/op	   34958 B/op	     522 allocs/op
+BenchmarkApplication/workshop/12/GoTemplate-18         	    1944	    126046 ns/op	   68932 B/op	    2230 allocs/op
+BenchmarkApplication/workshop/48/GoX-18                	     673	    346203 ns/op	  139465 B/op	    2106 allocs/op
+BenchmarkApplication/workshop/48/GoTemplate-18         	     490	    513259 ns/op	  272007 B/op	    8766 allocs/op
+BenchmarkApplication/journal/12/GoX-18                 	    4580	     49245 ns/op	   16394 B/op	     246 allocs/op
+BenchmarkApplication/journal/12/GoTemplate-18          	    3776	     67319 ns/op	   35687 B/op	    1071 allocs/op
+BenchmarkApplication/journal/48/GoX-18                 	    1303	    182266 ns/op	   61628 B/op	     933 allocs/op
+BenchmarkApplication/journal/48/GoTemplate-18          	     898	    271291 ns/op	  138749 B/op	    4145 allocs/op
+BenchmarkApplication/comparison/12/GoX-18              	    5634	     41449 ns/op	   21877 B/op	     125 allocs/op
+BenchmarkApplication/comparison/12/GoTemplate-18       	    3721	     69101 ns/op	   48415 B/op	    1136 allocs/op
+BenchmarkApplication/comparison/48/GoX-18              	    2007	    126619 ns/op	   68036 B/op	     229 allocs/op
+BenchmarkApplication/comparison/48/GoTemplate-18       	    1171	    204499 ns/op	  153987 B/op	    3244 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/etemplate
+cpu: Apple M5 Max
+BenchmarkApplication/workshop/12/GoX-18     	    2580	     91822 ns/op	   35004 B/op	     522 allocs/op
+BenchmarkApplication/workshop/12/GoTemplate-18         	    1898	    131806 ns/op	   68935 B/op	    2230 allocs/op
+BenchmarkApplication/workshop/48/GoX-18                	     700	    350955 ns/op	  139459 B/op	    2106 allocs/op
+BenchmarkApplication/workshop/48/GoTemplate-18         	     489	    490935 ns/op	  271999 B/op	    8766 allocs/op
+BenchmarkApplication/journal/12/GoX-18                 	    4735	     48786 ns/op	   16392 B/op	     246 allocs/op
+BenchmarkApplication/journal/12/GoTemplate-18          	    3703	     67383 ns/op	   35689 B/op	    1071 allocs/op
+BenchmarkApplication/journal/48/GoX-18                 	    1312	    185665 ns/op	   61636 B/op	     933 allocs/op
+BenchmarkApplication/journal/48/GoTemplate-18          	     910	    259693 ns/op	  138758 B/op	    4145 allocs/op
+BenchmarkApplication/comparison/12/GoX-18              	    5940	     39282 ns/op	   21876 B/op	     125 allocs/op
+BenchmarkApplication/comparison/12/GoTemplate-18       	    3692	     65472 ns/op	   48417 B/op	    1136 allocs/op
+BenchmarkApplication/comparison/48/GoX-18              	    1978	    119220 ns/op	   68035 B/op	     229 allocs/op
+BenchmarkApplication/comparison/48/GoTemplate-18       	    1252	    193840 ns/op	  153980 B/op	    3244 allocs/op
+PASS

@@ -1,0 +1,17 @@
+func Action(
+    b *gox.Builder,
+    screen *Screen,
+    palette *Palette,
+    item *Tile,
+    body func(),
+    after func(),
+) {
+    <button type="submit" data-key={item.Key} disabled={item.Disabled || screen.ReadOnly} class="action inline-flex items-center gap-2">
+        class(palette.Action)
+        if item.Complete {
+            class("is-complete")
+        }
+        body()
+        after()
+    </button>
+}

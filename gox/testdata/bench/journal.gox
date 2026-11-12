@@ -1,0 +1,62 @@
+func Journal(
+    b *gox.Builder,
+    screen *Screen,
+    palette *Palette,
+    records []*Record,
+) {
+    category := func(entry *Record) {
+        if entry.Code != "" {
+            <button class="category relative flex items-center gap-4" data-controller="clipboard" data-action="clipboard#copy" data-copy={entry.Code} data-payload={entry.CopyData}>
+                class(palette.Category)
+                <span data-clipboard-target="content">{entry.Code}</span>
+                <svg width="16" height="16" viewbox="0 0 16 16" aria-hidden="true"><path d="M4 4h8v9H4zM2 2h8" fill="none" stroke="currentColor"></path></svg>
+                <span class="confirmation hidden" data-clipboard-target="confirmation">{screen.Notice}</span>
+            </button>
+        } else {
+            <div class="category">
+                class(palette.Category)
+                if entry.Credit { class("is-credit") } else { class("is-debit") }
+                fmt.Sprintf("%+d units", entry.Amount)
+            </div>
+        }
+    }
+    detail := func(entry *Record) {
+        <div class={palette.Detail}><span>{entry.Description}</span></div>
+    }
+    expiry := func(entry *Record) {
+        <div class={palette.Expiry}>
+            if entry.Expires != "" {
+                <span>
+                    if entry.Expired { class("is-expired"); "Ended " } else { class("is-pending"); "Valid until " }
+                    entry.Expires
+                </span>
+            }
+        </div>
+    }
+    timestamp := func(entry *Record) {
+        <time class={palette.Date} datetime={entry.Date}>{entry.Date}</time>
+    }
+    <section class={palette.Section} aria-label={screen.Heading}>
+        <header><h2>{screen.Heading}</h2><p>{screen.Caption}</p></header>
+        <div class="journal grid gap-y-3">
+            for _, entry := range records {
+                <div class="entry grid grid-cols-4 gap-3" data-key={entry.Key}>
+                    if screen.Compact {
+                        <div class="col-span-2 space-y-1">
+                            timestamp(entry)
+                            detail(entry)
+                        </div>
+                        category(entry)
+                        expiry(entry)
+                    } else {
+                        category(entry)
+                        detail(entry)
+                        expiry(entry)
+                        timestamp(entry)
+                    }
+                </div>
+            }
+        </div>
+        <footer class="text-xs">{fmt.Sprintf("%d entries",len(records))}</footer>
+    </section>
+}

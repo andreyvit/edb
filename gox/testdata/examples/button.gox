@@ -1,0 +1,13 @@
+func Button(
+    b *gox.Builder,
+    page string,
+    label string,
+    body func(),
+    after func(),
+) {
+    <button title={page} aria-label={label}>
+        class("button px-4 py-2")
+        body()
+        after()
+    </button>
+}

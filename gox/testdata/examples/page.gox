@@ -1,0 +1,33 @@
+func Page(
+    b *gox.Builder,
+    page string,
+    names []string,
+) {
+    heading := title(page, len(names))
+    item := func(name string) {
+        <li>
+            <Button label={name}>
+                <slot-body>
+                    "Hello, "
+                    name
+                    "!"
+                </slot-body>
+                <slot-after>
+                    <span class="note">{page}</span>
+                </slot-after>
+            </Button>
+        </li>
+    }
+    <main>
+        <h1>{heading}</h1>
+        <ul>
+            for _, name := range names {
+                item(name)
+            }
+        </ul>
+    </main>
+}
+
+func title(page string, count int) string {
+    return fmt.Sprintf("%s (%d)", page, count)
+}

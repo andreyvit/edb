@@ -1,0 +1,40 @@
+<section class="{{.Palette.Section}}" data-view="{{.Screen.Key}}">
+<header><h2>{{.Screen.Heading}}</h2><p>{{.Screen.Caption}}</p></header>
+<div class="layout grid gap-5">
+{{range .Tiles}}
+<article class="tile flex flex-col rounded border {{$.Palette.Tile}}{{if .Complete}} is-complete{{end}}{{if .Disabled}} is-muted{{end}}" data-key="{{.Key}}" aria-labelledby="tile-{{.Key}}"{{if .Disabled}} aria-disabled="true"{{end}}>
+{{if .Icon}}<img src="{{.Icon.URL}}" alt="{{.Icon.Alt}}" width="64" height="64" class="object-contain">{{end}}
+<h3 id="tile-{{.Key}}">{{.Title}}</h3>
+{{if .Complete}}<span class="status text-xs">Finished</span>{{end}}
+<strong class="amount">{{printf "%d credits" .Amount}}</strong>
+<p class="description">{{.Description}}</p>
+<form action="{{.URL}}" method="post" data-controller="entry-editor">
+{{if eq .Mode "fields"}}
+<div class="fields flex gap-3">
+{{$disabled := or .Disabled $.Screen.ReadOnly}}
+{{range .Fields}}<label class="field flex flex-col gap-1"><span class="text-xs">{{.Label}}</span><input type="text" name="{{.Key}}" value="{{.Value}}" placeholder="{{.Hint}}"{{if $disabled}} disabled{{end}} class="border rounded px-3 py-2"></label>{{end}}
+</div>
+{{else if eq .Mode "choices"}}
+<fieldset class="choices grid gap-2">
+{{$disabled := or .Disabled $.Screen.ReadOnly}}
+{{range .Choices}}<label class="choice flex gap-2"><input type="checkbox" name="choice[{{.Key}}]"{{if .Checked}} checked{{end}}{{if $disabled}} disabled{{end}}><span>{{.Label}}</span></label>{{end}}
+</fieldset>
+{{else if eq .Mode "link"}}
+<a href="{{.URL}}" class="details underline" rel="noopener">View details</a>
+{{end}}
+{{if .Consent}}<label class="consent flex gap-2"><input type="checkbox" name="consent"{{if .Complete}} checked{{end}}><span>{{.Consent}}</span></label>{{end}}
+{{if .Error}}<div role="alert" class="error text-red-700">{{.Error}}</div>{{end}}
+{{template "action" (tileScope $ .)}}
+</form>
+</article>
+{{end}}
+</div>
+<footer><a href="{{.Screen.SignIn}}">Manage profile</a></footer>
+<script type="application/json">{"key":{{.Screen.Key}},"readOnly":{{.Screen.ReadOnly}}}</script>
+</section>
+{{define "action"}}
+<button type="submit" data-key="{{.Tile.Key}}"{{if or .Tile.Disabled .Scene.Screen.ReadOnly}} disabled{{end}} class="action inline-flex items-center gap-2 {{.Scene.Palette.Action}}{{if .Tile.Complete}} is-complete{{end}}">
+{{.Tile.CTA}}
+{{if .Tile.Complete}}<span aria-hidden="true">✓</span>{{else}}<span aria-hidden="true">→</span>{{end}}
+</button>
+{{end}}

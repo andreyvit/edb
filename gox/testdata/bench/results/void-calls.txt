@@ -1,0 +1,26 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkHostShapes/psv/General-18 	  101547	      2419 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/psv/General-18 	  101656	      2411 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/psv/General-18 	   98830	      2388 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/psv/General-18 	  101696	      2387 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/psv/General-18 	  101224	      2375 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/psv/Direct-18  	  184214	      1290 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/psv/Direct-18  	  185912	      1284 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/psv/Direct-18  	  187761	      1277 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/psv/Direct-18  	  186706	      1272 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/psv/Direct-18  	  179886	      1284 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/method.sv/General-18         	   98226	      2413 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/method.sv/General-18         	   99930	      2376 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/method.sv/General-18         	  101696	      2389 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/method.sv/General-18         	  102363	      2382 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/method.sv/General-18         	  100663	      2394 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/method.sv/Direct-18          	  181496	      1300 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/method.sv/Direct-18          	  187519	      1289 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/method.sv/Direct-18          	  181570	      1295 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/method.sv/Direct-18          	  184837	      1294 ns/op	       0 B/op	       0 allocs/op
+BenchmarkHostShapes/method.sv/Direct-18          	  184110	      1289 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/andreyvit/edb/evm/bench	5.196s

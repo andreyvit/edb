@@ -1,0 +1,33 @@
+<section class="{{.Palette.Section}}" aria-label="{{.Screen.Heading}}">
+<header><h2>{{.Screen.Heading}}</h2><p>{{.Screen.Caption}}</p></header>
+<div class="journal grid gap-y-3">
+{{range .Records}}
+<div class="entry grid grid-cols-4 gap-3" data-key="{{.Key}}">
+{{$scope := recordScope $ .}}
+{{if $.Screen.Compact}}
+<div class="col-span-2 space-y-1">{{template "timestamp" $scope}}{{template "detail" $scope}}</div>
+{{template "category" $scope}}{{template "expiry" $scope}}
+{{else}}
+{{template "category" $scope}}{{template "detail" $scope}}{{template "expiry" $scope}}{{template "timestamp" $scope}}
+{{end}}
+</div>
+{{end}}
+</div>
+<footer class="text-xs">{{printf "%d entries" (len .Records)}}</footer>
+</section>
+{{define "category"}}
+{{if .Record.Code}}
+<button class="category relative flex items-center gap-4 {{.Scene.Palette.Category}}" data-controller="clipboard" data-action="clipboard#copy" data-copy="{{.Record.Code}}" data-payload="{{.Record.CopyData}}">
+<span data-clipboard-target="content">{{.Record.Code}}</span>
+<svg width="16" height="16" viewbox="0 0 16 16" aria-hidden="true"><path d="M4 4h8v9H4zM2 2h8" fill="none" stroke="currentColor"></path></svg>
+<span class="confirmation hidden" data-clipboard-target="confirmation">{{.Scene.Screen.Notice}}</span>
+</button>
+{{else}}
+<div class="category {{.Scene.Palette.Category}}{{if .Record.Credit}} is-credit{{else}} is-debit{{end}}">{{printf "%+d units" .Record.Amount}}</div>
+{{end}}
+{{end}}
+{{define "detail"}}<div class="{{.Scene.Palette.Detail}}"><span>{{.Record.Description}}</span></div>{{end}}
+{{define "expiry"}}
+<div class="{{.Scene.Palette.Expiry}}">{{if .Record.Expires}}<span class="{{if .Record.Expired}}is-expired{{else}}is-pending{{end}}">{{if .Record.Expired}}Ended {{else}}Valid until {{end}}{{.Record.Expires}}</span>{{end}}</div>
+{{end}}
+{{define "timestamp"}}<time class="{{.Scene.Palette.Date}}" datetime="{{.Record.Date}}">{{.Record.Date}}</time>{{end}}
