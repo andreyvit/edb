@@ -41,17 +41,6 @@ func RawPrefix(p []byte) RawRange                { return RawRange{Prefix: p} }
 func (rang RawRange) Prefixed(p []byte) RawRange { rang.Prefix = p; return rang }
 func (rang RawRange) Reversed() RawRange         { rang.Reverse = true; return rang }
 
-// func (rang *RawRange) items(buck *bbolt.Bucket) func(yield func(k, v []byte) bool) {
-// 	return func(yield func(k, v []byte) bool) {
-// 		c := buck.Cursor()
-// 		for k, v := rang.start(c); k != nil; k, v = rang.next(c) {
-// 			if !yield(k, v) {
-// 				return
-// 			}
-// 		}
-// 	}
-// }
-
 func (r *RawRange) start(bcur storageCursor, logger *slog.Logger) ([]byte, []byte) {
 	var k, v []byte
 	var skipInitial bool

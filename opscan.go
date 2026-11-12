@@ -6,6 +6,7 @@ import (
 	"log"
 	"log/slog"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -40,6 +41,23 @@ func (c Cursor[Row]) Row() *Row {
 	return valToRow[Row](rowVal)
 }
 
+// RowInto replaces *dst with the current row. A scan can reuse the same
+// struct on each iteration. Use Row when handing independently owned rows
+// to another consumer. Maps and slices from earlier rows are never reused.
+func (c Cursor[Row]) RowInto(dst *Row) (ValueMeta, error) {
+	t := c.Table()
+	row := reflect.ValueOf(dst)
+	if dst == nil || row.Type().Elem() != t.rowType {
+		return ValueMeta{}, fmt.Errorf("expected *%s", t.rowType)
+	}
+	var v value
+	if err := v.decode(c.RawRow(), false); err != nil {
+		return ValueMeta{}, err
+	}
+	row.Elem().SetZero()
+	return decodeRowValueInto(row, &v, t, c.RawKey(), c.Tx())
+}
+
 func (c Cursor[Row]) Meta() ValueMeta {
 	return c.RawCursor.Meta()
 }
@@ -60,7 +78,9 @@ func TableScan[Row any](txh Txish, opt ScanOptions) Cursor[Row] {
 	return Cursor[Row]{tx.TableScan(tbl, opt)}
 }
 
-func (tx *Tx) TableScan(tbl *Table, opt ScanOptions) *RawTableCursor {
+func (tx *Tx) TableScan(tblArg AnyTable, opt ScanOptions) *RawTableCursor {
+	tbl := tblArg.TableDef()
+
 	return tx.newTableCursor(tbl, opt)
 }
 
@@ -83,7 +103,9 @@ func ExactTableScan[Row any](txh Txish, value any) Cursor[Row] {
 	return TableScan[Row](txh, RangeScan(value, value, true, true))
 }
 
-func IndexScan[Row any](txh Txish, idx *Index, opt ScanOptions) Cursor[Row] {
+func IndexScan[Row any](txh Txish, idxArg AnyIndex, opt ScanOptions) Cursor[Row] {
+	idx := idxArg.IndexDef()
+
 	tx := txh.DBTx()
 	tbl := tableOf[Row](tx)
 	if tbl != idx.table {
@@ -95,32 +117,48 @@ func IndexScan[Row any](txh Txish, idx *Index, opt ScanOptions) Cursor[Row] {
 	return Cursor[Row]{tx.IndexScan(idx, opt)}
 }
 
-func FullIndexScan[Row any](txh Txish, idx *Index) Cursor[Row] {
+func FullIndexScan[Row any](txh Txish, idxArg AnyIndex) Cursor[Row] {
+	idx := idxArg.IndexDef()
+
 	return IndexScan[Row](txh, idx, FullScan())
 }
 
-func ExactIndexScan[Row any](txh Txish, idx *Index, indexValue any) Cursor[Row] {
+func ExactIndexScan[Row any](txh Txish, idxArg AnyIndex, indexValue any) Cursor[Row] {
+	idx := idxArg.IndexDef()
+
 	return IndexScan[Row](txh, idx, ExactScan(indexValue))
 }
-func ReverseExactIndexScan[Row any](txh Txish, idx *Index, indexValue any) Cursor[Row] {
+func ReverseExactIndexScan[Row any](txh Txish, idxArg AnyIndex, indexValue any) Cursor[Row] {
+	idx := idxArg.IndexDef()
+
 	return IndexScan[Row](txh, idx, ExactScan(indexValue).Reversed())
 }
 
-func RangeIndexScan[Row any](txh Txish, idx *Index, lowerValue, upperValue any, lowerInc, upperInc bool) Cursor[Row] {
+func RangeIndexScan[Row any](txh Txish, idxArg AnyIndex, lowerValue, upperValue any, lowerInc, upperInc bool) Cursor[Row] {
+	idx := idxArg.IndexDef()
+
 	return IndexScan[Row](txh, idx, RangeScan(lowerValue, upperValue, lowerInc, upperInc))
 }
-func ReverseRangeIndexScan[Row any](txh Txish, idx *Index, lowerValue, upperValue any, lowerInc, upperInc bool) Cursor[Row] {
+func ReverseRangeIndexScan[Row any](txh Txish, idxArg AnyIndex, lowerValue, upperValue any, lowerInc, upperInc bool) Cursor[Row] {
+	idx := idxArg.IndexDef()
+
 	return IndexScan[Row](txh, idx, RangeScan(lowerValue, upperValue, lowerInc, upperInc).Reversed())
 }
 
-func PrefixIndexScan[Row any](txh Txish, idx *Index, els int, indexValue any) Cursor[Row] {
+func PrefixIndexScan[Row any](txh Txish, idxArg AnyIndex, els int, indexValue any) Cursor[Row] {
+	idx := idxArg.IndexDef()
+
 	return IndexScan[Row](txh, idx, ExactScan(indexValue).Prefix(els))
 }
-func ReversePrefixIndexScan[Row any](txh Txish, idx *Index, els int, indexValue any) Cursor[Row] {
+func ReversePrefixIndexScan[Row any](txh Txish, idxArg AnyIndex, els int, indexValue any) Cursor[Row] {
+	idx := idxArg.IndexDef()
+
 	return IndexScan[Row](txh, idx, ExactScan(indexValue).Prefix(els).Reversed())
 }
 
-func (tx *Tx) IndexScan(idx *Index, opt ScanOptions) *RawIndexCursor {
+func (tx *Tx) IndexScan(idxArg AnyIndex, opt ScanOptions) *RawIndexCursor {
+	idx := idxArg.IndexDef()
+
 	return tx.newIndexCursor(idx, opt)
 }
 
@@ -224,6 +262,7 @@ const (
 )
 
 type ScanOptions struct {
+	resume          ScanBookmark
 	Reverse         bool
 	Method          ScanMethod
 	PrefixValue     reflect.Value
@@ -378,10 +417,15 @@ func ExactIDRangeScanVal(exact, lower, upper reflect.Value, lowerInc, upperInc b
 }
 
 type RawCursor interface {
-	Table() *Table
+	Bookmark() ScanBookmark
+	Table() *TableDef
 	Tx() *Tx
 	Next() bool
 	Key() any
+	// UintKey returns the primary key as uint64. It accepts unsigned integer
+	// types, including named types, and panics for other key types. The built-in
+	// unsigned encoding is read without reflection or allocation.
+	UintKey() uint64
 	RawKey() []byte
 	RowVal() (reflect.Value, ValueMeta)
 	TryRowVal() (reflect.Value, ValueMeta, error)
@@ -393,8 +437,10 @@ type RawCursor interface {
 }
 
 type RawTableCursor struct {
+	after    string
+	done     bool
 	tx       *Tx
-	table    *Table
+	table    *TableDef
 	dcur     storageCursor
 	prefix   []byte
 	lower    []byte
@@ -410,11 +456,15 @@ func (c *RawTableCursor) Tx() *Tx {
 	return c.tx
 }
 
-func (c *RawTableCursor) Table() *Table {
+func (c *RawTableCursor) Table() *TableDef {
 	return c.table
 }
 
 func (c *RawTableCursor) Next() bool {
+	if c.done {
+		return false
+	}
+	c.done = true
 	var k, v []byte
 	if c.init {
 		if c.reverse {
@@ -427,21 +477,25 @@ func (c *RawTableCursor) Next() bool {
 		}
 	} else {
 		c.init = true
+		dcur := c.dcur
+		if c.after != "" {
+			dcur = &resumeStorageCursor{dcur, c.after}
+		}
 		if c.reverse {
 			upper := c.upper
 			if upper == nil && len(c.prefix) > 0 {
 				upper = c.prefix
 			}
 			if upper != nil {
-				k, v = c.dcur.SeekLast(upper)
+				k, v = dcur.SeekLast(upper)
 				if k != nil && !c.upperInc && bytes.Equal(k, upper) {
-					k, v = c.dcur.Prev()
+					k, v = dcur.Prev()
 				}
 				if debugLogTableScans {
 					log.Printf("%s::TableScan: SEEK to upper = %x: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, upper, c.prefix, c.reverse, k, v)
 				}
 			} else {
-				k, v = c.dcur.Last()
+				k, v = dcur.Last()
 				if debugLogTableScans {
 					log.Printf("%s::TableScan: LAST: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, c.prefix, c.reverse, k, v)
 				}
@@ -452,15 +506,15 @@ func (c *RawTableCursor) Next() bool {
 				lower = c.prefix
 			}
 			if lower != nil {
-				k, v = c.dcur.Seek(lower)
+				k, v = dcur.Seek(lower)
 				if k != nil && !c.lowerInc && bytes.Equal(k, lower) {
-					k, v = c.dcur.Next()
+					k, v = dcur.Next()
 				}
 				if debugLogTableScans {
 					log.Printf("%s::TableScan: SEEK to lower = %x: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, lower, c.prefix, c.reverse, k, v)
 				}
 			} else {
-				k, v = c.dcur.First()
+				k, v = dcur.First()
 				if debugLogTableScans {
 					log.Printf("%s::TableScan: FIRST: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, c.prefix, c.reverse, k, v)
 				}
@@ -506,6 +560,7 @@ func (c *RawTableCursor) Next() bool {
 		log.Printf("%s::TableScan: MTCH: prefix = %x, reverse = %v => k = %x, v = %x", c.table.name, c.prefix, c.reverse, k, v)
 	}
 	c.k, c.v = k, v
+	c.done = false
 	return true
 }
 
@@ -515,6 +570,11 @@ func (c *RawTableCursor) RawKey() []byte {
 
 func (c *RawTableCursor) Key() any {
 	return c.table.DecodeKeyVal(c.k).Interface()
+}
+
+// UintKey returns the current unsigned primary key without boxing it.
+func (c *RawTableCursor) UintKey() uint64 {
+	return c.table.decodeUintKey(c.k)
 }
 
 func (c *RawTableCursor) RowVal() (reflect.Value, ValueMeta) {
@@ -558,12 +618,14 @@ func (c *RawTableCursor) TryRow() (any, ValueMeta, error) {
 	return valToAny(rowVal), rowMeta, nil
 }
 
-func (tx *Tx) newTableCursor(tbl *Table, opt ScanOptions) *RawTableCursor {
+func (tx *Tx) newTableCursor(tbl *TableDef, opt ScanOptions) *RawTableCursor {
+	opt.resume.check(tbl, nil, opt.Reverse)
 	buck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 	c := &RawTableCursor{
 		tx:      tx,
 		table:   tbl,
 		dcur:    buck.Cursor(),
+		after:   opt.resume.position,
 		reverse: opt.Reverse,
 	}
 	if opt.PrefixValue.IsValid() {
@@ -617,20 +679,24 @@ func (tx *Tx) newTableCursor(tbl *Table, opt ScanOptions) *RawTableCursor {
 }
 
 type RawIndexCursor struct {
-	table      *Table
-	index      *Index
-	strat      indexScanStrategy
-	tx         *Tx
-	icur       storageCursor
-	dbuck      storageBucket
-	prefix     []byte
-	resetDone  bool
-	reverse    bool
-	ik, iv, dk []byte
-	itup       tuple
+	after        string
+	done         bool
+	table        *TableDef
+	index        *IndexDef
+	strat        indexScanStrategy
+	tx           *Tx
+	icur         storageCursor
+	dbuck        storageBucket
+	dcur         storageCursor
+	prefix       []byte
+	resetDone    bool
+	reverse      bool
+	ik, iv, dk   []byte
+	itup         tuple
+	tupleScratch tuple
 }
 
-func (c *RawIndexCursor) Table() *Table {
+func (c *RawIndexCursor) Table() *TableDef {
 	return c.table
 }
 
@@ -639,9 +705,24 @@ func (c *RawIndexCursor) Tx() *Tx {
 }
 
 func (c *RawIndexCursor) Next() bool {
-	c.ik, c.iv, c.itup, c.dk = c.strat.Next(c.icur, !c.resetDone, c.reverse, c.index)
+	if c.done {
+		return false
+	}
+	icur := c.icur
+	if !c.resetDone && c.after != "" {
+		icur = &resumeStorageCursor{icur, c.after}
+	}
+	ik, iv, itup, dk := c.strat.Next(icur, !c.resetDone, c.reverse, c.index, c.tupleScratch)
 	c.resetDone = true
-	return (c.ik != nil)
+	if ik == nil {
+		c.done = true
+		return false
+	}
+	c.ik, c.iv, c.itup, c.dk = ik, iv, itup, dk
+	if itup != nil {
+		c.tupleScratch = itup[:0]
+	}
+	return true
 }
 
 func (c *RawIndexCursor) RawKey() []byte {
@@ -656,17 +737,29 @@ func (c *RawIndexCursor) Key() any {
 	return c.table.DecodeKeyVal(c.dk).Interface()
 }
 
+// UintKey returns the current row's unsigned primary key, not the index key.
+func (c *RawIndexCursor) UintKey() uint64 {
+	return c.table.decodeUintKey(c.dk)
+}
+
 func (c *RawIndexCursor) RowVal() (reflect.Value, ValueMeta) {
 	return must2(c.TryRowVal())
 }
 
 func (c *RawIndexCursor) TryRowVal() (reflect.Value, ValueMeta, error) {
-	dv := c.dbuck.Get(c.dk)
+	dv := c.RawRow()
 	return decodeTableRow(c.table, c.dk, dv, c.tx, false)
 }
 
 func (c *RawIndexCursor) RawRow() []byte {
-	return c.dbuck.Get(c.dk)
+	if c.dcur == nil {
+		c.dcur = c.dbuck.Cursor()
+	}
+	k, v := c.dcur.Seek(c.dk)
+	if !bytes.Equal(k, c.dk) {
+		return nil
+	}
+	return v
 }
 
 func (c *RawIndexCursor) ValueMemento() []byte {
@@ -680,7 +773,7 @@ func (c *RawIndexCursor) ValueMemento() []byte {
 }
 
 func (c *RawIndexCursor) Meta() ValueMeta {
-	dv := c.dbuck.Get(c.dk)
+	dv := c.RawRow()
 	var vle value
 	decodeTableValue(&vle, c.table, c.dk, dv, false)
 	return vle.ValueMeta()
@@ -699,13 +792,28 @@ func (c *RawIndexCursor) TryRow() (any, ValueMeta, error) {
 	return valToAny(rowVal), rowMeta, nil
 }
 
-func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
+func (tx *Tx) newIndexCursor(idx *IndexDef, opt ScanOptions) *RawIndexCursor {
 	idx.requireTable()
+	opt.resume.check(idx.table, idx, opt.Reverse)
 	if tx.isVerboseLoggingEnabled() {
 		tx.db.logf("db: INDEX_SCAN %s/%v", idx.FullName(), opt.LogString())
 	}
 	ibuck := nonNil(tx.stx.Bucket(idx.table.name, idx.buck))
 	dbuck := nonNil(tx.stx.Bucket(idx.table.name, dataBucketName))
+	strat := tx.newIndexScanStrategy(idx, opt)
+	return &RawIndexCursor{
+		table:   idx.table,
+		index:   idx,
+		tx:      tx,
+		icur:    ibuck.Cursor(),
+		after:   opt.resume.position,
+		dbuck:   dbuck,
+		reverse: opt.Reverse,
+		strat:   strat,
+	}
+}
+
+func (tx *Tx) newIndexScanStrategy(idx *IndexDef, opt ScanOptions) indexScanStrategy {
 	var strat indexScanStrategy
 	if opt.usesRawIndexRange() {
 		strat = tx.newRawRangeIndexScanStrategy(idx, opt)
@@ -726,7 +834,11 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 			if idx.isUnique && isFull {
 				strat = &exactIndexScanStrategy{keyPrefix, keyEls}
 			} else {
-				strat = &prefixIndexScanStrategy{keyPrefix, keyEls}
+				var components tuple
+				if keyEls > 1 {
+					components = indexBoundaryTuple(idx, opt.Lower, keyEls)
+				}
+				strat = &prefixIndexScanStrategy{keyPrefix, keyEls, components}
 			}
 		case ScanMethodRange:
 			if !opt.Lower.IsValid() && !opt.Upper.IsValid() {
@@ -756,40 +868,120 @@ func (tx *Tx) newIndexCursor(idx *Index, opt ScanOptions) *RawIndexCursor {
 					}
 				}
 
-				strat = &rangeIndexScanStrategy{els, lower, upper, opt.LowerInc, opt.UpperInc, idx.debugScans}
+				if lower != nil && upper != nil && bytes.Compare(lower, upper) > 0 {
+					strat = emptyIndexScanStrategy{}
+				} else {
+					strat = &rangeIndexScanStrategy{
+						els: els, lower: lower, upper: upper,
+						upperEnvelope: indexUpperEnvelope(idx, els, lower, upper),
+						lowerInc:      opt.LowerInc, upperInc: opt.UpperInc, verbose: idx.debugScans,
+					}
+				}
 			}
 
 		default:
 			panic(fmt.Errorf("unsupported scan method %v", opt.Method))
 		}
 	}
-	return &RawIndexCursor{
-		table:   idx.table,
-		index:   idx,
-		tx:      tx,
-		icur:    ibuck.Cursor(),
-		dbuck:   dbuck,
-		reverse: opt.Reverse,
-		strat:   strat,
-	}
+	return strat
 }
 
 func (so ScanOptions) usesRawIndexRange() bool {
 	return so.PrefixValue.IsValid() || so.LowerPrimaryKey.IsValid() || so.UpperPrimaryKey.IsValid()
 }
 
-func (tx *Tx) newRawRangeIndexScanStrategy(idx *Index, opt ScanOptions) indexScanStrategy {
+func (tx *Tx) newRawRangeIndexScanStrategy(idx *IndexDef, opt ScanOptions) indexScanStrategy {
 	if idx.isUnique && (opt.LowerPrimaryKey.IsValid() || opt.UpperPrimaryKey.IsValid()) {
 		panic("primary-key range is not supported for deprecated unique indices")
 	}
 	rang, empty := tx.indexScanRawRange(idx, opt)
-	if empty {
+	if empty && opt.Method != ScanMethodRange {
 		return emptyIndexScanStrategy{}
 	}
-	return &rawRangeIndexScanStrategy{rang, tx.logger}
+	filter := &filteredIndexScanStrategy{base: &rawRangeIndexScanStrategy{rang, tx.logger}, lowerInc: opt.LowerInc, upperInc: opt.UpperInc}
+	if opt.PrefixValue.IsValid() {
+		filter.prefix = indexBoundaryTuple(idx, opt.PrefixValue, opt.PrefixEls)
+	}
+	if opt.Method == ScanMethodExact {
+		filter.prefix = indexBoundaryTuple(idx, opt.Lower, 0)
+	}
+	if opt.Method == ScanMethodRange {
+		// Raw bounds that append a primary key cannot bound an entire logical
+		// index range: a shorter string index key can sort beyond that bound.
+		// Use the ordinary range traversal and apply PK limits at its endpoints.
+		plain := opt
+		plain.PrefixValue, plain.LowerPrimaryKey, plain.UpperPrimaryKey = reflect.Value{}, reflect.Value{}, reflect.Value{}
+		plain.PrefixEls = 0
+		if opt.LowerPrimaryKey.IsValid() {
+			plain.LowerInc = true
+		}
+		if opt.UpperPrimaryKey.IsValid() {
+			plain.UpperInc = true
+		}
+		filter.base = tx.newIndexScanStrategy(idx, plain)
+	}
+	if opt.LowerPrimaryKey.IsValid() {
+		filter.lower = indexBoundaryTuple(idx, opt.Lower, 0)
+		filter.lowerPK = idx.table.EncodeKeyVal(opt.LowerPrimaryKey)
+	}
+	if opt.UpperPrimaryKey.IsValid() {
+		upper := opt.Upper
+		if opt.Method == ScanMethodExact {
+			upper = opt.Lower
+		}
+		filter.upper = indexBoundaryTuple(idx, upper, 0)
+		filter.upperPK = idx.table.EncodeKeyVal(opt.UpperPrimaryKey)
+	}
+	return filter
 }
 
-func (tx *Tx) indexScanRawRange(idx *Index, opt ScanOptions) (RawRange, bool) {
+func indexBoundaryTuple(idx *IndexDef, key reflect.Value, els int) tuple {
+	tup := must(decodeTuple(idx.keyEnc.encode(nil, key)))
+	if els != 0 && els < len(tup) {
+		tup = tup[:els]
+	}
+	return tup
+}
+
+type filteredIndexScanStrategy struct {
+	base                 indexScanStrategy
+	prefix, lower, upper tuple
+	lowerPK, upperPK     []byte
+	lowerInc, upperInc   bool
+}
+
+func indexTupleHasPrefix(key, prefix tuple) bool {
+	return len(key) >= len(prefix) && key[:len(prefix)].Equal(prefix)
+}
+
+func (s *filteredIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *IndexDef, scratch tuple) ([]byte, []byte, tuple, []byte) {
+
+	for {
+		ik, iv, tup, pk := s.base.Next(c, reset, reverse, idx, scratch)
+		if ik == nil {
+			return nil, nil, nil, nil
+		}
+		reset, scratch = false, tup[:0]
+		if !indexTupleHasPrefix(tup, s.prefix) {
+			continue
+		}
+		if s.lowerPK != nil && indexTupleHasPrefix(tup, s.lower) {
+			cmp := bytes.Compare(pk, s.lowerPK)
+			if cmp < 0 || cmp == 0 && !s.lowerInc {
+				continue
+			}
+		}
+		if s.upperPK != nil && indexTupleHasPrefix(tup, s.upper) {
+			cmp := bytes.Compare(pk, s.upperPK)
+			if cmp > 0 || cmp == 0 && !s.upperInc {
+				continue
+			}
+		}
+		return ik, iv, tup, pk
+	}
+}
+
+func (tx *Tx) indexScanRawRange(idx *IndexDef, opt ScanOptions) (RawRange, bool) {
 	var rang RawRange
 	if opt.PrefixValue.IsValid() {
 		if at, et := opt.PrefixValue.Type(), idx.keyType(); at != et {
@@ -836,7 +1028,7 @@ func (tx *Tx) indexScanRawRange(idx *Index, opt ScanOptions) (RawRange, bool) {
 	return rang, false
 }
 
-func (tx *Tx) indexScanRawRangeBound(idx *Index, indexKey, primaryKey reflect.Value, inclusive, upper bool) ([]byte, bool, bool) {
+func (tx *Tx) indexScanRawRangeBound(idx *IndexDef, indexKey, primaryKey reflect.Value, inclusive, upper bool) ([]byte, bool, bool) {
 	if at, et := indexKey.Type(), idx.keyType(); at != et {
 		panic(fmt.Errorf("%s: attempted to scan index using bound of incorrect type %v, expected %v", idx.FullName(), at, et))
 	}
@@ -868,7 +1060,7 @@ func rawSuccessor(raw []byte) ([]byte, bool) {
 	return next, inc(next)
 }
 
-func (tx *Tx) encodeTableBoundaryKey(keyVal reflect.Value, tbl *Table, cutoffEls int) ([]byte, int, bool) {
+func (tx *Tx) encodeTableBoundaryKey(keyVal reflect.Value, tbl *TableDef, cutoffEls int) ([]byte, int, bool) {
 	keyBuf := acquireKeyBuffer()
 	fe := flatEncoder{buf: keyBuf.data}
 	tbl.keyEnc.encodeInto(&fe, keyVal)
@@ -888,7 +1080,7 @@ func (tx *Tx) encodeTableBoundaryKey(keyVal reflect.Value, tbl *Table, cutoffEls
 	return keyBuf.data, keyEls, isFull
 }
 
-func (tx *Tx) encodeIndexFullKey(indexKeyVal, tableKeyVal reflect.Value, idx *Index) []byte {
+func (tx *Tx) encodeIndexFullKey(indexKeyVal, tableKeyVal reflect.Value, idx *IndexDef) []byte {
 	tableKeyBuf := acquireKeyBuffer()
 	tbl := idx.Table()
 	tableKeyRaw := tbl.encodeKeyVal(tableKeyBuf.data, tableKeyVal, false)
@@ -906,7 +1098,7 @@ func (tx *Tx) encodeIndexFullKey(indexKeyVal, tableKeyVal reflect.Value, idx *In
 	return indexKeyBuf.data
 }
 
-func (tx *Tx) encodeIndexBoundaryKey(keyVal reflect.Value, idx *Index, cutoffEls int, neverFinalize bool) ([]byte, int, bool) {
+func (tx *Tx) encodeIndexBoundaryKey(keyVal reflect.Value, idx *IndexDef, cutoffEls int, neverFinalize bool) ([]byte, int, bool) {
 	indexKeyBuf := acquireKeyBuffer()
 	fe := flatEncoder{buf: indexKeyBuf.data}
 	idx.keyEnc.encodeInto(&fe, keyVal)
@@ -932,18 +1124,19 @@ func (tx *Tx) encodeIndexBoundaryKey(keyVal reflect.Value, idx *Index, cutoffEls
 }
 
 type indexScanStrategy interface {
-	Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte)
+	Next(c storageCursor, reset, reverse bool, idx *IndexDef, scratch tuple) ([]byte, []byte, tuple, []byte)
 }
 
 type emptyIndexScanStrategy struct{}
 
-func (_ emptyIndexScanStrategy) Next(storageCursor, bool, bool, *Index) ([]byte, []byte, tuple, []byte) {
+func (_ emptyIndexScanStrategy) Next(storageCursor, bool, bool, *IndexDef, tuple) ([]byte, []byte, tuple, []byte) {
 	return nil, nil, nil, nil
 }
 
 type fullIndexScanStrategy struct{}
 
-func (_ fullIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
+func (_ fullIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *IndexDef, scratch tuple) ([]byte, []byte, tuple, []byte) {
+
 	var ik, iv []byte
 	if reset {
 		if reverse {
@@ -961,7 +1154,7 @@ func (_ fullIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *I
 	if ik == nil {
 		return nil, nil, nil, nil
 	}
-	iktup := decodeIndexKey(ik, idx)
+	iktup := decodeIndexKeyInto(scratch, ik, idx)
 	dk, itup := decodeIndexTableKey(ik, iktup, iv, idx)
 	return ik, iv, itup, dk
 }
@@ -971,7 +1164,8 @@ type exactIndexScanStrategy struct {
 	els    int
 }
 
-func (s *exactIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
+func (s *exactIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *IndexDef, scratch tuple) ([]byte, []byte, tuple, []byte) {
+
 	var ik, iv []byte
 	if reset {
 		if reverse {
@@ -986,8 +1180,11 @@ func (s *exactIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx 
 			ik, iv = c.Next()
 		}
 	}
-	if ik != nil && bytes.HasPrefix(ik, s.prefix) {
-		dk, itup := decodeIndexTableKey(ik, nil, iv, idx)
+	for reverse && ik != nil && bytes.Compare(ik, s.prefix) > 0 {
+		ik, iv = c.Prev()
+	}
+	if ik != nil && bytes.Equal(ik, s.prefix) {
+		dk, itup := decodeIndexTableKey(ik, decodeIndexKeyInto(scratch, ik, idx), iv, idx)
 		return ik, iv, itup, dk
 	} else {
 		return nil, nil, nil, nil
@@ -995,11 +1192,13 @@ func (s *exactIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx 
 }
 
 type prefixIndexScanStrategy struct {
-	prefix []byte
-	els    int
+	prefix     []byte
+	els        int
+	components tuple
 }
 
-func (s *prefixIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
+func (s *prefixIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *IndexDef, scratch tuple) ([]byte, []byte, tuple, []byte) {
+
 	prefix := s.prefix
 	var ik, iv []byte
 	if reset {
@@ -1028,11 +1227,16 @@ func (s *prefixIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx
 			}
 			return nil, nil, nil, nil
 		}
-		ikTup := decodeIndexKey(ik, idx)
+		ikTup := decodeIndexKeyInto(scratch, ik, idx)
+		scratch = ikTup[:0]
 		if len(ikTup) < s.els {
 			panic(fmt.Errorf("%s: invalid index key %x: got %d els, wanted at least %d", idx.FullName(), ik, len(ikTup), s.els+1))
 		}
-		if ikTup.prefixLen(s.els) == len(prefix) {
+		matches := ikTup.prefixLen(s.els) == len(prefix)
+		if matches && s.components != nil {
+			matches = indexTupleHasPrefix(ikTup, s.components)
+		}
+		if matches {
 			if debugLogIndexScans {
 				log.Printf("prefix index scan step: MTCH: ik = %x, iv = %q", ik, iv)
 			}
@@ -1055,122 +1259,91 @@ func (s *prefixIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx
 }
 
 type rangeIndexScanStrategy struct {
-	els      int
-	lower    []byte
-	upper    []byte
-	lowerInc bool
-	upperInc bool
-	verbose  bool
+	els           int
+	lower         []byte
+	upper         []byte
+	upperEnvelope []byte
+	lowerInc      bool
+	upperInc      bool
+	verbose       bool
 }
 
-func (s *rangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
+// Tuple payloads have no separators. A matching index value that is a proper
+// prefix of upper can have its primary-key suffix sort beyond upper ("a"+"z"
+// sorts after "aa"). Use the shortest possible such prefix as the raw ceiling,
+// then check logical bounds on every entry. Fixed-width keys keep their exact
+// ceiling. Variable keys may require a wider scan, but no wire change/reindex.
+func indexUpperEnvelope(idx *IndexDef, els int, lower, upper []byte) []byte {
+	if upper == nil {
+		return nil
+	}
+	minimum := 0
+	for _, c := range idx.keyEnc.components[:els] {
+		minimum += c.minEncodedLen
+	}
+	n := minimum + sort.Search(len(upper)-minimum+1, func(i int) bool {
+		return bytes.Compare(upper[:minimum+i], lower) >= 0
+	})
+	return upper[:n]
+}
+
+func (s *rangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *IndexDef, scratch tuple) ([]byte, []byte, tuple, []byte) {
+
 	var ik, iv []byte
-	var skippingInitial bool
 	if reset {
 		if reverse {
-			if s.upper == nil {
-				if s.verbose {
-					log.Printf("range index scan step: SEEK_LAST")
-				}
+			if len(s.upperEnvelope) == 0 {
 				ik, iv = c.Last()
 			} else {
-				if s.verbose {
-					log.Printf("range index scan step: SEEK_REV: upper = %x", s.upper)
-				}
-				ik, iv = c.SeekLast(s.upper)
-				if !s.upperInc {
-					skippingInitial = true
-				}
+				ik, iv = c.SeekLast(s.upperEnvelope)
 			}
 		} else {
 			if s.lower == nil {
-				if s.verbose {
-					log.Printf("range index scan step: SEEK_FIRST")
-				}
 				ik, iv = c.First()
 			} else {
-				if s.verbose {
-					log.Printf("range index scan step: SEEK_FWD: lower = %x", s.lower)
-				}
 				ik, iv = c.Seek(s.lower)
-				if !s.lowerInc {
-					skippingInitial = true
-				}
 			}
 		}
+	} else if reverse {
+		ik, iv = c.Prev()
 	} else {
-		if s.verbose {
-			log.Printf("range index scan step: ADVC: reverse = %v", reverse)
+		ik, iv = c.Next()
+	}
+	for ik != nil {
+		// Tuple components have lengths in a footer, not separators. String index
+		// keys that are prefixes of one another can interleave in storage order.
+		// Stop only outside the raw envelope; check both logical bounds on every
+		// candidate, including when resuming in the middle of that envelope.
+		if reverse && s.lower != nil && bytes.Compare(ik, s.lower) < 0 {
+			break
+		}
+		if !reverse && len(s.upperEnvelope) != 0 && bytes.Compare(ik, s.upperEnvelope) > 0 && !bytes.HasPrefix(ik, s.upperEnvelope) {
+			break
+		}
+		ikTup := decodeIndexKeyInto(scratch, ik, idx)
+		scratch = ikTup[:0]
+		if len(ikTup) < s.els {
+			panic(fmt.Errorf("%s: invalid index key %x: got %d els, wanted at least %d", idx.FullName(), ik, len(ikTup), s.els+1))
+		}
+		relevant := ik[:ikTup.prefixLen(s.els)]
+		matches := true
+		if s.lower != nil {
+			cmp := bytes.Compare(relevant, s.lower)
+			matches = cmp > 0 || (cmp == 0 && s.lowerInc)
+		}
+		if matches && s.upper != nil {
+			cmp := bytes.Compare(relevant, s.upper)
+			matches = cmp < 0 || (cmp == 0 && s.upperInc)
+		}
+		if matches {
+			dk, itup := decodeIndexTableKey(ik, ikTup, iv, idx)
+			return ik, iv, itup, dk
 		}
 		if reverse {
 			ik, iv = c.Prev()
 		} else {
 			ik, iv = c.Next()
 		}
-	}
-
-	lower, upper := s.lower, s.upper
-	for ik != nil {
-		ikTup := decodeIndexKey(ik, idx)
-		if len(ikTup) < s.els {
-			panic(fmt.Errorf("%s: invalid index key %x: got %d els, wanted at least %d", idx.FullName(), ik, len(ikTup), s.els+1))
-		}
-		relevantLen := ikTup.prefixLen(s.els)
-		relevant := ik[:relevantLen]
-
-		if skippingInitial {
-			if reverse {
-				if bytes.Equal(relevant, s.upper) {
-					if s.verbose {
-						log.Printf("range index scan step: SKIP_INITIAL_EQ_UPPER: ik = %x, relevant = %x", ik, relevant)
-					}
-					ik, iv = c.Prev()
-					continue
-				}
-			} else {
-				if bytes.Equal(relevant, s.lower) {
-					if s.verbose {
-						log.Printf("range index scan step: SKIP_INITIAL_EQ_LOWER: ik = %x, relevant = %x", ik, relevant)
-					}
-					ik, iv = c.Next()
-					continue
-				}
-			}
-		}
-
-		if reverse {
-			if s.lower != nil {
-				// if debugLogScans {
-				// 	log.Printf("range index scan step: cmp (reverse+lower): ik = %x, relevant = %x, lower = %x", ik, relevant, lower)
-				// }
-				cmp := bytes.Compare(relevant, s.lower)
-				if cmp < 0 || (cmp == 0 && !s.lowerInc) {
-					if s.verbose {
-						log.Printf("range index scan step: BAIL: below lower: ik = %x, lower = %x", ik, lower)
-					}
-					return nil, nil, nil, nil
-				}
-			}
-		} else {
-			if s.upper != nil {
-				cmp := bytes.Compare(relevant, s.upper)
-				if cmp > 0 || (cmp == 0 && !s.upperInc) {
-					if s.verbose {
-						log.Printf("range index scan step: BAIL: above upper: ik = %x, upper = %x", ik, upper)
-					}
-					return nil, nil, nil, nil
-				}
-			}
-		}
-
-		if s.verbose {
-			log.Printf("range index scan step: MTCH: ik = %x, iv = %q", ik, iv)
-		}
-		dk, itup := decodeIndexTableKey(ik, ikTup, iv, idx)
-		return ik, iv, itup, dk
-	}
-	if s.verbose {
-		log.Printf("range index scan step: EOFd")
 	}
 	return nil, nil, nil, nil
 }
@@ -1180,8 +1353,8 @@ type rawRangeIndexScanStrategy struct {
 	logger *slog.Logger
 }
 
-func (s *rawRangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *Index) ([]byte, []byte, tuple, []byte) {
-	// slog.LogAttrs(context.Background(), slog.LevelDebug, "rawRangeIndexScanStrategy.Next")
+func (s *rawRangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *IndexDef, scratch tuple) ([]byte, []byte, tuple, []byte) {
+
 	var ik, iv []byte
 	if reset {
 		s.rang.Reverse = reverse
@@ -1192,7 +1365,7 @@ func (s *rawRangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, i
 	if ik == nil {
 		return nil, nil, nil, nil
 	}
-	ikTup := decodeIndexKey(ik, idx)
+	ikTup := decodeIndexKeyInto(scratch, ik, idx)
 	dk, itup := decodeIndexTableKey(ik, ikTup, iv, idx)
 	return ik, iv, itup, dk
 }

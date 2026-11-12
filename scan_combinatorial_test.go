@@ -3,6 +3,8 @@ package edb
 import (
 	"reflect"
 	"testing"
+
+	"github.com/andreyvit/edb/kvo"
 )
 
 type scanEdgeRow struct {
@@ -29,15 +31,20 @@ type scanEdgeCompoundRow struct {
 
 var (
 	scanEdgeSchema       = &Schema{}
-	scanEdgesByGroup     = AddIndex[string]("group")
-	scanEdgesByGroupSort = AddIndex[scanEdgeGroupSort]("group_sort")
-	scanEdgesByCode      = AddIndex[string]("code").Unique()
-	scanEdgesTable       = AddTable(scanEdgeSchema, "scan_edges", 1, func(row *scanEdgeRow, ib *IndexBuilder) {
-		ib.Add(scanEdgesByGroup, row.Group)
-		ib.Add(scanEdgesByGroupSort, scanEdgeGroupSort{Group: row.Group, Sort: row.Sort})
-		ib.Add(scanEdgesByCode, row.Code)
-	}, nil, []*Index{scanEdgesByGroup, scanEdgesByGroupSort, scanEdgesByCode})
-	scanEdgeCompoundTable = AddTable[scanEdgeCompoundRow](scanEdgeSchema, "scan_compound_edges", 1, nil, nil, nil)
+	scanEdgesByGroup     *IndexDef
+	scanEdgesByGroupSort *IndexDef
+	scanEdgesByCode      *IndexDef
+	scanEdgesTable       = DefineTable(scanEdgeSchema, "scan_edges", testIndexAccess[scanEdgeRow](indexGroup, indexSort, indexCode), func(b *TableBuilder[ID]) {
+		scanEdgesByGroup = b.AddIndex[string]("group", nil).IndexDef()
+		scanEdgesByGroupSort = b.AddIndex[scanEdgeGroupSort]("group_sort", nil).IndexDef()
+		scanEdgesByCode = b.AddIndex[string]("code", nil, IndexOptDeprecatedUnique).IndexDef()
+		b.SetIndexer(func(key ID, row kvo.Record, ib *IndexBuilder) {
+			ib.Add(scanEdgesByGroup, row.Get(indexGroup))
+			ib.Add(scanEdgesByGroupSort, scanEdgeGroupSort{Group: row.Get(indexGroup), Sort: row.Get(indexSort)})
+			ib.Add(scanEdgesByCode, row.Get(indexCode))
+		})
+	}).TableDef()
+	scanEdgeCompoundTable = DefineTable(scanEdgeSchema, "scan_compound_edges", testTableModel[scanEdgeCompoundRow](), func(b *TableBuilder[scanEdgeCompoundKey]) {}).TableDef()
 )
 
 type scanEdgeIDCase struct {
@@ -268,7 +275,7 @@ func TestIndexScan_UniqueScalarBoundaryMatrix(t *testing.T) {
 
 func TestIndexScan_MalformedOptionsPanic(t *testing.T) {
 	db := setupScanEdgeDB(t)
-	unownedIndex := AddIndex[string]("unowned")
+	unownedIndex := &IndexDef{name: "unowned"}
 	cases := []struct {
 		name string
 		run  func(tx *Tx)
@@ -459,7 +466,7 @@ func TestIndex_KeyStringParseAndDecodeRoundTrip(t *testing.T) {
 }
 
 func TestIndexScan_EmptyStrategyProducesEmptyCursor(t *testing.T) {
-	ik, iv, itup, dk := (emptyIndexScanStrategy{}).Next(nil, true, false, scanEdgesByGroup)
+	ik, iv, itup, dk := (emptyIndexScanStrategy{}).Next(nil, true, false, scanEdgesByGroup, nil)
 	if ik != nil || iv != nil || itup != nil || dk != nil {
 		t.Fatalf("empty strategy returned %x %x %v %x", ik, iv, itup, dk)
 	}
