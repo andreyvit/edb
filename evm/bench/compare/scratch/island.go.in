@@ -1,0 +1,63 @@
+// Generated into an overlay for the floating-point experiment only.
+package evm
+
+import "math"
+
+// Quota stops between any two instructions. The enclosing evaluator polls
+// cancellation at its usual remaining&255 boundaries. Peer calls and faults
+// cannot enter this helper. The next call starts with a fresh scratch bank.
+func runScratch(code []Instruction, r []uint64, cur *frame, remaining uint64, budget *executionBudget) (uint64, error) {
+	var bank struct { f0, f1, f2, f3 float64 }
+	pc := cur.pc-1
+	for {
+		quota := (remaining-1)&255 + 1
+		var spent uint64
+		var done bool
+		pc, spent, done = scratchChunk(code, r, pc, quota, &bank)
+		remaining -= spent
+		cur.pc = pc
+		if done {
+			return remaining, nil
+		}
+		if remaining == 0 {
+			return 0, ErrSteps
+		}
+		if err := budget.contextErr(); err != nil {
+			return remaining, err
+		}
+	}
+}
+
+func scratchChunk(code []Instruction, r []uint64, pc int, quota uint64, bank *struct{ f0,f1,f2,f3 float64 }) (int, uint64, bool) {
+	f0, f1, f2, f3 := bank.f0, bank.f1, bank.f2, bank.f3
+	for spent := uint64(0); spent < quota; spent++ {
+		ins := code[pc]
+		pc++
+		a,b,c := int(ins.A()),int(ins.B()),int(ins.C())
+		switch ins.Op() {
+		/*HANDLERS*/
+		case OpMoveR:
+			r[a] = r[b]
+		case OpJump:
+			pc += int(int32(ins.BC()))
+		case OpJz, OpJnz:
+			if (r[a] != 0) == (ins.Op() == OpJnz) { pc += int(int32(ins.BC())) }
+		case OpLoopLtI64:
+			r[a]++
+			if int64(r[a]) < int64(r[b]) {pc += int(int16(c))}
+		case opBranchLtI64, opBranchLtF64:
+			if ins.Op() == opBranchLtI64 {
+				r[a] = boolWord(int64(r[b]) < int64(r[c]))
+			} else {
+				r[a] = boolWord(math.Float64frombits(r[b]) < math.Float64frombits(r[c]))
+			}
+			branch := code[pc]
+			pc++
+			if (r[a] != 0) == (branch.Op()==OpJnz) {pc += int(int32(branch.BC()))}
+		default:
+			return pc-1, spent, true
+		}
+	}
+	bank.f0, bank.f1, bank.f2, bank.f3 = f0, f1, f2, f3
+	return pc, quota, false
+}

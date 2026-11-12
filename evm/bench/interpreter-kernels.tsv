@@ -1,0 +1,1101 @@
+series	round	runtime	workload	ns/op	B/op	allocs/op
+kernels	1	EVM before	Price	39998	0	0
+kernels	1	EVM before	Scan	4593	0	0
+kernels	1	EVM before	Fib	83035	0	0
+kernels	1	EVM before	Sieve	384280	81920	1
+kernels	1	EVM before	Mandelbrot	421999	0	0
+kernels	1	EVM	Price	27933	0	0
+kernels	1	EVM	Scan	3547	0	0
+kernels	1	EVM	Fib	51559	0	0
+kernels	1	EVM	Sieve	115309	81920	1
+kernels	1	EVM	Mandelbrot	223194	0	0
+kernels	1	EVM RawUnary	Scan	1863	0	0
+kernels	1	Yaegi	Price	172218	3080	265
+kernels	1	Yaegi	Scan	40154	13136	1050
+kernels	1	Yaegi	Fib	819619	1172194	25404
+kernels	1	Yaegi	Sieve	675402	11823	708
+kernels	1	Yaegi	Mandelbrot	2420968	1141042	56724
+kernels	1	Lunar	Price	51220	0	0
+kernels	1	Lunar	Scan	9328	0	0
+kernels	1	Lunar	Fib	62962	0	0
+kernels	1	Lunar	Sieve	305098	266640	13
+kernels	1	Lunar	Mandelbrot	460007	0	0
+kernels	1	GopherLua	Price	299709	185238	725
+kernels	1	GopherLua	Scan	16940	3642	262
+kernels	1	GopherLua	Fib	116882	92	1
+kernels	1	GopherLua	Sieve	779313	494702	1008
+kernels	1	GopherLua	Mandelbrot	1704618	1080942	4223
+kernels	1	PUC Lua	Price	31025.0	-	-
+kernels	1	PUC Lua	Scan	3038.5	-	-
+kernels	1	PUC Lua	Fib	21319.5	-	-
+kernels	1	PUC Lua	Sieve	101220.8	-	-
+kernels	1	PUC Lua	Mandelbrot	233385.8	-	-
+kernels	1	LuaJIT	Price	5429.3	-	-
+kernels	1	LuaJIT	Scan	2271.8	-	-
+kernels	1	LuaJIT	Fib	3837.9	-	-
+kernels	1	LuaJIT	Sieve	15134.8	-	-
+kernels	1	LuaJIT	Mandelbrot	26889.2	-	-
+kernels	1	LuaJIT off	Price	27788.5	-	-
+kernels	1	LuaJIT off	Scan	2707.3	-	-
+kernels	1	LuaJIT off	Fib	14132.9	-	-
+kernels	1	LuaJIT off	Sieve	111370.4	-	-
+kernels	1	LuaJIT off	Mandelbrot	444680.0	-	-
+kernels	2	EVM	Price	27660	0	0
+kernels	2	EVM	Scan	3708	0	0
+kernels	2	EVM	Fib	49642	0	0
+kernels	2	EVM	Sieve	118403	81920	1
+kernels	2	EVM	Mandelbrot	242779	0	0
+kernels	2	EVM RawUnary	Scan	1871	0	0
+kernels	2	Yaegi	Price	186999	3080	265
+kernels	2	Yaegi	Scan	49538	13136	1050
+kernels	2	Yaegi	Fib	764380	1172054	25401
+kernels	2	Yaegi	Sieve	568808	11823	708
+kernels	2	Yaegi	Mandelbrot	2589282	1141042	56724
+kernels	2	Lunar	Price	52787	0	0
+kernels	2	Lunar	Scan	9151	0	0
+kernels	2	Lunar	Fib	57320	0	0
+kernels	2	Lunar	Sieve	302703	266640	13
+kernels	2	Lunar	Mandelbrot	483772	0	0
+kernels	2	GopherLua	Price	262421	185238	725
+kernels	2	GopherLua	Scan	18009	3642	262
+kernels	2	GopherLua	Fib	121650	91	1
+kernels	2	GopherLua	Sieve	681937	494700	1008
+kernels	2	GopherLua	Mandelbrot	1669070	1082633	4229
+kernels	2	PUC Lua	Price	29232.5	-	-
+kernels	2	PUC Lua	Scan	2829.6	-	-
+kernels	2	PUC Lua	Fib	20745.6	-	-
+kernels	2	PUC Lua	Sieve	99363.2	-	-
+kernels	2	PUC Lua	Mandelbrot	210316.7	-	-
+kernels	2	LuaJIT	Price	4708.2	-	-
+kernels	2	LuaJIT	Scan	2282.2	-	-
+kernels	2	LuaJIT	Fib	3439.2	-	-
+kernels	2	LuaJIT	Sieve	12234.0	-	-
+kernels	2	LuaJIT	Mandelbrot	21968.3	-	-
+kernels	2	LuaJIT off	Price	26255.3	-	-
+kernels	2	LuaJIT off	Scan	2771.7	-	-
+kernels	2	LuaJIT off	Fib	15943.2	-	-
+kernels	2	LuaJIT off	Sieve	121455.6	-	-
+kernels	2	LuaJIT off	Mandelbrot	445332.5	-	-
+kernels	2	EVM before	Price	32309	0	0
+kernels	2	EVM before	Scan	4206	0	0
+kernels	2	EVM before	Fib	83839	0	0
+kernels	2	EVM before	Sieve	448219	81920	1
+kernels	2	EVM before	Mandelbrot	507540	0	0
+kernels	3	Yaegi	Price	194852	3080	265
+kernels	3	Yaegi	Scan	40430	13136	1050
+kernels	3	Yaegi	Fib	714364	1174308	25450
+kernels	3	Yaegi	Sieve	580629	11823	708
+kernels	3	Yaegi	Mandelbrot	2538098	1141041	56724
+kernels	3	Lunar	Price	55579	0	0
+kernels	3	Lunar	Scan	8688	0	0
+kernels	3	Lunar	Fib	61027	0	0
+kernels	3	Lunar	Sieve	280807	266640	13
+kernels	3	Lunar	Mandelbrot	432514	0	0
+kernels	3	GopherLua	Price	290844	185238	725
+kernels	3	GopherLua	Scan	20244	3642	262
+kernels	3	GopherLua	Fib	131392	92	1
+kernels	3	GopherLua	Sieve	842071	494711	1008
+kernels	3	GopherLua	Mandelbrot	1855725	1080249	4220
+kernels	3	PUC Lua	Price	30014.2	-	-
+kernels	3	PUC Lua	Scan	2759.9	-	-
+kernels	3	PUC Lua	Fib	21204.1	-	-
+kernels	3	PUC Lua	Sieve	103478.4	-	-
+kernels	3	PUC Lua	Mandelbrot	226520.8	-	-
+kernels	3	LuaJIT	Price	5319.2	-	-
+kernels	3	LuaJIT	Scan	2363.0	-	-
+kernels	3	LuaJIT	Fib	4014.6	-	-
+kernels	3	LuaJIT	Sieve	15570.0	-	-
+kernels	3	LuaJIT	Mandelbrot	29325.8	-	-
+kernels	3	LuaJIT off	Price	29334.0	-	-
+kernels	3	LuaJIT off	Scan	2893.1	-	-
+kernels	3	LuaJIT off	Fib	16234.6	-	-
+kernels	3	LuaJIT off	Sieve	127477.6	-	-
+kernels	3	LuaJIT off	Mandelbrot	478583.3	-	-
+kernels	3	EVM before	Price	41705	0	0
+kernels	3	EVM before	Scan	4611	0	0
+kernels	3	EVM before	Fib	93651	0	0
+kernels	3	EVM before	Sieve	540893	81920	1
+kernels	3	EVM before	Mandelbrot	557955	0	0
+kernels	3	EVM	Price	30617	0	0
+kernels	3	EVM	Scan	3983	0	0
+kernels	3	EVM	Fib	57774	0	0
+kernels	3	EVM	Sieve	118944	81920	1
+kernels	3	EVM	Mandelbrot	255986	0	0
+kernels	3	EVM RawUnary	Scan	2213	0	0
+kernels	4	Lunar	Price	55408	0	0
+kernels	4	Lunar	Scan	9815	0	0
+kernels	4	Lunar	Fib	58203	0	0
+kernels	4	Lunar	Sieve	302513	266640	13
+kernels	4	Lunar	Mandelbrot	459352	0	0
+kernels	4	GopherLua	Price	256453	185238	725
+kernels	4	GopherLua	Scan	17246	3641	262
+kernels	4	GopherLua	Fib	133138	91	1
+kernels	4	GopherLua	Sieve	888874	494696	1008
+kernels	4	GopherLua	Mandelbrot	1720380	1082632	4229
+kernels	4	PUC Lua	Price	31110.5	-	-
+kernels	4	PUC Lua	Scan	2870.2	-	-
+kernels	4	PUC Lua	Fib	22069.9	-	-
+kernels	4	PUC Lua	Sieve	102388.8	-	-
+kernels	4	PUC Lua	Mandelbrot	239118.3	-	-
+kernels	4	LuaJIT	Price	5073.5	-	-
+kernels	4	LuaJIT	Scan	2082.5	-	-
+kernels	4	LuaJIT	Fib	3150.6	-	-
+kernels	4	LuaJIT	Sieve	12881.2	-	-
+kernels	4	LuaJIT	Mandelbrot	22909.2	-	-
+kernels	4	LuaJIT off	Price	25982.3	-	-
+kernels	4	LuaJIT off	Scan	2963.4	-	-
+kernels	4	LuaJIT off	Fib	17143.3	-	-
+kernels	4	LuaJIT off	Sieve	129940.0	-	-
+kernels	4	LuaJIT off	Mandelbrot	426850.8	-	-
+kernels	4	EVM before	Price	30742	0	0
+kernels	4	EVM before	Scan	4291	0	0
+kernels	4	EVM before	Fib	95615	0	0
+kernels	4	EVM before	Sieve	368602	81920	1
+kernels	4	EVM before	Mandelbrot	395067	0	0
+kernels	4	EVM	Price	26028	0	0
+kernels	4	EVM	Scan	3454	0	0
+kernels	4	EVM	Fib	46797	0	0
+kernels	4	EVM	Sieve	116855	81920	1
+kernels	4	EVM	Mandelbrot	268983	0	0
+kernels	4	EVM RawUnary	Scan	1842	0	0
+kernels	4	Yaegi	Price	155890	3080	265
+kernels	4	Yaegi	Scan	37053	13136	1050
+kernels	4	Yaegi	Fib	596486	1172009	25400
+kernels	4	Yaegi	Sieve	537897	11823	708
+kernels	4	Yaegi	Mandelbrot	2495288	1141041	56724
+kernels	5	GopherLua	Price	230428	185238	725
+kernels	5	GopherLua	Scan	16169	3641	262
+kernels	5	GopherLua	Fib	116063	91	1
+kernels	5	GopherLua	Sieve	684502	494702	1008
+kernels	5	GopherLua	Mandelbrot	1524144	1081075	4223
+kernels	5	PUC Lua	Price	27722.3	-	-
+kernels	5	PUC Lua	Scan	2892.7	-	-
+kernels	5	PUC Lua	Fib	20537.0	-	-
+kernels	5	PUC Lua	Sieve	87179.6	-	-
+kernels	5	PUC Lua	Mandelbrot	202254.2	-	-
+kernels	5	LuaJIT	Price	4616.2	-	-
+kernels	5	LuaJIT	Scan	2094.4	-	-
+kernels	5	LuaJIT	Fib	3113.4	-	-
+kernels	5	LuaJIT	Sieve	12137.6	-	-
+kernels	5	LuaJIT	Mandelbrot	23848.3	-	-
+kernels	5	LuaJIT off	Price	24752.8	-	-
+kernels	5	LuaJIT off	Scan	2564.9	-	-
+kernels	5	LuaJIT off	Fib	13081.5	-	-
+kernels	5	LuaJIT off	Sieve	108668.8	-	-
+kernels	5	LuaJIT off	Mandelbrot	409700.0	-	-
+kernels	5	EVM before	Price	30671	0	0
+kernels	5	EVM before	Scan	3894	0	0
+kernels	5	EVM before	Fib	78491	0	0
+kernels	5	EVM before	Sieve	341942	81920	1
+kernels	5	EVM before	Mandelbrot	359406	0	0
+kernels	5	EVM	Price	26176	0	0
+kernels	5	EVM	Scan	3675	0	0
+kernels	5	EVM	Fib	49639	0	0
+kernels	5	EVM	Sieve	107957	81920	1
+kernels	5	EVM	Mandelbrot	215092	0	0
+kernels	5	EVM RawUnary	Scan	1824	0	0
+kernels	5	Yaegi	Price	160546	3080	265
+kernels	5	Yaegi	Scan	38161	13136	1050
+kernels	5	Yaegi	Fib	631365	1172527	25411
+kernels	5	Yaegi	Sieve	562069	11823	708
+kernels	5	Yaegi	Mandelbrot	2473710	1141042	56724
+kernels	5	Lunar	Price	49600	0	0
+kernels	5	Lunar	Scan	8801	0	0
+kernels	5	Lunar	Fib	55625	0	0
+kernels	5	Lunar	Sieve	259847	266640	13
+kernels	5	Lunar	Mandelbrot	453838	0	0
+kernels	6	PUC Lua	Price	28060.0	-	-
+kernels	6	PUC Lua	Scan	2935.9	-	-
+kernels	6	PUC Lua	Fib	21082.6	-	-
+kernels	6	PUC Lua	Sieve	105524.8	-	-
+kernels	6	PUC Lua	Mandelbrot	217430.8	-	-
+kernels	6	LuaJIT	Price	5019.3	-	-
+kernels	6	LuaJIT	Scan	2289.5	-	-
+kernels	6	LuaJIT	Fib	3332.6	-	-
+kernels	6	LuaJIT	Sieve	13540.4	-	-
+kernels	6	LuaJIT	Mandelbrot	25270.8	-	-
+kernels	6	LuaJIT off	Price	27807.2	-	-
+kernels	6	LuaJIT off	Scan	2697.0	-	-
+kernels	6	LuaJIT off	Fib	16419.1	-	-
+kernels	6	LuaJIT off	Sieve	127832.0	-	-
+kernels	6	LuaJIT off	Mandelbrot	494915.8	-	-
+kernels	6	EVM before	Price	52466	0	0
+kernels	6	EVM before	Scan	4473	0	0
+kernels	6	EVM before	Fib	88121	0	0
+kernels	6	EVM before	Sieve	401538	81920	1
+kernels	6	EVM before	Mandelbrot	429387	0	0
+kernels	6	EVM	Price	28199	0	0
+kernels	6	EVM	Scan	5679	0	0
+kernels	6	EVM	Fib	69677	0	0
+kernels	6	EVM	Sieve	138040	81920	1
+kernels	6	EVM	Mandelbrot	283146	0	0
+kernels	6	EVM RawUnary	Scan	2134	0	0
+kernels	6	Yaegi	Price	208708	3080	265
+kernels	6	Yaegi	Scan	41553	13136	1050
+kernels	6	Yaegi	Fib	701901	1171668	25393
+kernels	6	Yaegi	Sieve	730137	11824	709
+kernels	6	Yaegi	Mandelbrot	2616052	1141042	56724
+kernels	6	Lunar	Price	56596	0	0
+kernels	6	Lunar	Scan	11075	0	0
+kernels	6	Lunar	Fib	59589	0	0
+kernels	6	Lunar	Sieve	291867	266640	13
+kernels	6	Lunar	Mandelbrot	580722	0	0
+kernels	6	GopherLua	Price	305924	185238	725
+kernels	6	GopherLua	Scan	19356	3642	262
+kernels	6	GopherLua	Fib	142135	91	1
+kernels	6	GopherLua	Sieve	921395	494699	1008
+kernels	6	GopherLua	Mandelbrot	2041720	1082633	4229
+kernels	7	LuaJIT	Price	4984.3	-	-
+kernels	7	LuaJIT	Scan	2428.4	-	-
+kernels	7	LuaJIT	Fib	4648.5	-	-
+kernels	7	LuaJIT	Sieve	17607.2	-	-
+kernels	7	LuaJIT	Mandelbrot	62536.7	-	-
+kernels	7	LuaJIT off	Price	48134.7	-	-
+kernels	7	LuaJIT off	Scan	2872.0	-	-
+kernels	7	LuaJIT off	Fib	23039.7	-	-
+kernels	7	LuaJIT off	Sieve	134864.8	-	-
+kernels	7	LuaJIT off	Mandelbrot	509529.2	-	-
+kernels	7	EVM before	Price	35941	0	0
+kernels	7	EVM before	Scan	4382	0	0
+kernels	7	EVM before	Fib	98422	0	0
+kernels	7	EVM before	Sieve	460686	81920	1
+kernels	7	EVM before	Mandelbrot	444784	0	0
+kernels	7	EVM	Price	28805	0	0
+kernels	7	EVM	Scan	9631	0	0
+kernels	7	EVM	Fib	117137	0	0
+kernels	7	EVM	Sieve	163450	81920	1
+kernels	7	EVM	Mandelbrot	302223	0	0
+kernels	7	EVM RawUnary	Scan	2156	0	0
+kernels	7	Yaegi	Price	235821	3080	265
+kernels	7	Yaegi	Scan	52244	13136	1050
+kernels	7	Yaegi	Fib	2714419	1174307	25450
+kernels	7	Yaegi	Sieve	999403	11823	708
+kernels	7	Yaegi	Mandelbrot	3183644	1141041	56724
+kernels	7	Lunar	Price	54706	0	0
+kernels	7	Lunar	Scan	10803	0	0
+kernels	7	Lunar	Fib	69143	0	0
+kernels	7	Lunar	Sieve	296232	266640	13
+kernels	7	Lunar	Mandelbrot	477866	0	0
+kernels	7	GopherLua	Price	265531	185238	725
+kernels	7	GopherLua	Scan	17322	3642	262
+kernels	7	GopherLua	Fib	128849	91	1
+kernels	7	GopherLua	Sieve	827679	494703	1008
+kernels	7	GopherLua	Mandelbrot	1767028	1080989	4223
+kernels	7	PUC Lua	Price	28228.2	-	-
+kernels	7	PUC Lua	Scan	2894.5	-	-
+kernels	7	PUC Lua	Fib	21341.6	-	-
+kernels	7	PUC Lua	Sieve	100083.2	-	-
+kernels	7	PUC Lua	Mandelbrot	202940.8	-	-
+kernels	8	LuaJIT off	Price	24565.5	-	-
+kernels	8	LuaJIT off	Scan	2599.8	-	-
+kernels	8	LuaJIT off	Fib	13978.0	-	-
+kernels	8	LuaJIT off	Sieve	115423.6	-	-
+kernels	8	LuaJIT off	Mandelbrot	434795.8	-	-
+kernels	8	EVM before	Price	37414	0	0
+kernels	8	EVM before	Scan	5280	0	0
+kernels	8	EVM before	Fib	104039	0	0
+kernels	8	EVM before	Sieve	391832	81920	1
+kernels	8	EVM before	Mandelbrot	478510	0	0
+kernels	8	EVM	Price	29924	0	0
+kernels	8	EVM	Scan	3967	0	0
+kernels	8	EVM	Fib	55292	0	0
+kernels	8	EVM	Sieve	128622	81920	1
+kernels	8	EVM	Mandelbrot	253236	0	0
+kernels	8	EVM RawUnary	Scan	2125	0	0
+kernels	8	Yaegi	Price	180923	3080	265
+kernels	8	Yaegi	Scan	43625	13136	1050
+kernels	8	Yaegi	Fib	753338	1171200	25382
+kernels	8	Yaegi	Sieve	631436	11823	708
+kernels	8	Yaegi	Mandelbrot	2710164	1141042	56724
+kernels	8	Lunar	Price	52005	0	0
+kernels	8	Lunar	Scan	9961	0	0
+kernels	8	Lunar	Fib	61881	0	0
+kernels	8	Lunar	Sieve	299862	266640	13
+kernels	8	Lunar	Mandelbrot	471732	0	0
+kernels	8	GopherLua	Price	288466	185238	725
+kernels	8	GopherLua	Scan	20161	3641	262
+kernels	8	GopherLua	Fib	204750	92	1
+kernels	8	GopherLua	Sieve	887786	494711	1008
+kernels	8	GopherLua	Mandelbrot	2042612	1082633	4229
+kernels	8	PUC Lua	Price	33055.5	-	-
+kernels	8	PUC Lua	Scan	2924.6	-	-
+kernels	8	PUC Lua	Fib	22918.0	-	-
+kernels	8	PUC Lua	Sieve	129778.4	-	-
+kernels	8	PUC Lua	Mandelbrot	287916.7	-	-
+kernels	8	LuaJIT	Price	4738.2	-	-
+kernels	8	LuaJIT	Scan	2437.4	-	-
+kernels	8	LuaJIT	Fib	3425.1	-	-
+kernels	8	LuaJIT	Sieve	13797.2	-	-
+kernels	8	LuaJIT	Mandelbrot	23464.2	-	-
+records	1	EVM before	KVO/ReadCustomers	53079	1376	15
+records	1	EVM	KVO/ReadCustomers	56911	1376	15
+records	1	EVM	KVO/WriteCustomers	730487	760494	4799
+records	1	EVM before	KVO/WriteCustomers	736687	760493	4799
+records	1	EVM before	KVOCompact/ReadCustomers	68008	1376	15
+records	1	EVM	KVOCompact/ReadCustomers	64808	1376	15
+records	1	EVM	KVOCompact/WriteCustomers	1233788	745872	5216
+records	1	EVM before	KVOCompact/WriteCustomers	878605	745913	5216
+records	1	EVM before	KVOBolt/ReadCustomers	59240	1848	24
+records	1	EVM	KVOBolt/ReadCustomers	86264	1848	24
+records	1	EVM	KVOBolt/WriteCustomers	1045768	908909	8977
+records	1	EVM before	KVOBolt/WriteCustomers	1016628	908909	8977
+records	1	EVM before	KVOCompactBolt/ReadCustomers	67674	1848	24
+records	1	EVM	KVOCompactBolt/ReadCustomers	66327	1848	24
+records	1	EVM	KVOCompactBolt/WriteCustomers	1100498	914461	9384
+records	1	EVM before	KVOCompactBolt/WriteCustomers	1141364	914465	9384
+records	1	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	436591	1840	24
+records	1	EVM	AccountState/EVM/ReadCustomers/KVIndexer	531464	1840	24
+records	1	EVM	AccountState/EVM/WriteCustomers/KVIndexer	16482428	9130069	92727
+records	1	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	20635502	9453428	92777
+records	1	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7819479	2683360	77889
+records	1	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	8107654	2683354	77889
+records	1	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	33800081	15056962	285854
+records	1	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	45229861	15531670	285885
+records	2	EVM before	KVO/WriteCustomers	583078	760493	4799
+records	2	EVM	KVO/WriteCustomers	576248	760493	4799
+records	2	EVM	KVOCompact/ReadCustomers	62185	1376	15
+records	2	EVM before	KVOCompact/ReadCustomers	58285	1376	15
+records	2	EVM before	KVOCompact/WriteCustomers	752390	745951	5216
+records	2	EVM	KVOCompact/WriteCustomers	777239	745953	5216
+records	2	EVM	KVOBolt/ReadCustomers	50969	1848	24
+records	2	EVM before	KVOBolt/ReadCustomers	51834	1848	24
+records	2	EVM before	KVOBolt/WriteCustomers	811214	908908	8977
+records	2	EVM	KVOBolt/WriteCustomers	717773	908908	8977
+records	2	EVM	KVOCompactBolt/ReadCustomers	56285	1848	24
+records	2	EVM before	KVOCompactBolt/ReadCustomers	58854	1848	24
+records	2	EVM before	KVOCompactBolt/WriteCustomers	970807	914473	9384
+records	2	EVM	KVOCompactBolt/WriteCustomers	1087752	914470	9384
+records	2	EVM	AccountState/EVM/ReadCustomers/KVIndexer	459370	1840	24
+records	2	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	417887	1840	24
+records	2	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	17082707	9100206	92744
+records	2	EVM	AccountState/EVM/WriteCustomers/KVIndexer	14954164	9434925	92748
+records	2	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7273591	2683349	77889
+records	2	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7380768	2683353	77889
+records	2	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	31657203	14762102	285904
+records	2	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	35453933	15338940	285885
+records	2	EVM	KVO/ReadCustomers	53348	1376	15
+records	2	EVM before	KVO/ReadCustomers	55512	1376	15
+records	3	EVM before	KVOCompact/ReadCustomers	60956	1376	15
+records	3	EVM	KVOCompact/ReadCustomers	62249	1376	15
+records	3	EVM	KVOCompact/WriteCustomers	740820	745951	5216
+records	3	EVM before	KVOCompact/WriteCustomers	748155	745953	5216
+records	3	EVM before	KVOBolt/ReadCustomers	96568	1848	24
+records	3	EVM	KVOBolt/ReadCustomers	56861	1848	24
+records	3	EVM	KVOBolt/WriteCustomers	757253	908908	8977
+records	3	EVM before	KVOBolt/WriteCustomers	727335	908908	8977
+records	3	EVM before	KVOCompactBolt/ReadCustomers	58835	1848	24
+records	3	EVM	KVOCompactBolt/ReadCustomers	57694	1848	24
+records	3	EVM	KVOCompactBolt/WriteCustomers	920752	914474	9384
+records	3	EVM before	KVOCompactBolt/WriteCustomers	913513	914468	9384
+records	3	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	400101	1840	24
+records	3	EVM	AccountState/EVM/ReadCustomers/KVIndexer	428322	1840	24
+records	3	EVM	AccountState/EVM/WriteCustomers/KVIndexer	16438274	9303598	92768
+records	3	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	13744424	9044101	92727
+records	3	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7104327	2683349	77889
+records	3	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	6996628	2683353	77889
+records	3	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	27789516	14413029	285888
+records	3	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	28255632	14764820	285837
+records	3	EVM before	KVO/ReadCustomers	50482	1376	15
+records	3	EVM	KVO/ReadCustomers	50951	1376	15
+records	3	EVM	KVO/WriteCustomers	589179	760493	4799
+records	3	EVM before	KVO/WriteCustomers	640551	760493	4799
+records	4	EVM before	KVOCompact/WriteCustomers	893875	745913	5216
+records	4	EVM	KVOCompact/WriteCustomers	848086	745935	5216
+records	4	EVM	KVOBolt/ReadCustomers	69374	1848	24
+records	4	EVM before	KVOBolt/ReadCustomers	77210	1848	24
+records	4	EVM before	KVOBolt/WriteCustomers	1242725	908910	8977
+records	4	EVM	KVOBolt/WriteCustomers	1098407	908910	8977
+records	4	EVM	KVOCompactBolt/ReadCustomers	74759	1848	24
+records	4	EVM before	KVOCompactBolt/ReadCustomers	75903	1848	24
+records	4	EVM before	KVOCompactBolt/WriteCustomers	1198024	914466	9384
+records	4	EVM	KVOCompactBolt/WriteCustomers	1157824	914458	9384
+records	4	EVM	AccountState/EVM/ReadCustomers/KVIndexer	468659	1840	24
+records	4	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	465838	1840	24
+records	4	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	20537527	9014490	92719
+records	4	EVM	AccountState/EVM/WriteCustomers/KVIndexer	17396246	9778785	92823
+records	4	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	8719611	2683356	77889
+records	4	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7958909	2683357	77889
+records	4	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	34690738	14936790	285924
+records	4	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	37491003	15555434	285901
+records	4	EVM	KVO/ReadCustomers	56360	1376	15
+records	4	EVM before	KVO/ReadCustomers	74706	1376	15
+records	4	EVM before	KVO/WriteCustomers	738994	760494	4799
+records	4	EVM	KVO/WriteCustomers	654392	760493	4799
+records	4	EVM	KVOCompact/ReadCustomers	62094	1376	15
+records	4	EVM before	KVOCompact/ReadCustomers	68732	1376	15
+records	5	EVM before	KVOBolt/ReadCustomers	61928	1848	24
+records	5	EVM	KVOBolt/ReadCustomers	56927	1848	24
+records	5	EVM	KVOBolt/WriteCustomers	861258	908908	8977
+records	5	EVM before	KVOBolt/WriteCustomers	868308	908909	8977
+records	5	EVM before	KVOCompactBolt/ReadCustomers	63403	1848	24
+records	5	EVM	KVOCompactBolt/ReadCustomers	65632	1848	24
+records	5	EVM	KVOCompactBolt/WriteCustomers	1234968	914474	9384
+records	5	EVM before	KVOCompactBolt/WriteCustomers	968244	914473	9384
+records	5	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	509143	1840	24
+records	5	EVM	AccountState/EVM/ReadCustomers/KVIndexer	473410	1840	24
+records	5	EVM	AccountState/EVM/WriteCustomers/KVIndexer	15943364	9278499	92756
+records	5	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	14493338	9365129	92763
+records	5	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7412445	2683349	77889
+records	5	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7258246	2683349	77889
+records	5	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	28365450	14185582	285767
+records	5	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	30469513	14965327	285960
+records	5	EVM before	KVO/ReadCustomers	50734	1376	15
+records	5	EVM	KVO/ReadCustomers	49372	1376	15
+records	5	EVM	KVO/WriteCustomers	603750	760491	4799
+records	5	EVM before	KVO/WriteCustomers	563865	760493	4799
+records	5	EVM before	KVOCompact/ReadCustomers	58302	1376	15
+records	5	EVM	KVOCompact/ReadCustomers	59267	1376	15
+records	5	EVM	KVOCompact/WriteCustomers	813884	745939	5216
+records	5	EVM before	KVOCompact/WriteCustomers	769070	745927	5216
+records	6	EVM before	KVOBolt/WriteCustomers	730778	908908	8977
+records	6	EVM	KVOBolt/WriteCustomers	751685	908907	8977
+records	6	EVM	KVOCompactBolt/ReadCustomers	62450	1848	24
+records	6	EVM before	KVOCompactBolt/ReadCustomers	60934	1848	24
+records	6	EVM before	KVOCompactBolt/WriteCustomers	976951	914473	9384
+records	6	EVM	KVOCompactBolt/WriteCustomers	1004041	914472	9384
+records	6	EVM	AccountState/EVM/ReadCustomers/KVIndexer	418174	1840	24
+records	6	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	429152	1840	24
+records	6	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	14086034	9299797	92750
+records	6	EVM	AccountState/EVM/WriteCustomers/KVIndexer	13890315	9106627	92742
+records	6	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	6908704	2683349	77889
+records	6	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7644754	2683353	77889
+records	6	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	28455149	14939137	285861
+records	6	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	29199695	15624349	286027
+records	6	EVM	KVO/ReadCustomers	49595	1376	15
+records	6	EVM before	KVO/ReadCustomers	53049	1376	15
+records	6	EVM before	KVO/WriteCustomers	585532	760493	4799
+records	6	EVM	KVO/WriteCustomers	637978	760490	4799
+records	6	EVM	KVOCompact/ReadCustomers	64409	1376	15
+records	6	EVM before	KVOCompact/ReadCustomers	59950	1376	15
+records	6	EVM before	KVOCompact/WriteCustomers	798030	745946	5216
+records	6	EVM	KVOCompact/WriteCustomers	764570	745945	5216
+records	6	EVM	KVOBolt/ReadCustomers	56799	1848	24
+records	6	EVM before	KVOBolt/ReadCustomers	58005	1848	24
+records	7	EVM before	KVOCompactBolt/ReadCustomers	66913	1848	24
+records	7	EVM	KVOCompactBolt/ReadCustomers	68464	1848	24
+records	7	EVM	KVOCompactBolt/WriteCustomers	1006207	914458	9384
+records	7	EVM before	KVOCompactBolt/WriteCustomers	1008723	914474	9384
+records	7	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	433725	1840	24
+records	7	EVM	AccountState/EVM/ReadCustomers/KVIndexer	457656	1840	24
+records	7	EVM	AccountState/EVM/WriteCustomers/KVIndexer	16044303	9118982	92739
+records	7	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	15962997	9347338	92763
+records	7	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7526505	2683353	77889
+records	7	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7429779	2683358	77889
+records	7	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	32939173	14904678	285937
+records	7	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	32148539	15538463	285914
+records	7	EVM before	KVO/ReadCustomers	53867	1376	15
+records	7	EVM	KVO/ReadCustomers	53821	1376	15
+records	7	EVM	KVO/WriteCustomers	790029	760493	4799
+records	7	EVM before	KVO/WriteCustomers	675231	760493	4799
+records	7	EVM before	KVOCompact/ReadCustomers	69284	1376	15
+records	7	EVM	KVOCompact/ReadCustomers	67440	1376	15
+records	7	EVM	KVOCompact/WriteCustomers	860500	745930	5216
+records	7	EVM before	KVOCompact/WriteCustomers	810557	745920	5216
+records	7	EVM before	KVOBolt/ReadCustomers	56821	1848	24
+records	7	EVM	KVOBolt/ReadCustomers	56528	1848	24
+records	7	EVM	KVOBolt/WriteCustomers	898825	908907	8977
+records	7	EVM before	KVOBolt/WriteCustomers	843238	908908	8977
+records	8	EVM before	KVOCompactBolt/WriteCustomers	985089	914466	9384
+records	8	EVM	KVOCompactBolt/WriteCustomers	1071802	914469	9384
+records	8	EVM	AccountState/EVM/ReadCustomers/KVIndexer	429284	1840	24
+records	8	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	427705	1840	24
+records	8	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	14574659	9375597	92740
+records	8	EVM	AccountState/EVM/WriteCustomers/KVIndexer	13217966	9301745	92754
+records	8	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7149425	2683357	77889
+records	8	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7253200	2683357	77889
+records	8	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	29045938	14411856	285889
+records	8	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	29397156	14517854	285919
+records	8	EVM	KVO/ReadCustomers	54438	1376	15
+records	8	EVM before	KVO/ReadCustomers	59167	1376	15
+records	8	EVM before	KVO/WriteCustomers	613496	760493	4799
+records	8	EVM	KVO/WriteCustomers	607750	760493	4799
+records	8	EVM	KVOCompact/ReadCustomers	61206	1376	15
+records	8	EVM before	KVOCompact/ReadCustomers	62894	1376	15
+records	8	EVM before	KVOCompact/WriteCustomers	818000	745940	5216
+records	8	EVM	KVOCompact/WriteCustomers	831038	745954	5216
+records	8	EVM	KVOBolt/ReadCustomers	57465	1848	24
+records	8	EVM before	KVOBolt/ReadCustomers	55081	1848	24
+records	8	EVM before	KVOBolt/WriteCustomers	792383	908907	8977
+records	8	EVM	KVOBolt/WriteCustomers	856284	908908	8977
+records	8	EVM	KVOCompactBolt/ReadCustomers	72388	1848	24
+records	8	EVM before	KVOCompactBolt/ReadCustomers	71920	1848	24
+kernels-contended	1	EVM before	Price	119268	0	0
+kernels-contended	1	EVM before	Scan	23106	0	0
+kernels-contended	1	EVM before	Fib	171242	0	0
+kernels-contended	1	EVM before	Sieve	2080037	81920	1
+kernels-contended	1	EVM before	Mandelbrot	1190939	0	0
+kernels-contended	1	EVM	Price	90171	0	0
+kernels-contended	1	EVM	Scan	34769	0	0
+kernels-contended	1	EVM	Fib	117868	0	0
+kernels-contended	1	EVM	Sieve	407227	81920	1
+kernels-contended	1	EVM	Mandelbrot	1191188	0	0
+kernels-contended	1	EVM RawUnary	Scan	2800	0	0
+kernels-contended	1	Yaegi	Price	776497	3080	265
+kernels-contended	1	Yaegi	Scan	66887	13136	1050
+kernels-contended	1	Yaegi	Fib	2438765	1174307	25450
+kernels-contended	1	Yaegi	Sieve	2829545	11824	709
+kernels-contended	1	Yaegi	Mandelbrot	4889975	1137284	56537
+kernels-contended	1	Lunar	Price	350395	0	0
+kernels-contended	1	Lunar	Scan	11616	0	0
+kernels-contended	1	Lunar	Fib	91373	0	0
+kernels-contended	1	Lunar	Sieve	809661	266640	13
+kernels-contended	1	Lunar	Mandelbrot	4042100	0	0
+kernels-contended	1	GopherLua	Price	1153122	185238	725
+kernels-contended	1	GopherLua	Scan	69344	3641	262
+kernels-contended	1	GopherLua	Fib	1294292	91	1
+kernels-contended	1	GopherLua	Sieve	6281107	494712	1008
+kernels-contended	1	GopherLua	Mandelbrot	13989594	1082631	4229
+kernels-contended	1	PUC Lua	Price	156535.2	-	-
+kernels-contended	1	PUC Lua	Scan	5779.1	-	-
+kernels-contended	1	PUC Lua	Fib	66258.4	-	-
+kernels-contended	1	PUC Lua	Sieve	178585.6	-	-
+kernels-contended	1	PUC Lua	Mandelbrot	532538.3	-	-
+kernels-contended	1	LuaJIT	Price	10150.7	-	-
+kernels-contended	1	LuaJIT	Scan	6710.6	-	-
+kernels-contended	1	LuaJIT	Fib	5764.0	-	-
+kernels-contended	1	LuaJIT	Sieve	28384.8	-	-
+kernels-contended	1	LuaJIT	Mandelbrot	141497.5	-	-
+kernels-contended	1	LuaJIT off	Price	71666.0	-	-
+kernels-contended	1	LuaJIT off	Scan	19738.8	-	-
+kernels-contended	1	LuaJIT off	Fib	60476.4	-	-
+kernels-contended	1	LuaJIT off	Sieve	190158.4	-	-
+kernels-contended	1	LuaJIT off	Mandelbrot	1547535.8	-	-
+kernels-contended	2	EVM	Price	85178	0	0
+kernels-contended	2	EVM	Scan	7669	0	0
+kernels-contended	2	EVM	Fib	175309	0	0
+kernels-contended	2	EVM	Sieve	413334	81920	1
+kernels-contended	2	EVM	Mandelbrot	653183	0	0
+kernels-contended	2	EVM RawUnary	Scan	7944	0	0
+kernels-contended	2	Yaegi	Price	298054	3080	265
+kernels-contended	2	Yaegi	Scan	57214	13136	1050
+kernels-contended	2	Yaegi	Fib	1830134	1167980	25313
+kernels-contended	2	Yaegi	Sieve	2883698	11823	708
+kernels-contended	2	Yaegi	Mandelbrot	7095271	1141042	56724
+kernels-contended	2	Lunar	Price	182232	0	0
+kernels-contended	2	Lunar	Scan	31654	0	0
+kernels-contended	2	Lunar	Fib	140723	0	0
+kernels-contended	2	Lunar	Sieve	692113	266640	13
+kernels-contended	2	Lunar	Mandelbrot	1358358	0	0
+kernels-contended	2	GopherLua	Price	616762	185238	725
+kernels-contended	2	GopherLua	Scan	29560	3641	262
+kernels-contended	2	GopherLua	Fib	518121	92	1
+kernels-contended	2	GopherLua	Sieve	3200605	494696	1008
+kernels-contended	2	GopherLua	Mandelbrot	3688574	1078413	4213
+kernels-contended	2	PUC Lua	Price	122038.7	-	-
+kernels-contended	2	PUC Lua	Scan	6617.9	-	-
+kernels-contended	2	PUC Lua	Fib	80977.1	-	-
+kernels-contended	2	PUC Lua	Sieve	357905.6	-	-
+kernels-contended	2	PUC Lua	Mandelbrot	568629.2	-	-
+kernels-contended	2	LuaJIT	Price	24459.5	-	-
+kernels-contended	2	LuaJIT	Scan	4061.0	-	-
+kernels-contended	2	LuaJIT	Fib	5253.7	-	-
+kernels-contended	2	LuaJIT	Sieve	31738.0	-	-
+kernels-contended	2	LuaJIT	Mandelbrot	40114.2	-	-
+kernels-contended	2	LuaJIT off	Price	101078.7	-	-
+kernels-contended	2	LuaJIT off	Scan	5961.3	-	-
+kernels-contended	2	LuaJIT off	Fib	32767.4	-	-
+kernels-contended	2	LuaJIT off	Sieve	331406.4	-	-
+kernels-contended	2	LuaJIT off	Mandelbrot	659745.0	-	-
+kernels-contended	2	EVM before	Price	62579	0	0
+kernels-contended	2	EVM before	Scan	16838	0	0
+kernels-contended	2	EVM before	Fib	171287	0	0
+kernels-contended	2	EVM before	Sieve	890379	81920	1
+kernels-contended	2	EVM before	Mandelbrot	754131	0	0
+kernels-contended	3	Yaegi	Price	382201	3080	265
+kernels-contended	3	Yaegi	Scan	127453	13136	1050
+kernels-contended	3	Yaegi	Fib	3923150	1174308	25450
+kernels-contended	3	Yaegi	Sieve	1856723	11824	709
+kernels-contended	3	Yaegi	Mandelbrot	8455956	1135588	56453
+kernels-contended	3	Lunar	Price	206599	0	0
+kernels-contended	3	Lunar	Scan	21127	0	0
+kernels-contended	3	Lunar	Fib	134643	0	0
+kernels-contended	3	Lunar	Sieve	865958	266640	13
+kernels-contended	3	Lunar	Mandelbrot	2005491	0	0
+kernels-contended	3	GopherLua	Price	648776	185238	725
+kernels-contended	3	GopherLua	Scan	32774	3641	262
+kernels-contended	3	GopherLua	Fib	261824	91	1
+kernels-contended	3	GopherLua	Sieve	2231037	494693	1008
+kernels-contended	3	GopherLua	Mandelbrot	5323425	1082633	4229
+kernels-contended	3	PUC Lua	Price	74693.8	-	-
+kernels-contended	3	PUC Lua	Scan	4703.3	-	-
+kernels-contended	3	PUC Lua	Fib	55030.6	-	-
+kernels-contended	3	PUC Lua	Sieve	178514.4	-	-
+kernels-contended	3	PUC Lua	Mandelbrot	959985.8	-	-
+kernels-contended	3	LuaJIT	Price	16170.8	-	-
+kernels-contended	3	LuaJIT	Scan	10127.4	-	-
+kernels-contended	3	LuaJIT	Fib	5668.9	-	-
+kernels-contended	3	LuaJIT	Sieve	46712.8	-	-
+kernels-contended	3	LuaJIT	Mandelbrot	145934.2	-	-
+kernels-contended	3	LuaJIT off	Price	120745.0	-	-
+kernels-contended	3	LuaJIT off	Scan	6125.0	-	-
+kernels-contended	3	LuaJIT off	Fib	21790.3	-	-
+kernels-contended	3	LuaJIT off	Sieve	272984.0	-	-
+kernels-contended	3	LuaJIT off	Mandelbrot	1370635.0	-	-
+kernels-contended	3	EVM before	Price	111512	0	0
+kernels-contended	3	EVM before	Scan	16156	0	0
+kernels-contended	3	EVM before	Fib	499503	0	0
+kernels-contended	3	EVM before	Sieve	1489757	81920	1
+kernels-contended	3	EVM before	Mandelbrot	1315310	0	0
+kernels-contended	3	EVM	Price	111410	0	0
+kernels-contended	3	EVM	Scan	9307	0	0
+kernels-contended	3	EVM	Fib	118802	0	0
+kernels-contended	3	EVM	Sieve	232960	81920	1
+kernels-contended	3	EVM	Mandelbrot	1881458	0	0
+kernels-contended	3	EVM RawUnary	Scan	3950	0	0
+kernels-contended	4	Lunar	Price	314757	0	0
+kernels-contended	4	Lunar	Scan	41032	0	0
+kernels-contended	4	Lunar	Fib	359238	0	0
+kernels-contended	4	Lunar	Sieve	557587	266640	13
+kernels-contended	4	Lunar	Mandelbrot	821450	0	0
+kernels-contended	4	GopherLua	Price	772475	185238	725
+kernels-contended	4	GopherLua	Scan	50302	3641	262
+kernels-contended	4	GopherLua	Fib	455522	92	1
+kernels-contended	4	GopherLua	Sieve	4837586	494675	1008
+kernels-contended	4	GopherLua	Mandelbrot	4759566	1082633	4229
+kernels-contended	4	PUC Lua	Price	124637.7	-	-
+kernels-contended	4	PUC Lua	Scan	4866.5	-	-
+kernels-contended	4	PUC Lua	Fib	38529.6	-	-
+kernels-contended	4	PUC Lua	Sieve	234034.4	-	-
+kernels-contended	4	PUC Lua	Mandelbrot	1266641.7	-	-
+kernels-contended	4	LuaJIT	Price	8385.5	-	-
+kernels-contended	4	LuaJIT	Scan	3323.1	-	-
+kernels-contended	4	LuaJIT	Fib	10894.5	-	-
+kernels-contended	4	LuaJIT	Sieve	20354.4	-	-
+kernels-contended	4	LuaJIT	Mandelbrot	52831.7	-	-
+kernels-contended	4	LuaJIT off	Price	105068.2	-	-
+kernels-contended	4	LuaJIT off	Scan	3136.9	-	-
+kernels-contended	4	LuaJIT off	Fib	27837.9	-	-
+kernels-contended	4	LuaJIT off	Sieve	444200.0	-	-
+kernels-contended	4	LuaJIT off	Mandelbrot	867714.2	-	-
+kernels-contended	4	EVM before	Price	71840	0	0
+kernels-contended	4	EVM before	Scan	7901	0	0
+kernels-contended	4	EVM before	Fib	284252	0	0
+kernels-contended	4	EVM before	Sieve	2149532	81920	1
+kernels-contended	4	EVM before	Mandelbrot	2208865	0	0
+kernels-contended	4	EVM	Price	109551	0	0
+kernels-contended	4	EVM	Scan	40714	0	0
+kernels-contended	4	EVM	Fib	154778	0	0
+kernels-contended	4	EVM	Sieve	427728	81920	1
+kernels-contended	4	EVM	Mandelbrot	1496666	0	0
+kernels-contended	4	EVM RawUnary	Scan	5128	0	0
+kernels-contended	4	Yaegi	Price	334270	3080	265
+kernels-contended	4	Yaegi	Scan	70051	13136	1050
+kernels-contended	4	Yaegi	Fib	2032063	1174308	25450
+kernels-contended	4	Yaegi	Sieve	4519773	11823	708
+kernels-contended	4	Yaegi	Mandelbrot	4086346	1137109	56529
+kernels-contended	5	GopherLua	Price	946895	185238	725
+kernels-contended	5	GopherLua	Scan	35722	3641	262
+kernels-contended	5	GopherLua	Fib	364585	91	1
+kernels-contended	5	GopherLua	Sieve	1853581	494711	1008
+kernels-contended	5	GopherLua	Mandelbrot	4216140	1082633	4229
+kernels-contended	5	PUC Lua	Price	50715.0	-	-
+kernels-contended	5	PUC Lua	Scan	6043.6	-	-
+kernels-contended	5	PUC Lua	Fib	37322.1	-	-
+kernels-contended	5	PUC Lua	Sieve	158929.6	-	-
+kernels-contended	5	PUC Lua	Mandelbrot	336396.7	-	-
+kernels-contended	5	LuaJIT	Price	6968.8	-	-
+kernels-contended	5	LuaJIT	Scan	8176.0	-	-
+kernels-contended	5	LuaJIT	Fib	9047.1	-	-
+kernels-contended	5	LuaJIT	Sieve	38780.0	-	-
+kernels-contended	5	LuaJIT	Mandelbrot	85276.7	-	-
+kernels-contended	5	LuaJIT off	Price	68716.8	-	-
+kernels-contended	5	LuaJIT off	Scan	3329.1	-	-
+kernels-contended	5	LuaJIT off	Fib	25834.4	-	-
+kernels-contended	5	LuaJIT off	Sieve	284942.4	-	-
+kernels-contended	5	LuaJIT off	Mandelbrot	803777.5	-	-
+kernels-contended	5	EVM before	Price	71755	0	0
+kernels-contended	5	EVM before	Scan	9672	0	0
+kernels-contended	5	EVM before	Fib	137833	0	0
+kernels-contended	5	EVM before	Sieve	591311	81920	1
+kernels-contended	5	EVM before	Mandelbrot	1117083	0	0
+kernels-contended	5	EVM	Price	101295	0	0
+kernels-contended	5	EVM	Scan	17148	0	0
+kernels-contended	5	EVM	Fib	269857	0	0
+kernels-contended	5	EVM	Sieve	404461	81920	1
+kernels-contended	5	EVM	Mandelbrot	561534	0	0
+kernels-contended	5	EVM RawUnary	Scan	9978	0	0
+kernels-contended	5	Yaegi	Price	483041	3080	265
+kernels-contended	5	Yaegi	Scan	79920	13136	1050
+kernels-contended	5	Yaegi	Fib	1421996	1169652	25349
+kernels-contended	5	Yaegi	Sieve	2896287	11824	709
+kernels-contended	5	Yaegi	Mandelbrot	6429215	1137109	56529
+kernels-contended	5	Lunar	Price	71824	0	0
+kernels-contended	5	Lunar	Scan	37278	0	0
+kernels-contended	5	Lunar	Fib	117880	0	0
+kernels-contended	5	Lunar	Sieve	505631	266640	13
+kernels-contended	5	Lunar	Mandelbrot	568852	0	0
+kernels-contended	6	PUC Lua	Price	73277.0	-	-
+kernels-contended	6	PUC Lua	Scan	4541.8	-	-
+kernels-contended	6	PUC Lua	Fib	46201.1	-	-
+kernels-contended	6	PUC Lua	Sieve	149775.6	-	-
+kernels-contended	6	PUC Lua	Mandelbrot	530798.3	-	-
+kernels-contended	6	LuaJIT	Price	7996.2	-	-
+kernels-contended	6	LuaJIT	Scan	7242.8	-	-
+kernels-contended	6	LuaJIT	Fib	13966.0	-	-
+kernels-contended	6	LuaJIT	Sieve	44852.8	-	-
+kernels-contended	6	LuaJIT	Mandelbrot	81100.0	-	-
+kernels-contended	6	LuaJIT off	Price	67982.0	-	-
+kernels-contended	6	LuaJIT off	Scan	7495.4	-	-
+kernels-contended	6	LuaJIT off	Fib	53212.3	-	-
+kernels-contended	6	LuaJIT off	Sieve	602770.4	-	-
+kernels-contended	6	LuaJIT off	Mandelbrot	2331804.2	-	-
+kernels-contended	6	EVM before	Price	131122	0	0
+kernels-contended	6	EVM before	Scan	13767	0	0
+kernels-contended	6	EVM before	Fib	276929	0	0
+kernels-contended	6	EVM before	Sieve	717740	81920	1
+kernels-contended	6	EVM before	Mandelbrot	2210129	0	0
+kernels-contended	6	EVM	Price	104576	0	0
+kernels-contended	6	EVM	Scan	15742	0	0
+kernels-contended	6	EVM	Fib	154043	0	0
+kernels-contended	6	EVM	Sieve	179083	81920	1
+kernels-contended	6	EVM	Mandelbrot	2107484	0	0
+kernels-contended	6	EVM RawUnary	Scan	15319	0	0
+kernels-contended	6	Yaegi	Price	808378	3080	265
+kernels-contended	6	Yaegi	Scan	109543	13136	1050
+kernels-contended	6	Yaegi	Fib	1416335	1170077	25358
+kernels-contended	6	Yaegi	Sieve	820036	11823	708
+kernels-contended	6	Yaegi	Mandelbrot	11423119	1141041	56724
+kernels-contended	6	Lunar	Price	58312	0	0
+kernels-contended	6	Lunar	Scan	19279	0	0
+kernels-contended	6	Lunar	Fib	189895	0	0
+kernels-contended	6	Lunar	Sieve	391984	266640	13
+kernels-contended	6	Lunar	Mandelbrot	552985	0	0
+kernels-contended	6	GopherLua	Price	487854	185238	725
+kernels-contended	6	GopherLua	Scan	31338	3641	262
+kernels-contended	6	GopherLua	Fib	257000	91	1
+kernels-contended	6	GopherLua	Sieve	1283801	494711	1008
+kernels-contended	6	GopherLua	Mandelbrot	2730448	1082633	4229
+kernels-contended	7	LuaJIT	Price	6967.8	-	-
+kernels-contended	7	LuaJIT	Scan	3021.3	-	-
+kernels-contended	7	LuaJIT	Fib	6170.0	-	-
+kernels-contended	7	LuaJIT	Sieve	24873.6	-	-
+kernels-contended	7	LuaJIT	Mandelbrot	51497.5	-	-
+kernels-contended	7	LuaJIT off	Price	43537.8	-	-
+kernels-contended	7	LuaJIT off	Scan	4921.9	-	-
+kernels-contended	7	LuaJIT off	Fib	22684.1	-	-
+kernels-contended	7	LuaJIT off	Sieve	279048.0	-	-
+kernels-contended	7	LuaJIT off	Mandelbrot	1176135.8	-	-
+kernels-contended	7	EVM before	Price	55926	0	0
+kernels-contended	7	EVM before	Scan	11832	0	0
+kernels-contended	7	EVM before	Fib	226562	0	0
+kernels-contended	7	EVM before	Sieve	1000791	81920	1
+kernels-contended	7	EVM before	Mandelbrot	759664	0	0
+kernels-contended	7	EVM	Price	40102	0	0
+kernels-contended	7	EVM	Scan	5331	0	0
+kernels-contended	7	EVM	Fib	67962	0	0
+kernels-contended	7	EVM	Sieve	258099	81920	1
+kernels-contended	7	EVM	Mandelbrot	370609	0	0
+kernels-contended	7	EVM RawUnary	Scan	4119	0	0
+kernels-contended	7	Yaegi	Price	268257	3080	265
+kernels-contended	7	Yaegi	Scan	80549	13136	1050
+kernels-contended	7	Yaegi	Fib	1543133	1169832	25353
+kernels-contended	7	Yaegi	Sieve	1049869	11823	708
+kernels-contended	7	Yaegi	Mandelbrot	7694627	1141042	56724
+kernels-contended	7	Lunar	Price	134298	0	0
+kernels-contended	7	Lunar	Scan	17609	0	0
+kernels-contended	7	Lunar	Fib	171717	0	0
+kernels-contended	7	Lunar	Sieve	469899	266640	13
+kernels-contended	7	Lunar	Mandelbrot	3057885	0	0
+kernels-contended	7	GopherLua	Price	513491	185238	725
+kernels-contended	7	GopherLua	Scan	38942	3641	262
+kernels-contended	7	GopherLua	Fib	477538	92	1
+kernels-contended	7	GopherLua	Sieve	3346074	494713	1008
+kernels-contended	7	GopherLua	Mandelbrot	3538906	1082633	4229
+kernels-contended	7	PUC Lua	Price	59381.3	-	-
+kernels-contended	7	PUC Lua	Scan	4094.1	-	-
+kernels-contended	7	PUC Lua	Fib	96788.2	-	-
+kernels-contended	7	PUC Lua	Sieve	117657.2	-	-
+kernels-contended	7	PUC Lua	Mandelbrot	646930.8	-	-
+kernels-contended	8	LuaJIT off	Price	50345.2	-	-
+kernels-contended	8	LuaJIT off	Scan	4253.5	-	-
+kernels-contended	8	LuaJIT off	Fib	46841.1	-	-
+kernels-contended	8	LuaJIT off	Sieve	161701.2	-	-
+kernels-contended	8	LuaJIT off	Mandelbrot	1434249.2	-	-
+kernels-contended	8	EVM before	Price	126937	0	0
+kernels-contended	8	EVM before	Scan	17419	0	0
+kernels-contended	8	EVM before	Fib	258674	0	0
+kernels-contended	8	EVM before	Sieve	1239879	81920	1
+kernels-contended	8	EVM before	Mandelbrot	866743	0	0
+kernels-contended	8	EVM	Price	79582	0	0
+kernels-contended	8	EVM	Scan	24529	0	0
+kernels-contended	8	EVM	Fib	128920	0	0
+kernels-contended	8	EVM	Sieve	324651	81920	1
+kernels-contended	8	EVM	Mandelbrot	586178	0	0
+kernels-contended	8	EVM RawUnary	Scan	4183	0	0
+kernels-contended	8	Yaegi	Price	509306	3080	265
+kernels-contended	8	Yaegi	Scan	95972	13136	1050
+kernels-contended	8	Yaegi	Fib	3339159	1174307	25450
+kernels-contended	8	Yaegi	Sieve	3258129	11823	708
+kernels-contended	8	Yaegi	Mandelbrot	4356155	1141042	56724
+kernels-contended	8	Lunar	Price	241372	0	0
+kernels-contended	8	Lunar	Scan	49135	0	0
+kernels-contended	8	Lunar	Fib	143057	0	0
+kernels-contended	8	Lunar	Sieve	1022365	266640	13
+kernels-contended	8	Lunar	Mandelbrot	1652706	0	0
+kernels-contended	8	GopherLua	Price	1142593	185238	725
+kernels-contended	8	GopherLua	Scan	57232	3641	262
+kernels-contended	8	GopherLua	Fib	213445	92	1
+kernels-contended	8	GopherLua	Sieve	1702484	494697	1008
+kernels-contended	8	GopherLua	Mandelbrot	4738075	1082633	4229
+kernels-contended	8	PUC Lua	Price	181863.7	-	-
+kernels-contended	8	PUC Lua	Scan	8505.6	-	-
+kernels-contended	8	PUC Lua	Fib	83316.3	-	-
+kernels-contended	8	PUC Lua	Sieve	266813.6	-	-
+kernels-contended	8	PUC Lua	Mandelbrot	1114281.7	-	-
+kernels-contended	8	LuaJIT	Price	15096.7	-	-
+kernels-contended	8	LuaJIT	Scan	10701.6	-	-
+kernels-contended	8	LuaJIT	Fib	8864.7	-	-
+kernels-contended	8	LuaJIT	Sieve	28784.4	-	-
+kernels-contended	8	LuaJIT	Mandelbrot	88980.8	-	-
+records-contended	1	EVM before	KVO/ReadCustomers	136759	1376	15
+records-contended	1	EVM	KVO/ReadCustomers	141861	1376	15
+records-contended	1	EVM	KVO/WriteCustomers	1501335	760495	4799
+records-contended	1	EVM before	KVO/WriteCustomers	1285505	760495	4799
+records-contended	1	EVM before	KVOCompact/ReadCustomers	117184	1376	15
+records-contended	1	EVM	KVOCompact/ReadCustomers	185388	1376	15
+records-contended	1	EVM	KVOCompact/WriteCustomers	3121216	745567	5216
+records-contended	1	EVM before	KVOCompact/WriteCustomers	2059280	745789	5216
+records-contended	1	EVM before	KVOBolt/ReadCustomers	167605	1848	24
+records-contended	1	EVM	KVOBolt/ReadCustomers	146617	1848	24
+records-contended	1	EVM	KVOBolt/WriteCustomers	2871247	908916	8977
+records-contended	1	EVM before	KVOBolt/WriteCustomers	2060718	908915	8977
+records-contended	1	EVM before	KVOCompactBolt/ReadCustomers	224186	1848	24
+records-contended	1	EVM	KVOCompactBolt/ReadCustomers	182433	1848	24
+records-contended	1	EVM	KVOCompactBolt/WriteCustomers	3138314	914414	9382
+records-contended	1	EVM before	KVOCompactBolt/WriteCustomers	3022564	914419	9382
+records-contended	1	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	2108230	1840	24
+records-contended	1	EVM	AccountState/EVM/ReadCustomers/KVIndexer	991983	1840	24
+records-contended	1	EVM	AccountState/EVM/WriteCustomers/KVIndexer	46192792	9121538	92712
+records-contended	1	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	50873446	9448317	92787
+records-contended	1	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	15914015	2683354	77889
+records-contended	1	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	11021276	2683357	77889
+records-contended	1	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	119496446	15243514	285723
+records-contended	1	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	129698208	16450704	286167
+records-contended	2	EVM before	KVO/WriteCustomers	1245632	760494	4799
+records-contended	2	EVM	KVO/WriteCustomers	1389401	760494	4799
+records-contended	2	EVM	KVOCompact/ReadCustomers	303620	1376	15
+records-contended	2	EVM before	KVOCompact/ReadCustomers	141516	1376	15
+records-contended	2	EVM before	KVOCompact/WriteCustomers	2046000	745767	5216
+records-contended	2	EVM	KVOCompact/WriteCustomers	2721921	745806	5216
+records-contended	2	EVM	KVOBolt/ReadCustomers	137104	1848	24
+records-contended	2	EVM before	KVOBolt/ReadCustomers	107890	1848	24
+records-contended	2	EVM before	KVOBolt/WriteCustomers	1624419	908913	8977
+records-contended	2	EVM	KVOBolt/WriteCustomers	2260216	908920	8977
+records-contended	2	EVM	KVOCompactBolt/ReadCustomers	126095	1848	24
+records-contended	2	EVM before	KVOCompactBolt/ReadCustomers	146606	1848	24
+records-contended	2	EVM before	KVOCompactBolt/WriteCustomers	2836221	914440	9383
+records-contended	2	EVM	KVOCompactBolt/WriteCustomers	2054097	914432	9383
+records-contended	2	EVM	AccountState/EVM/ReadCustomers/KVIndexer	2211354	1840	24
+records-contended	2	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	1002986	1840	24
+records-contended	2	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	41227019	8727566	92677
+records-contended	2	EVM	AccountState/EVM/WriteCustomers/KVIndexer	31070397	9517882	92791
+records-contended	2	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	19225232	2683360	77889
+records-contended	2	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	15346053	2683364	77889
+records-contended	2	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	89284381	15244565	285739
+records-contended	2	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	133368240	14676174	285900
+records-contended	2	EVM	KVO/ReadCustomers	111280	1376	15
+records-contended	2	EVM before	KVO/ReadCustomers	119361	1376	15
+records-contended	3	EVM before	KVOCompact/ReadCustomers	225944	1376	15
+records-contended	3	EVM	KVOCompact/ReadCustomers	150941	1376	15
+records-contended	3	EVM	KVOCompact/WriteCustomers	1787707	745842	5216
+records-contended	3	EVM before	KVOCompact/WriteCustomers	3150975	745830	5216
+records-contended	3	EVM before	KVOBolt/ReadCustomers	272420	1848	24
+records-contended	3	EVM	KVOBolt/ReadCustomers	242897	1848	24
+records-contended	3	EVM	KVOBolt/WriteCustomers	1993483	908911	8977
+records-contended	3	EVM before	KVOBolt/WriteCustomers	2456977	908919	8977
+records-contended	3	EVM before	KVOCompactBolt/ReadCustomers	163626	1848	24
+records-contended	3	EVM	KVOCompactBolt/ReadCustomers	123500	1848	24
+records-contended	3	EVM	KVOCompactBolt/WriteCustomers	2576080	914419	9382
+records-contended	3	EVM before	KVOCompactBolt/WriteCustomers	2235596	914418	9382
+records-contended	3	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	1173455	1840	24
+records-contended	3	EVM	AccountState/EVM/ReadCustomers/KVIndexer	861878	1840	24
+records-contended	3	EVM	AccountState/EVM/WriteCustomers/KVIndexer	43234375	9187129	92760
+records-contended	3	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	39400809	9547944	92761
+records-contended	3	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	17018056	2683358	77889
+records-contended	3	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	15393835	2683362	77889
+records-contended	3	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	157872500	15931593	285715
+records-contended	3	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	99439382	16086485	286102
+records-contended	3	EVM before	KVO/ReadCustomers	117914	1376	15
+records-contended	3	EVM	KVO/ReadCustomers	303340	1376	15
+records-contended	3	EVM	KVO/WriteCustomers	4506828	760505	4800
+records-contended	3	EVM before	KVO/WriteCustomers	2429357	760496	4799
+records-contended	4	EVM before	KVOCompact/WriteCustomers	1780206	745784	5216
+records-contended	4	EVM	KVOCompact/WriteCustomers	1811643	745814	5216
+records-contended	4	EVM	KVOBolt/ReadCustomers	224200	1848	24
+records-contended	4	EVM before	KVOBolt/ReadCustomers	216769	1848	24
+records-contended	4	EVM before	KVOBolt/WriteCustomers	4161169	908920	8977
+records-contended	4	EVM	KVOBolt/WriteCustomers	2102660	908912	8977
+records-contended	4	EVM	KVOCompactBolt/ReadCustomers	115656	1848	24
+records-contended	4	EVM before	KVOCompactBolt/ReadCustomers	170028	1848	24
+records-contended	4	EVM before	KVOCompactBolt/WriteCustomers	3226812	914433	9383
+records-contended	4	EVM	KVOCompactBolt/WriteCustomers	2351834	914444	9383
+records-contended	4	EVM	AccountState/EVM/ReadCustomers/KVIndexer	1476319	1840	24
+records-contended	4	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	1023168	1840	24
+records-contended	4	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	46641488	9215248	92723
+records-contended	4	EVM	AccountState/EVM/WriteCustomers/KVIndexer	47621667	8734256	92664
+records-contended	4	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	18185250	2683366	77889
+records-contended	4	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	15968275	2683367	77889
+records-contended	4	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	134891219	15571918	286000
+records-contended	4	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	124109677	16479670	286111
+records-contended	4	EVM	KVO/ReadCustomers	194074	1376	15
+records-contended	4	EVM before	KVO/ReadCustomers	165135	1376	15
+records-contended	4	EVM before	KVO/WriteCustomers	1752031	760495	4799
+records-contended	4	EVM	KVO/WriteCustomers	4592575	760496	4799
+records-contended	4	EVM	KVOCompact/ReadCustomers	178431	1376	15
+records-contended	4	EVM before	KVOCompact/ReadCustomers	151654	1376	15
+records-contended	5	EVM before	KVOBolt/ReadCustomers	142546	1848	24
+records-contended	5	EVM	KVOBolt/ReadCustomers	285726	1848	24
+records-contended	5	EVM	KVOBolt/WriteCustomers	2996185	908923	8977
+records-contended	5	EVM before	KVOBolt/WriteCustomers	2082225	908915	8977
+records-contended	5	EVM before	KVOCompactBolt/ReadCustomers	256008	1848	24
+records-contended	5	EVM	KVOCompactBolt/ReadCustomers	182096	1848	24
+records-contended	5	EVM	KVOCompactBolt/WriteCustomers	2347793	914433	9383
+records-contended	5	EVM before	KVOCompactBolt/WriteCustomers	2158070	914440	9383
+records-contended	5	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	660954	1840	24
+records-contended	5	EVM	AccountState/EVM/ReadCustomers/KVIndexer	1392428	1840	24
+records-contended	5	EVM	AccountState/EVM/WriteCustomers/KVIndexer	54876919	9477453	92824
+records-contended	5	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	37855264	9196930	92749
+records-contended	5	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	15575585	2683361	77889
+records-contended	5	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	13498306	2683371	77889
+records-contended	5	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	67042280	15232216	285755
+records-contended	5	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	77632326	15499208	286030
+records-contended	5	EVM before	KVO/ReadCustomers	158882	1376	15
+records-contended	5	EVM	KVO/ReadCustomers	191775	1376	15
+records-contended	5	EVM	KVO/WriteCustomers	1538034	760495	4799
+records-contended	5	EVM before	KVO/WriteCustomers	2809688	760497	4799
+records-contended	5	EVM before	KVOCompact/ReadCustomers	229565	1376	15
+records-contended	5	EVM	KVOCompact/ReadCustomers	197565	1376	15
+records-contended	5	EVM	KVOCompact/WriteCustomers	1667980	745798	5216
+records-contended	5	EVM before	KVOCompact/WriteCustomers	1531508	745817	5216
+records-contended	6	EVM before	KVOBolt/WriteCustomers	2233560	908912	8977
+records-contended	6	EVM	KVOBolt/WriteCustomers	1956167	908916	8977
+records-contended	6	EVM	KVOCompactBolt/ReadCustomers	119059	1848	24
+records-contended	6	EVM before	KVOCompactBolt/ReadCustomers	220138	1848	24
+records-contended	6	EVM before	KVOCompactBolt/WriteCustomers	1958093	914443	9383
+records-contended	6	EVM	KVOCompactBolt/WriteCustomers	2141702	914439	9383
+records-contended	6	EVM	AccountState/EVM/ReadCustomers/KVIndexer	1097842	1840	24
+records-contended	6	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	745162	1840	24
+records-contended	6	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	52962373	8880516	92730
+records-contended	6	EVM	AccountState/EVM/WriteCustomers/KVIndexer	49662420	9388900	92761
+records-contended	6	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	23648456	2683358	77889
+records-contended	6	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	10857301	2683365	77889
+records-contended	6	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	75039801	15650354	285846
+records-contended	6	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	60960427	15450283	285991
+records-contended	6	EVM	KVO/ReadCustomers	141080	1376	15
+records-contended	6	EVM before	KVO/ReadCustomers	84746	1376	15
+records-contended	6	EVM before	KVO/WriteCustomers	2474424	760495	4799
+records-contended	6	EVM	KVO/WriteCustomers	1876483	760495	4799
+records-contended	6	EVM	KVOCompact/ReadCustomers	266781	1376	15
+records-contended	6	EVM before	KVOCompact/ReadCustomers	246766	1376	15
+records-contended	6	EVM before	KVOCompact/WriteCustomers	1765422	745828	5216
+records-contended	6	EVM	KVOCompact/WriteCustomers	2769463	745667	5216
+records-contended	6	EVM	KVOBolt/ReadCustomers	274830	1848	24
+records-contended	6	EVM before	KVOBolt/ReadCustomers	481947	1848	24
+records-contended	7	EVM before	KVOCompactBolt/ReadCustomers	244060	1848	24
+records-contended	7	EVM	KVOCompactBolt/ReadCustomers	241370	1848	24
+records-contended	7	EVM	KVOCompactBolt/WriteCustomers	1671345	914449	9383
+records-contended	7	EVM before	KVOCompactBolt/WriteCustomers	2023847	914449	9383
+records-contended	7	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	596661	1840	24
+records-contended	7	EVM	AccountState/EVM/ReadCustomers/KVIndexer	1372748	1840	24
+records-contended	7	EVM	AccountState/EVM/WriteCustomers/KVIndexer	60753449	9080264	92750
+records-contended	7	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	25935107	9041672	92692
+records-contended	7	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	10708552	2683354	77889
+records-contended	7	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	9949469	2683353	77889
+records-contended	7	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	55254455	15150084	285951
+records-contended	7	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	45514642	14367140	285892
+records-contended	7	EVM before	KVO/ReadCustomers	77794	1376	15
+records-contended	7	EVM	KVO/ReadCustomers	92605	1376	15
+records-contended	7	EVM	KVO/WriteCustomers	978481	760494	4799
+records-contended	7	EVM before	KVO/WriteCustomers	1130638	760494	4799
+records-contended	7	EVM before	KVOCompact/ReadCustomers	180523	1376	15
+records-contended	7	EVM	KVOCompact/ReadCustomers	83668	1376	15
+records-contended	7	EVM	KVOCompact/WriteCustomers	1156019	745835	5216
+records-contended	7	EVM before	KVOCompact/WriteCustomers	1269952	745836	5216
+records-contended	7	EVM before	KVOBolt/ReadCustomers	71641	1848	24
+records-contended	7	EVM	KVOBolt/ReadCustomers	58484	1848	24
+records-contended	7	EVM	KVOBolt/WriteCustomers	1279595	908908	8977
+records-contended	7	EVM before	KVOBolt/WriteCustomers	1201131	908911	8977
+records-contended	8	EVM before	KVOCompactBolt/WriteCustomers	1317179	914453	9383
+records-contended	8	EVM	KVOCompactBolt/WriteCustomers	1352882	914443	9383
+records-contended	8	EVM	AccountState/EVM/ReadCustomers/KVIndexer	458489	1840	24
+records-contended	8	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	412958	1840	24
+records-contended	8	EVM before	AccountState/EVM/WriteCustomers/KVIndexer	15320303	9236636	92731
+records-contended	8	EVM	AccountState/EVM/WriteCustomers/KVIndexer	14551881	9272509	92757
+records-contended	8	EVM	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7634078	2683357	77889
+records-contended	8	EVM before	AccountState/MessagePackEVM/ReadCustomers/KVIndexer	7757943	2683361	77889
+records-contended	8	EVM before	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	39720280	15916514	286051
+records-contended	8	EVM	AccountState/MessagePackEVM/WriteCustomers/KVIndexer	41538565	15181111	285974
+records-contended	8	EVM	KVO/ReadCustomers	53814	1376	15
+records-contended	8	EVM before	KVO/ReadCustomers	56176	1376	15
+records-contended	8	EVM before	KVO/WriteCustomers	696722	760493	4799
+records-contended	8	EVM	KVO/WriteCustomers	632108	760493	4799
+records-contended	8	EVM	KVOCompact/ReadCustomers	66608	1376	15
+records-contended	8	EVM before	KVOCompact/ReadCustomers	62849	1376	15
+records-contended	8	EVM before	KVOCompact/WriteCustomers	836287	745904	5216
+records-contended	8	EVM	KVOCompact/WriteCustomers	896116	745933	5216
+records-contended	8	EVM	KVOBolt/ReadCustomers	57561	1848	24
+records-contended	8	EVM before	KVOBolt/ReadCustomers	58613	1848	24
+records-contended	8	EVM before	KVOBolt/WriteCustomers	1071812	908910	8977
+records-contended	8	EVM	KVOBolt/WriteCustomers	921931	908904	8977
+records-contended	8	EVM	KVOCompactBolt/ReadCustomers	68445	1848	24
+records-contended	8	EVM before	KVOCompactBolt/ReadCustomers	70554	1848	24
+records-repeat	1	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	414092	1840	24
+records-repeat	1	EVM	AccountState/EVM/ReadCustomers/KVIndexer	555745	1840	24
+records-repeat	1	EVM	KVOBolt/WriteCustomers	1060928	908908	8977
+records-repeat	1	EVM before	KVOBolt/WriteCustomers	889122	908907	8977
+records-repeat	1	EVM before	KVOCompact/WriteCustomers	890478	746026	5216
+records-repeat	1	EVM	KVOCompact/WriteCustomers	924646	746011	5216
+records-repeat	2	EVM before	KVOBolt/WriteCustomers	801766	908907	8977
+records-repeat	2	EVM	KVOBolt/WriteCustomers	839841	908907	8977
+records-repeat	2	EVM	KVOCompact/WriteCustomers	864169	746010	5216
+records-repeat	2	EVM before	KVOCompact/WriteCustomers	983197	746011	5216
+records-repeat	2	EVM	AccountState/EVM/ReadCustomers/KVIndexer	444165	1840	24
+records-repeat	2	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	459191	1840	24
+records-repeat	3	EVM before	KVOCompact/WriteCustomers	857427	746014	5216
+records-repeat	3	EVM	KVOCompact/WriteCustomers	892052	746021	5216
+records-repeat	3	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	484784	1840	24
+records-repeat	3	EVM	AccountState/EVM/ReadCustomers/KVIndexer	446776	1840	24
+records-repeat	3	EVM	KVOBolt/WriteCustomers	810515	908908	8977
+records-repeat	3	EVM before	KVOBolt/WriteCustomers	971502	908897	8977
+records-repeat	4	EVM	AccountState/EVM/ReadCustomers/KVIndexer	462838	1840	24
+records-repeat	4	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	436518	1840	24
+records-repeat	4	EVM before	KVOBolt/WriteCustomers	967586	908906	8977
+records-repeat	4	EVM	KVOBolt/WriteCustomers	959711	908906	8977
+records-repeat	4	EVM	KVOCompact/WriteCustomers	830302	746020	5216
+records-repeat	4	EVM before	KVOCompact/WriteCustomers	852089	746019	5216
+records-repeat	5	EVM	KVOBolt/WriteCustomers	852436	908905	8977
+records-repeat	5	EVM before	KVOBolt/WriteCustomers	814027	908907	8977
+records-repeat	5	EVM before	KVOCompact/WriteCustomers	882472	746021	5216
+records-repeat	5	EVM	KVOCompact/WriteCustomers	1007906	745995	5216
+records-repeat	5	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	461358	1840	24
+records-repeat	5	EVM	AccountState/EVM/ReadCustomers/KVIndexer	455000	1840	24
+records-repeat	6	EVM	KVOCompact/WriteCustomers	858467	746011	5216
+records-repeat	6	EVM before	KVOCompact/WriteCustomers	836425	746019	5216
+records-repeat	6	EVM	AccountState/EVM/ReadCustomers/KVIndexer	434764	1840	24
+records-repeat	6	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	428460	1840	24
+records-repeat	6	EVM before	KVOBolt/WriteCustomers	951871	908905	8977
+records-repeat	6	EVM	KVOBolt/WriteCustomers	809910	908906	8977
+records-repeat	7	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	389057	1840	24
+records-repeat	7	EVM	AccountState/EVM/ReadCustomers/KVIndexer	402704	1840	24
+records-repeat	7	EVM	KVOBolt/WriteCustomers	774687	908906	8977
+records-repeat	7	EVM before	KVOBolt/WriteCustomers	754671	908907	8977
+records-repeat	7	EVM before	KVOCompact/WriteCustomers	827535	746026	5216
+records-repeat	7	EVM	KVOCompact/WriteCustomers	794829	746021	5216
+records-repeat	8	EVM before	KVOBolt/WriteCustomers	756603	908907	8977
+records-repeat	8	EVM	KVOBolt/WriteCustomers	764343	908907	8977
+records-repeat	8	EVM	KVOCompact/WriteCustomers	764153	746026	5216
+records-repeat	8	EVM before	KVOCompact/WriteCustomers	775845	746023	5216
+records-repeat	8	EVM	AccountState/EVM/ReadCustomers/KVIndexer	474468	1840	24
+records-repeat	8	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	411948	1840	24
+records-repeat	9	EVM before	KVOCompact/WriteCustomers	795202	746027	5216
+records-repeat	9	EVM	KVOCompact/WriteCustomers	884360	746024	5216
+records-repeat	9	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	414775	1840	24
+records-repeat	9	EVM	AccountState/EVM/ReadCustomers/KVIndexer	393708	1840	24
+records-repeat	9	EVM	KVOBolt/WriteCustomers	818060	908907	8977
+records-repeat	9	EVM before	KVOBolt/WriteCustomers	758352	908907	8977
+records-repeat	10	EVM	AccountState/EVM/ReadCustomers/KVIndexer	397633	1840	24
+records-repeat	10	EVM before	AccountState/EVM/ReadCustomers/KVIndexer	397533	1840	24
+records-repeat	10	EVM before	KVOBolt/WriteCustomers	728664	908906	8977
+records-repeat	10	EVM	KVOBolt/WriteCustomers	710363	908907	8977
+records-repeat	10	EVM	KVOCompact/WriteCustomers	744355	746026	5216
+records-repeat	10	EVM before	KVOCompact/WriteCustomers	810610	746029	5216

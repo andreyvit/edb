@@ -1,0 +1,89 @@
+package bench_test
+
+import (
+	"fmt"
+	"slices"
+	"testing"
+
+	"github.com/andreyvit/edb/evm"
+	"github.com/andreyvit/edb/evm/bench/internal/workload"
+	"github.com/andreyvit/edb/evm/evmcompiler"
+	"github.com/andreyvit/edb/values"
+)
+
+var scheduled = []string{/*NAMES*/}
+
+func operations(name string, pc int, old evm.Instruction) []evm.Instruction {
+	jump := func(reg uint16, target int) evm.Instruction {
+		return evm.WithBC(evm.OpJnz, reg, uint32(target-pc-1))
+	}
+	_ = jump
+	switch name {
+	/*PLANS*/
+	}
+	return []evm.Instruction{old}
+}
+
+func scheduleScratch(m *evm.Module) {
+	for i := range m.Functions {
+		f := &m.Functions[i]
+		if !slices.Contains(scheduled, f.Name) {
+			continue
+		}
+		// Verify this is the fixture these hand schedules were written against.
+		hash := uint64(14695981039346656037)
+		for _, word := range f.Code {
+			hash = (hash ^ uint64(word)) * 1099511628211
+		}
+		want := map[string]uint64{"Mandelbrot": 0x7467dfc7799bf8a9, "Price": 0xa634d9f1026f748, "Sieve": 0x3129c44ff89db2b5}
+		if hash != want[f.Name] {
+			panic(fmt.Sprintf("%s bytecode changed: %x", f.Name, hash))
+		}
+		var code []evm.Instruction
+		var positions []evm.SourcePosition
+		var lines []int
+		var origins []int
+		first := make([]int, len(f.Code)+1)
+		for pc, old := range f.Code {
+			first[pc] = len(code)
+			for _, word := range operations(f.Name, pc, old) {
+				code = append(code, word)
+				origins = append(origins, pc)
+				if len(f.Positions) != 0 {
+					positions = append(positions, f.Positions[pc])
+				}
+				if len(f.Lines) != 0 {
+					lines = append(lines, f.Lines[pc])
+				}
+			}
+		}
+		first[len(f.Code)] = len(code)
+		for pc, ins := range code {
+			from := origins[pc]
+			rel := func(delta int) int { return first[from+1+delta] - pc - 1 }
+			switch ins.Op() {
+			case evm.OpJump, evm.OpJnz, evm.OpJz:
+				code[pc] = evm.WithBC(ins.Op(), ins.A(), uint32(rel(int(int32(ins.BC())))))
+			case evm.OpLoopLeI64, evm.OpLoopLtI64:
+				code[pc] = evm.ABC(ins.Op(), ins.A(), ins.B(), uint16(rel(int(int16(ins.C())))))
+			case evm.OpLoopAddLeI64, evm.OpLoopAddLtI64:
+				a,b,c,_ := ins.ABCD12()
+				code[pc] = evm.ABCD12(ins.Op(), a,b,c,uint16(rel(ins.SignedD12()))&4095)
+			}
+		}
+		f.Code, f.Positions, f.Lines = code, positions, lines
+	}
+}
+
+// Includes the Go frontend and all functions in guest.go. Excludes VM execution.
+func BenchmarkScratchCompile(b *testing.B) {
+	sig := evm.Signature{Params: []*values.Type{values.IntType}, Results: []*values.Type{values.IntType}}
+	pkg := evm.Package{Path: "sensors", Functions: []evm.ExternalFunction{
+		{Name: "Reading", Signature: sig}, {Name: "Limit", Signature: sig},
+	}}
+	for range b.N {
+		m, err := evmcompiler.Compile("guest.go", workload.GuestGo, pkg)
+		if err != nil { b.Fatal(err) }
+		scheduleScratch(m)
+	}
+}

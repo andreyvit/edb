@@ -1,0 +1,61 @@
+runtime	workload	sample	ns/op	Go allocs/op
+EVM	Price	1	104093	0
+EVM	Price	2	103224	0
+EVM	Price	3	103130	0
+EVM	Price	4	103300	0
+EVM	Price	5	103244	0
+EVM	Scan	1	6859	0
+EVM	Scan	2	6849	0
+EVM	Scan	3	6840	0
+EVM	Scan	4	6847	0
+EVM	Scan	5	6850	0
+Lunar	Price	1	47091	0
+Lunar	Price	2	46975	0
+Lunar	Price	3	47060	0
+Lunar	Price	4	45944	0
+Lunar	Price	5	47382	0
+Lunar	Scan	1	8598	0
+Lunar	Scan	2	8573	0
+Lunar	Scan	3	8473	0
+Lunar	Scan	4	8726	0
+Lunar	Scan	5	8474	0
+Gopher	Price	1	231977	725
+Gopher	Price	2	234759	725
+Gopher	Price	3	234508	725
+Gopher	Price	4	236000	725
+Gopher	Price	5	243126	725
+Gopher	Scan	1	16116	262
+Gopher	Scan	2	14429	262
+Gopher	Scan	3	14312	262
+Gopher	Scan	4	14451	262
+Gopher	Scan	5	14330	262
+PUC Lua	Price	1	27861	-
+PUC Lua	Price	2	27509.8	-
+PUC Lua	Price	3	28128.6	-
+PUC Lua	Price	4	27299.1	-
+PUC Lua	Price	5	27624.3	-
+PUC Lua	Scan	1	2948.5	-
+PUC Lua	Scan	2	2906.8	-
+PUC Lua	Scan	3	2710	-
+PUC Lua	Scan	4	2625.7	-
+PUC Lua	Scan	5	2765.1	-
+LuaJIT	Price	1	4660.6	-
+LuaJIT	Price	2	4683.4	-
+LuaJIT	Price	3	4722.3	-
+LuaJIT	Price	4	4699.7	-
+LuaJIT	Price	5	4687.2	-
+LuaJIT	Scan	1	2109.2	-
+LuaJIT	Scan	2	2103.8	-
+LuaJIT	Scan	3	2111.1	-
+LuaJIT	Scan	4	2091.1	-
+LuaJIT	Scan	5	2149.4	-
+EVM	ReadCustomers	1	106122	22
+EVM	ReadCustomers	2	104281	22
+EVM	ReadCustomers	3	103533	22
+EVM	ReadCustomers	4	105640	22
+EVM	ReadCustomers	5	104141	22
+EVM	WriteCustomers	1	685503	13591
+EVM	WriteCustomers	2	679827	13591
+EVM	WriteCustomers	3	690144	13591
+EVM	WriteCustomers	4	679147	13591
+EVM	WriteCustomers	5	682428	13591

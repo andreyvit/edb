@@ -1,0 +1,23 @@
+
+func TestScratchCounts(t *testing.T) {
+	for _, name := range []string{"Price", "Mandelbrot", "Fib", "Sieve", "Scan"} {
+		run := newEVM(t, name)
+		for seed := range 4 {
+			// The ordinary checked test runs when building this binary.
+			clear(evm.ScratchCounts[:])
+			if _, err := run(seed); err != nil { t.Fatal(err) }
+			var steps, loads, stores, moves uint64
+			for op, n := range evm.ScratchCounts {
+				if n == 0 {continue}
+				steps += n
+				s := evm.Opcode(op).String()
+				switch {
+				case len(s)>5 && (s[:5]=="load." && (s[5]=='f' || s[5]=='u')): loads += n
+				case len(s)>8 && s[:8]=="store.r.": stores += n
+				case len(s)>5 && (s[:5]=="move." && (s[5]=='f' || s[5]=='u')): moves += n
+				}
+			}
+			fmt.Printf("%s\t%d\t%d\t%d\t%d\t%d\n", name, seed, steps, loads, stores, moves)
+		}
+	}
+}

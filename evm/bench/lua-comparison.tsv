@@ -1,0 +1,73 @@
+runtime	workload	round	position	iterations	ns/op	B/op (Go)	allocs/op (Go)
+EVM before	Price	1	1	5234	107278	0	0
+EVM before	Scan	1	1	56251	9086	0	0
+Lunar	Price	1	2	10000	50961	0	0
+Lunar	Scan	1	2	62128	8593	0	0
+PUC Lua	Price	1	3	20000	27326.4	n/a	n/a
+PUC Lua	Scan	1	3	100000	2739.5	n/a	n/a
+EVM current	Price	1	4	10000	46703	0	0
+EVM current	Scan	1	4	120937	4507	0	0
+GopherLua	Price	1	5	2268	231120	185238	725
+GopherLua	Scan	1	5	33654	15341	3641	262
+LuaJIT	Price	1	6	100000	4645.3	n/a	n/a
+LuaJIT	Scan	1	6	100000	2102.4	n/a	n/a
+Lunar	Price	2	1	10000	46857	0	0
+Lunar	Scan	2	1	63774	8530	0	0
+PUC Lua	Price	2	2	20000	27508.4	n/a	n/a
+PUC Lua	Scan	2	2	100000	2894.0	n/a	n/a
+EVM current	Price	2	3	10000	47892	0	0
+EVM current	Scan	2	3	115677	4538	0	0
+GopherLua	Price	2	4	2162	250487	185238	725
+GopherLua	Scan	2	4	33244	15876	3642	262
+LuaJIT	Price	2	5	100000	4626.6	n/a	n/a
+LuaJIT	Scan	2	5	100000	2070.5	n/a	n/a
+EVM before	Price	2	6	5001	105519	0	0
+EVM before	Scan	2	6	59936	9228	0	0
+PUC Lua	Price	3	1	20000	27228.3	n/a	n/a
+PUC Lua	Scan	3	1	100000	2712.2	n/a	n/a
+EVM current	Price	3	2	10000	47654	0	0
+EVM current	Scan	3	2	117236	4528	0	0
+GopherLua	Price	3	3	2338	232113	185238	725
+GopherLua	Scan	3	3	33290	15597	3641	262
+LuaJIT	Price	3	4	100000	4642.9	n/a	n/a
+LuaJIT	Scan	3	4	100000	2093.6	n/a	n/a
+EVM before	Price	3	5	5197	103962	0	0
+EVM before	Scan	3	5	63145	8510	0	0
+Lunar	Price	3	6	10000	47528	0	0
+Lunar	Scan	3	6	62556	8694	0	0
+EVM current	Price	4	1	10000	46823	0	0
+EVM current	Scan	4	1	118069	4572	0	0
+GopherLua	Price	4	2	2326	234123	185238	725
+GopherLua	Scan	4	2	32706	16156	3641	262
+LuaJIT	Price	4	3	100000	4649.1	n/a	n/a
+LuaJIT	Scan	4	3	100000	2097.6	n/a	n/a
+EVM before	Price	4	4	5172	105688	0	0
+EVM before	Scan	4	4	62854	8688	0	0
+Lunar	Price	4	5	10000	47955	0	0
+Lunar	Scan	4	5	54876	8970	0	0
+PUC Lua	Price	4	6	20000	28288.3	n/a	n/a
+PUC Lua	Scan	4	6	100000	2897.6	n/a	n/a
+GopherLua	Price	5	1	2150	240258	185238	725
+GopherLua	Scan	5	1	32618	15873	3641	262
+LuaJIT	Price	5	2	100000	4637.6	n/a	n/a
+LuaJIT	Scan	5	2	100000	2080.5	n/a	n/a
+EVM before	Price	5	3	5173	103698	0	0
+EVM before	Scan	5	3	60361	9211	0	0
+Lunar	Price	5	4	10000	48351	0	0
+Lunar	Scan	5	4	63619	8544	0	0
+PUC Lua	Price	5	5	20000	27023.3	n/a	n/a
+PUC Lua	Scan	5	5	100000	3016.4	n/a	n/a
+EVM current	Price	5	6	10000	46410	0	0
+EVM current	Scan	5	6	118510	4519	0	0
+LuaJIT	Price	6	1	100000	4702.6	n/a	n/a
+LuaJIT	Scan	6	1	100000	2100.8	n/a	n/a
+EVM before	Price	6	2	5098	105748	0	0
+EVM before	Scan	6	2	59388	9297	0	0
+Lunar	Price	6	3	10000	48871	0	0
+Lunar	Scan	6	3	63133	8536	0	0
+PUC Lua	Price	6	4	20000	27299.7	n/a	n/a
+PUC Lua	Scan	6	4	100000	2857.8	n/a	n/a
+EVM current	Price	6	5	10000	47596	0	0
+EVM current	Scan	6	5	118066	4572	0	0
+GopherLua	Price	6	6	2326	231733	185238	725
+GopherLua	Scan	6	6	34334	15218	3641	262
