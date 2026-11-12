@@ -62,9 +62,9 @@ type storageBucket interface {
 }
 
 type bucketStats struct {
-	KeyN       int
-	LeafInuse  int64
-	LeafAlloc  int64
+	KeyN        int
+	LeafInuse   int64
+	LeafAlloc   int64
 	BranchAlloc int64
 }
 
@@ -80,6 +80,9 @@ type storageCursor interface {
 
 	// Seek moves to the first key >= seek.
 	Seek(seek []byte) (key, value []byte)
+
+	// SeekBefore moves to the last key strictly less than seek.
+	SeekBefore(seek []byte) (key, value []byte)
 
 	// SeekLast moves to the last key strictly before the successor of the given prefix/boundary.
 	// This is commonly implemented as: Seek(inc(prefix)) then Prev().

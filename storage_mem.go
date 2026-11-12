@@ -367,6 +367,19 @@ func (c *memCursor) Seek(seek []byte) ([]byte, []byte) {
 	return kv.key, kv.value
 }
 
+func (c *memCursor) SeekBefore(seek []byte) ([]byte, []byte) {
+	items := c.items()
+	i := sort.Search(len(items), func(i int) bool {
+		return bytes.Compare(items[i].key, seek) >= 0
+	})
+	c.pos = i - 1
+	if c.pos < 0 {
+		return nil, nil
+	}
+	kv := items[c.pos]
+	return kv.key, kv.value
+}
+
 func (c *memCursor) SeekLast(prefix []byte) ([]byte, []byte) {
 	if prefix == nil || len(prefix) == 0 {
 		return c.Last()

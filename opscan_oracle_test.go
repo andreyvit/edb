@@ -122,6 +122,20 @@ func TestIndexComponentBoundaries(t *testing.T) {
 			if got := AllKeys[uint64](tx.IndexScan(idx, opt.Prefix(1))); !slices.Equal(got, want) {
 				t.Fatalf("prefix components: %v", got)
 			}
+			opt = RangeScan(pair{"a", "bc"}, pair{"a", "bc"}, true, true).PrimaryKeyRange(uint64(3), nil, true, true)
+			opt.Reverse = reverse
+			if got := AllKeys[uint64](tx.IndexScan(idx, opt)); !slices.Equal(got, []uint64{2}) {
+				t.Fatalf("equal payload with distinct components: %v", got)
+			}
+			opt = RangeScan(pair{"a", "bc"}, pair{"a", "bc"}, true, true).PrimaryKeyRange(nil, uint64(1), true, true)
+			opt.Reverse = reverse
+			want = []uint64{1, 2}
+			if reverse {
+				slices.Reverse(want)
+			}
+			if got := AllKeys[uint64](tx.IndexScan(idx, opt)); !slices.Equal(got, want) {
+				t.Fatalf("equal payload upper endpoint: %v", got)
+			}
 		})
 	}
 }

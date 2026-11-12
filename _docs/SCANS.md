@@ -1,8 +1,9 @@
 # Resumable scans and key-only queries
 
 Rows and records share scan rules: a scan stays in one transaction, a chunk
-bounds work, and an owned bookmark resumes in another transaction. Tables and
-unique/nonunique indexes support both directions, strings and composite keys.
+bounds yielded entries, and an owned bookmark resumes in another transaction.
+Tables and unique/nonunique indexes support both directions, strings and
+composite keys.
 
 ## Bounded reads with joins
 
@@ -35,8 +36,9 @@ Returning `edb.RowScan[Customer, uint64]` from the factory instead gives native
 chunks with `Rows()` and `(key, *Customer)` entries. Both forms have `Keys()`,
 `Count()`, `Bookmark()`, `More()`, and `Tx()`.
 
-- The limit is a positive number of **visited entries**, including entries an
-  application filter rejects. It is not a matching-row or byte limit.
+- The limit is a positive number of **entries yielded by the scan**, including
+  entries an application filter rejects. Internal index-boundary filtering can
+  inspect more physical entries; the limit does not bound those or bytes read.
 - `break`, `return`, and panic in the outer loop close the current transaction.
   Check a request's cancellation/deadline inside the loop as usual.
 - Breaking an inner iteration ends that chunk early; automatic iteration
@@ -96,10 +98,12 @@ resumption is exclusive in the original traversal direction. Deleted bookmark
 entries are supported. Table/index or direction mismatches panic. Query bounds
 remain in force and may be narrowed when resuming.
 
-Bookmarks are process-local values tied to schema objects. They are not durable
-pagination tokens, transaction snapshots, or authorization boundaries. Capture
-a bookmark while its cursor's transaction is open. Copying it afterward is
-safe and does not allocate. Creating it copies the position once; ordinary
+Bookmarks hold table/index pointers used to validate their scope and have no
+serialization format. This makes the current API process-local; the position
+itself is owned key bytes, independent of the transaction. Bookmarks are not
+durable pagination tokens, transaction snapshots, or authorization boundaries.
+Capture a bookmark while its cursor's transaction is open. Copying it afterward
+is safe and does not allocate. Creating it copies the position once; ordinary
 iteration does not copy positions per row.
 
 Traditional cursors share the same implementation:
@@ -114,6 +118,33 @@ after = cursor.Bookmark() // Capture before closing tx.
 
 The [tested manual example](../examples/loyalty/scans_test.go) shows the typed form.
 Append `.Reversed()` to the query before resuming a reverse bookmark.
+
+### Logical primary-key bounds versus continuation
+
+`PrimaryKeyRange` restricts primary keys at the logical index range's endpoints.
+It does not mean "continue after this physical entry." Use `Resume` for that,
+keeping the original query bounds across pages.
+
+The distinction matters for variable-width keys. In an index range from `"b"`
+through `"c"`, a lower primary-key bound of `"z"` at `"b"` still admits the row
+`(index="ba", primary key="a")`. Its stored payload `"baa"` precedes `"bz"`, so
+seeking directly to the complete lower-bound key would miss it. Filtering
+unwanted rows after that seek cannot recover the skipped match.
+
+Fixed-width index and primary keys retain direct composite seeks. A range with
+equal index endpoints can also seek directly when component boundaries are
+unambiguous. Variable primary keys use bounds without the outer index footer.
+The upper bound widens only when an embedded tuple-count footer could let a
+shorter primary key sort beyond it; logical endpoint checks discard extra
+candidates. Ordinary printable string IDs still seek directly in both
+directions. Wider variable-index ranges retain the traversal needed for
+correctness. No preflight scan or storage-format migration is used.
+
+`Resume` instead seeks after the complete stored entry, then preserves the
+query's logical checks. This avoids repeatedly walking earlier pages even for
+variable-width ranges. A bookmark continues storage order, which can differ
+from decoded index/primary-key tuple order. It also works if the bookmarked
+entry was deleted between transactions.
 
 ## Filter keys before fetching rows
 

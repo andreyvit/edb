@@ -296,6 +296,10 @@ func (so ScanOptions) Prefix(els int) ScanOptions {
 	return so
 }
 
+// PrimaryKeyRange restricts the primary keys at the index range's endpoints.
+// It does not specify a physical continuation position. Use Resume for paging:
+// variable-width index keys can interleave, so logical endpoint restrictions
+// may need to visit entries before a complete index-key/primary-key seek.
 func (so ScanOptions) PrimaryKeyRange(lower, upper any, lowerInc, upperInc bool) ScanOptions {
 	var lowerVal, upperVal reflect.Value
 	if lower != nil {
@@ -895,20 +899,39 @@ func (tx *Tx) newRawRangeIndexScanStrategy(idx *IndexDef, opt ScanOptions) index
 		panic("primary-key range is not supported for deprecated unique indices")
 	}
 	rang, empty := tx.indexScanRawRange(idx, opt)
-	if empty && opt.Method != ScanMethodRange {
+	fixedIndex := scanKeyHasFixedWidth(idx.keyEnc)
+	var exactRange tuple
+	if opt.Method == ScanMethodRange && !fixedIndex && opt.Lower.IsValid() && opt.Upper.IsValid() && scanKeyHasUnambiguousComponents(idx.keyEnc) {
+		lower := indexBoundaryTuple(idx, opt.Lower, 0)
+		if lower.Equal(indexBoundaryTuple(idx, opt.Upper, 0)) {
+			exactRange = lower
+		}
+	}
+	rawBoundsSafe := opt.Method != ScanMethodRange || fixedIndex || exactRange != nil
+	if empty && rawBoundsSafe {
 		return emptyIndexScanStrategy{}
 	}
-	filter := &filteredIndexScanStrategy{base: &rawRangeIndexScanStrategy{rang, tx.logger}, lowerInc: opt.LowerInc, upperInc: opt.UpperInc}
+	raw := &rawRangeIndexScanStrategy{rang: rang, logger: tx.logger}
+	if opt.UpperPrimaryKey.IsValid() && !scanKeyHasFixedWidth(idx.table.keyEnc) {
+		raw.upperEnvelope = rang.Upper
+	}
+	filter := &filteredIndexScanStrategy{base: raw, lowerInc: opt.LowerInc, upperInc: opt.UpperInc}
 	if opt.PrefixValue.IsValid() {
 		filter.prefix = indexBoundaryTuple(idx, opt.PrefixValue, opt.PrefixEls)
 	}
 	if opt.Method == ScanMethodExact {
 		filter.prefix = indexBoundaryTuple(idx, opt.Lower, 0)
 	}
-	if opt.Method == ScanMethodRange {
-		// Raw bounds that append a primary key cannot bound an entire logical
-		// index range: a shorter string index key can sort beyond that bound.
-		// Use the ordinary range traversal and apply PK limits at its endpoints.
+	if exactRange != nil {
+		if !indexTupleHasPrefix(exactRange, filter.prefix) {
+			return emptyIndexScanStrategy{}
+		}
+		filter.prefix = exactRange
+	}
+	if !rawBoundsSafe {
+		// Variable index values can interleave with a boundary's PK suffix.
+		// Keep logical bounds and filter endpoint PKs; Resume independently
+		// supplies a fast seek past entries already visited.
 		plain := opt
 		plain.PrefixValue, plain.LowerPrimaryKey, plain.UpperPrimaryKey = reflect.Value{}, reflect.Value{}, reflect.Value{}
 		plain.PrefixEls = 0
@@ -935,6 +958,28 @@ func (tx *Tx) newRawRangeIndexScanStrategy(idx *IndexDef, opt ScanOptions) index
 	return filter
 }
 
+func scanKeyHasFixedWidth(enc *flatEncoding) bool {
+	for _, component := range enc.components {
+		if component.minEncodedLen == 0 {
+			return false
+		}
+	}
+	return true
+}
+
+// Range bounds compare concatenated component payloads. With two variable
+// components, distinct tuples such as ("a", "bc") and ("ab", "c") can have
+// the same payload; an equal-bound range must retain both tuples.
+func scanKeyHasUnambiguousComponents(enc *flatEncoding) bool {
+	variable := 0
+	for _, component := range enc.components {
+		if component.minEncodedLen == 0 {
+			variable++
+		}
+	}
+	return variable <= 1
+}
+
 func indexBoundaryTuple(idx *IndexDef, key reflect.Value, els int) tuple {
 	tup := must(decodeTuple(idx.keyEnc.encode(nil, key)))
 	if els != 0 && els < len(tup) {
@@ -955,7 +1000,6 @@ func indexTupleHasPrefix(key, prefix tuple) bool {
 }
 
 func (s *filteredIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *IndexDef, scratch tuple) ([]byte, []byte, tuple, []byte) {
-
 	for {
 		ik, iv, tup, pk := s.base.Next(c, reset, reverse, idx, scratch)
 		if ik == nil {
@@ -1037,6 +1081,17 @@ func (tx *Tx) indexScanRawRangeBound(idx *IndexDef, indexKey, primaryKey reflect
 		if at, et := primaryKey.Type(), tbl.KeyType(); at != et {
 			panic(fmt.Errorf("%s: attempted to scan table using bound of incorrect type %v, expected %v", tbl.Name(), at, et))
 		}
+		if !scanKeyHasFixedWidth(tbl.keyEnc) {
+			prefix, _, _ := tx.encodeIndexBoundaryKey(indexKey, idx, 0, true)
+			pk := tbl.encodeKeyVal(nil, primaryKey, false)
+			if upper {
+				pk = primaryKeyUpperEnvelope(tbl.keyEnc, pk)
+			}
+			raw := append(bytes.Clone(prefix), pk...)
+			// The outer index footer may reorder primary keys that prefix
+			// one another. Exclude that footer and filter logical endpoints.
+			return raw, true, false
+		}
 		raw := tx.encodeIndexFullKey(indexKey, primaryKey, idx)
 		return raw, inclusive, false
 	}
@@ -1053,6 +1108,19 @@ func (tx *Tx) indexScanRawRangeBound(idx *IndexDef, indexKey, primaryKey reflect
 		return next, true, !ok
 	}
 	return raw, inclusive, false
+}
+
+// Appending the outer index footer can move an encoded PK prefix past its
+// upper bound. Every such prefix ends in the table's component-count footer.
+// Include the shortest possible prefix's whole range. An earlier occurrence
+// need not be a valid key: a false match only widens the scan, never loses rows.
+func primaryKeyUpperEnvelope(enc *flatEncoding, upper []byte) []byte {
+	var buf [5]byte
+	footer := appendRuvarint(buf[:0], uint32(len(enc.components)))
+	if i := bytes.Index(upper[:len(upper)-1], footer); i >= 0 {
+		return upper[:i+len(footer)]
+	}
+	return upper
 }
 
 func rawSuccessor(raw []byte) ([]byte, bool) {
@@ -1349,8 +1417,9 @@ func (s *rangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx 
 }
 
 type rawRangeIndexScanStrategy struct {
-	rang   RawRange
-	logger *slog.Logger
+	rang          RawRange
+	upperEnvelope []byte
+	logger        *slog.Logger
 }
 
 func (s *rawRangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, idx *IndexDef, scratch tuple) ([]byte, []byte, tuple, []byte) {
@@ -1358,7 +1427,28 @@ func (s *rawRangeIndexScanStrategy) Next(c storageCursor, reset, reverse bool, i
 	var ik, iv []byte
 	if reset {
 		s.rang.Reverse = reverse
-		ik, iv = s.rang.start(c, s.logger)
+		if s.upperEnvelope != nil {
+			if reverse {
+				s.rang.Upper, s.rang.UpperInc = s.upperEnvelope, true
+			} else {
+				upper, ok := rawSuccessor(s.upperEnvelope)
+				if !ok {
+					upper = nil
+				}
+				s.rang.Upper, s.rang.UpperInc = upper, false
+			}
+		}
+		if reverse && s.rang.Upper != nil && !s.rang.UpperInc {
+			if s.rang.Prefix != nil && !bytes.HasPrefix(s.rang.Upper, s.rang.Prefix) {
+				panic("upper bound does not match prefix")
+			}
+			ik, iv = c.SeekBefore(s.rang.Upper)
+			if ik != nil && !s.rang.match(ik, iv, s.logger) {
+				ik, iv = nil, nil
+			}
+		} else {
+			ik, iv = s.rang.start(c, s.logger)
+		}
 	} else {
 		ik, iv = s.rang.next(c, s.logger)
 	}

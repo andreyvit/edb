@@ -9,9 +9,11 @@ import "bytes"
 //
 // A bookmark belongs to its table/index and traversal direction. Resume keeps
 // the new scan's bounds, so it can also narrow the original query. Bookmarks are
-// process-local, not durable pagination tokens or snapshots. Between read
-// transactions, inserts behind the position are missed and entries moved ahead
-// of it can be visited again. Collect keys first when changing a scanned index.
+// tied to in-process table/index definitions and have no serialization format;
+// their position bytes are owned and can outlive transactions. They are not
+// durable pagination tokens or snapshots. Between read transactions, inserts
+// behind the position are missed and entries moved ahead of it can be visited
+// again. Collect keys first when changing a scanned index.
 type ScanBookmark struct {
 	table    *TableDef
 	index    *IndexDef
@@ -91,6 +93,13 @@ func (c *resumeStorageCursor) Seek(key []byte) ([]byte, []byte) {
 		return c.First()
 	}
 	return c.storageCursor.Seek(key)
+}
+
+func (c *resumeStorageCursor) SeekBefore(key []byte) ([]byte, []byte) {
+	if bytes.Compare(key, []byte(c.after)) > 0 {
+		key = []byte(c.after)
+	}
+	return c.storageCursor.SeekBefore(key)
 }
 
 func (c *resumeStorageCursor) SeekLast(prefix []byte) ([]byte, []byte) {

@@ -131,6 +131,13 @@ func (c boltCursor) Last() ([]byte, []byte) { return c.c.Last() }
 
 func (c boltCursor) Seek(seek []byte) ([]byte, []byte) { return c.c.Seek(seek) }
 
+func (c boltCursor) SeekBefore(seek []byte) ([]byte, []byte) {
+	if k, _ := c.c.Seek(seek); k == nil {
+		return c.c.Last()
+	}
+	return c.c.Prev()
+}
+
 func (c boltCursor) SeekLast(prefix []byte) ([]byte, []byte) {
 	if prefix == nil || len(prefix) == 0 {
 		return c.c.Last()
