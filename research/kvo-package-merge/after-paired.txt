@@ -1,0 +1,168 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkTypedProperty/Fast2/Value-18   	16823166	        16.20 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/TypedCode-18         	14453005	        15.95 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/DirectCode-18        	13390210	        15.60 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/Value-18         	37525411	         8.056 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/TypedCode-18     	23071560	         9.035 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/DirectCode-18    	25779225	         8.303 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/Value-18            	33289986	         9.061 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/TypedCode-18        	28863644	         9.329 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/DirectCode-18       	24911984	         8.949 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkRecordHandle/Memory/OpenRead-18         	51742258	         5.128 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Retain-18           	47604085	         5.342 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkRecordHandleEVM/Fast2/Scan-18         	   14227	     16766 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18     	   15540	     15206 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkTypedProperty/Fast2/Value-18   	13288975	        16.71 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/TypedCode-18         	14111662	        16.95 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/DirectCode-18        	14162808	        14.48 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/Value-18         	37839968	         7.234 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/TypedCode-18     	28282015	         8.259 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/DirectCode-18    	29644725	         7.513 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/Value-18            	35903956	         8.243 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/TypedCode-18        	23794573	         9.618 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/DirectCode-18       	36856213	         8.727 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkRecordHandle/Memory/OpenRead-18         	48223428	         5.632 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Retain-18           	52649856	         4.899 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkRecordHandleEVM/Fast2/Scan-18         	   13994	     16872 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18     	   17071	     15266 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkTypedProperty/Fast2/Value-18   	14925643	        14.48 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/TypedCode-18         	15846595	        15.89 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/DirectCode-18        	19283690	        15.30 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/Value-18         	28850054	         7.398 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/TypedCode-18     	31158208	         8.895 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/DirectCode-18    	32710176	         7.718 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/Value-18            	31958275	         9.125 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/TypedCode-18        	22083940	         9.276 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/DirectCode-18       	38511170	         7.930 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkRecordHandle/Memory/OpenRead-18         	52009032	         5.150 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Retain-18           	40186424	         5.558 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkRecordHandleEVM/Fast2/Scan-18         	   14644	     16458 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18     	   15918	     15648 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkTypedProperty/Fast2/Value-18   	14222853	        16.47 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/TypedCode-18         	12950455	        16.20 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/DirectCode-18        	15925635	        15.69 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/Value-18         	31683690	         7.840 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/TypedCode-18     	31088416	         8.729 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/DirectCode-18    	40831374	         7.228 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/Value-18            	27707738	         9.175 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/TypedCode-18        	22512048	        10.53 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/DirectCode-18       	29554676	        10.35 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkRecordHandle/Memory/OpenRead-18         	37799460	         5.577 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Retain-18           	48319312	         5.733 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkRecordHandleEVM/Fast2/Scan-18         	   12720	     17406 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18     	   13808	     16455 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkTypedProperty/Fast2/Value-18   	15523430	        15.95 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/TypedCode-18         	14215693	        17.12 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/DirectCode-18        	17865670	        14.45 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/Value-18         	37558197	         7.958 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/TypedCode-18     	30653787	         8.257 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/DirectCode-18    	29321034	         7.171 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/Value-18            	31386567	         8.364 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/TypedCode-18        	33706482	         9.890 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/DirectCode-18       	29393302	         8.842 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkRecordHandle/Memory/OpenRead-18         	48261014	         5.201 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Retain-18           	38405118	         5.744 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkRecordHandleEVM/Fast2/Scan-18         	   15103	     17397 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18     	   16548	     14725 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkTypedProperty/Fast2/Value-18   	13840098	        16.58 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/TypedCode-18         	11834926	        18.04 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/DirectCode-18        	14877799	        15.42 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/Value-18         	28515367	         7.890 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/TypedCode-18     	24247731	         9.127 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/DirectCode-18    	27050253	         8.344 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/Value-18            	26212915	         8.592 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/TypedCode-18        	27073014	        10.12 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/DirectCode-18       	28164468	         8.927 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkRecordHandle/Memory/OpenRead-18         	36191136	         5.802 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Retain-18           	52396987	         5.192 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkRecordHandleEVM/Fast2/Scan-18         	   14491	     17364 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18     	   14912	     16330 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+PASS

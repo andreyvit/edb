@@ -90,14 +90,14 @@ func (c *integrityChecker) problem(format string, args ...any) {
 	c.problems = append(c.problems, fmt.Sprintf(format, args...))
 }
 
-func (c *integrityChecker) checkTable(tbl *Table) {
+func (c *integrityChecker) checkTable(tbl *TableDef) {
 	dataBuck := c.tx.stx.Bucket(tbl.name, dataBucketName)
 	if dataBuck == nil {
 		c.problem("%s: missing data bucket", tbl.name)
 		return
 	}
 
-	expected := make(map[*Index]map[string][]byte, len(tbl.indices))
+	expected := make(map[*IndexDef]map[string][]byte, len(tbl.indices))
 	for _, idx := range tbl.indices {
 		expected[idx] = make(map[string][]byte)
 	}
@@ -112,14 +112,14 @@ func (c *integrityChecker) checkTable(tbl *Table) {
 	}
 }
 
-func (c *integrityChecker) checkTableRow(tbl *Table, keyRaw, valueRaw []byte, expected map[*Index]map[string][]byte) {
+func (c *integrityChecker) checkTableRow(tbl *TableDef, keyRaw, valueRaw []byte, expected map[*IndexDef]map[string][]byte) {
 	var vle value
 	if err := vle.decode(valueRaw, false); err != nil {
 		c.problem("%s/%x: invalid row value: %v", tbl.name, keyRaw, err)
 		return
 	}
 
-	rowVal, _, _, err := decodeTableRowFromValue(&vle, tbl, keyRaw, c.tx)
+	rowVal, _, err := decodeTableRowFromValue(&vle, tbl, keyRaw, c.tx)
 	if err != nil {
 		c.problem("%s/%x: cannot decode row: %v", tbl.name, keyRaw, err)
 		return
@@ -132,7 +132,9 @@ func (c *integrityChecker) checkTableRow(tbl *Table, keyRaw, valueRaw []byte, ex
 	ts := c.tx.db.tableState(tbl)
 	ib := makeIndexBuilder(ts, keyRaw)
 	defer ib.release()
-	tbl.indexer(rowVal.Interface(), &ib)
+	if tbl.hasIndexers() {
+		tbl.indexProperties(c.tx, tbl.RowKeyVal(rowVal), vle.Flags, vle.Data, rowVal, ib)
+	}
 	ib.finalize()
 
 	wantedIndexData := appendIndexKeys(nil, ib.rows)
@@ -145,7 +147,7 @@ func (c *integrityChecker) checkTableRow(tbl *Table, keyRaw, valueRaw []byte, ex
 	}
 }
 
-func (c *integrityChecker) checkStoredIndexList(tbl *Table, keyRaw, raw []byte) error {
+func (c *integrityChecker) checkStoredIndexList(tbl *TableDef, keyRaw, raw []byte) error {
 	ts := c.tx.db.tableState(tbl)
 	rows, err := decodeStoredIndexRows(raw)
 	if err != nil {
@@ -159,7 +161,7 @@ func (c *integrityChecker) checkStoredIndexList(tbl *Table, keyRaw, raw []byte) 
 	return nil
 }
 
-func (c *integrityChecker) checkExpectedTableIndexRow(tbl *Table, tableKeyRaw []byte, row IndexRow, expected map[string][]byte) {
+func (c *integrityChecker) checkExpectedTableIndexRow(tbl *TableDef, tableKeyRaw []byte, row IndexRow, expected map[string][]byte) {
 	idxBuck := c.tx.stx.Bucket(tbl.name, row.Index.buck)
 	if idxBuck == nil {
 		c.problem("%s: missing index bucket", row.Index.FullName())
@@ -179,7 +181,7 @@ func (c *integrityChecker) checkExpectedTableIndexRow(tbl *Table, tableKeyRaw []
 	}
 }
 
-func (c *integrityChecker) checkTableIndex(tbl *Table, idx *Index, dataBuck storageBucket, expected map[string][]byte) {
+func (c *integrityChecker) checkTableIndex(tbl *TableDef, idx *IndexDef, dataBuck storageBucket, expected map[string][]byte) {
 	idxBuck := c.tx.stx.Bucket(tbl.name, idx.buck)
 	if idxBuck == nil {
 		c.problem("%s: missing index bucket", idx.FullName())
@@ -298,7 +300,7 @@ func decodeStoredIndexRows(raw []byte) (rows []storedIndexRow, err error) {
 	return rows, nil
 }
 
-func decodeIndexTableKeyForIntegrity(idx *Index, indexKeyRaw, indexValRaw []byte) (keyRaw []byte, err error) {
+func decodeIndexTableKeyForIntegrity(idx *IndexDef, indexKeyRaw, indexValRaw []byte) (keyRaw []byte, err error) {
 	defer func() {
 		if p := recover(); p != nil {
 			err = fmt.Errorf("%v", p)

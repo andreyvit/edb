@@ -1,0 +1,3382 @@
+{
+  "baseline.txt": {
+    "BenchmarkRecordHandle/Compact2/Fastest": {
+      "samples": 5,
+      "ns/op": 657.9,
+      "B/op": 437.0,
+      "allocs/op": 4.0
+    },
+    "BenchmarkRecordHandle/Compact2/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 195.6,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Compact2/OpenRead": {
+      "samples": 5,
+      "ns/op": 20.41,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Compact2/PointerBoundary": {
+      "samples": 5,
+      "ns/op": 10.29,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Compact2/Read": {
+      "samples": 5,
+      "ns/op": 9.174,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Compact2/Retain": {
+      "samples": 5,
+      "ns/op": 25.12,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Compact2/ValueBoundary": {
+      "samples": 5,
+      "ns/op": 11.72,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Fast2/Fastest": {
+      "samples": 5,
+      "ns/op": 538.9,
+      "B/op": 437.0,
+      "allocs/op": 4.0
+    },
+    "BenchmarkRecordHandle/Fast2/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 75.13,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Fast2/OpenRead": {
+      "samples": 5,
+      "ns/op": 16.39,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Fast2/PointerBoundary": {
+      "samples": 5,
+      "ns/op": 6.838,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Fast2/Read": {
+      "samples": 5,
+      "ns/op": 6.377,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Fast2/Retain": {
+      "samples": 5,
+      "ns/op": 22.36,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Fast2/ValueBoundary": {
+      "samples": 5,
+      "ns/op": 8.31,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Generated/Fastest": {
+      "samples": 5,
+      "ns/op": 31.83,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Generated/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 43.59,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Generated/OpenRead": {
+      "samples": 5,
+      "ns/op": 15.86,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Generated/PointerBoundary": {
+      "samples": 5,
+      "ns/op": 3.825,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Generated/Read": {
+      "samples": 5,
+      "ns/op": 3.521,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Generated/Retain": {
+      "samples": 5,
+      "ns/op": 21.65,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Generated/ValueBoundary": {
+      "samples": 5,
+      "ns/op": 5.417,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Memory/Fastest": {
+      "samples": 5,
+      "ns/op": 22.45,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Memory/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 51.09,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Memory/OpenRead": {
+      "samples": 5,
+      "ns/op": 7.859,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Memory/PointerBoundary": {
+      "samples": 5,
+      "ns/op": 4.338,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Memory/Read": {
+      "samples": 5,
+      "ns/op": 4.09,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Memory/Retain": {
+      "samples": 5,
+      "ns/op": 13.29,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Memory/ValueBoundary": {
+      "samples": 5,
+      "ns/op": 5.997,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/MessagePack/Fastest": {
+      "samples": 5,
+      "ns/op": 1372.0,
+      "B/op": 646.0,
+      "allocs/op": 17.0
+    },
+    "BenchmarkRecordHandle/MessagePack/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1667.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/MessagePack/OpenRead": {
+      "samples": 5,
+      "ns/op": 199.3,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/MessagePack/PointerBoundary": {
+      "samples": 5,
+      "ns/op": 186.6,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/MessagePack/Read": {
+      "samples": 5,
+      "ns/op": 185.9,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/MessagePack/Retain": {
+      "samples": 5,
+      "ns/op": 211.6,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/MessagePack/ValueBoundary": {
+      "samples": 5,
+      "ns/op": 189.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Reflected/Fastest": {
+      "samples": 5,
+      "ns/op": 38.3,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Reflected/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 102.5,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Reflected/OpenRead": {
+      "samples": 5,
+      "ns/op": 21.64,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Reflected/PointerBoundary": {
+      "samples": 5,
+      "ns/op": 9.348,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Reflected/Read": {
+      "samples": 5,
+      "ns/op": 9.17,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Reflected/Retain": {
+      "samples": 5,
+      "ns/op": 28.23,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandle/Reflected/ValueBoundary": {
+      "samples": 5,
+      "ns/op": 11.19,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleEVM/Compact2/Retain": {
+      "samples": 5,
+      "ns/op": 37341.0,
+      "B/op": 60528.0,
+      "allocs/op": 524.0
+    },
+    "BenchmarkRecordHandleEVM/Compact2/Scan": {
+      "samples": 5,
+      "ns/op": 21316.0,
+      "B/op": 720.0,
+      "allocs/op": 5.0
+    },
+    "BenchmarkRecordHandleEVM/Fast2/Retain": {
+      "samples": 5,
+      "ns/op": 37611.0,
+      "B/op": 60528.0,
+      "allocs/op": 524.0
+    },
+    "BenchmarkRecordHandleEVM/Fast2/Scan": {
+      "samples": 5,
+      "ns/op": 17865.0,
+      "B/op": 720.0,
+      "allocs/op": 5.0
+    },
+    "BenchmarkRecordHandleEVM/Generated/Retain": {
+      "samples": 5,
+      "ns/op": 35014.0,
+      "B/op": 60528.0,
+      "allocs/op": 524.0
+    },
+    "BenchmarkRecordHandleEVM/Generated/Scan": {
+      "samples": 5,
+      "ns/op": 16884.0,
+      "B/op": 720.0,
+      "allocs/op": 5.0
+    },
+    "BenchmarkRecordHandleEVM/Memory/Retain": {
+      "samples": 5,
+      "ns/op": 31058.0,
+      "B/op": 60528.0,
+      "allocs/op": 524.0
+    },
+    "BenchmarkRecordHandleEVM/Memory/Scan": {
+      "samples": 5,
+      "ns/op": 14867.0,
+      "B/op": 720.0,
+      "allocs/op": 5.0
+    },
+    "BenchmarkRecordHandleEVM/MessagePack/Retain": {
+      "samples": 5,
+      "ns/op": 136296.0,
+      "B/op": 60528.0,
+      "allocs/op": 524.0
+    },
+    "BenchmarkRecordHandleEVM/MessagePack/Scan": {
+      "samples": 5,
+      "ns/op": 120827.0,
+      "B/op": 720.0,
+      "allocs/op": 5.0
+    },
+    "BenchmarkRecordHandleEVM/Reflected/Retain": {
+      "samples": 5,
+      "ns/op": 37337.0,
+      "B/op": 60528.0,
+      "allocs/op": 524.0
+    },
+    "BenchmarkRecordHandleEVM/Reflected/Scan": {
+      "samples": 5,
+      "ns/op": 20990.0,
+      "B/op": 720.0,
+      "allocs/op": 5.0
+    }
+  },
+  "untagged-layouts.txt": {
+    "BenchmarkRecordHandleLayout/Compact2/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 24.77,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 201.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 11.39,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 21.0,
+      "B/op": 32.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 30.87,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 192.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.193,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 19.39,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 24.77,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 190.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.703,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 14.1,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 32.12,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 208.5,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 11.61,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 23.34,
+      "B/op": 48.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 33.54,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 202.6,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 10.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 21.68,
+      "B/op": 48.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 23.23,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 189.5,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.391,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 11.14,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 30.28,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 199.3,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 10.06,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 18.87,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 24.84,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 192.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 10.49,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 14.11,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 30.11,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 202.2,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 10.7,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 18.58,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 31.3,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 200.2,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 10.5,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 18.83,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 14.24,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 65.46,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 7.236,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 16.54,
+      "B/op": 32.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 24.89,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 79.45,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.767,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 16.02,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 16.45,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 63.7,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.042,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 9.91,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 22.54,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 71.6,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.711,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 20.15,
+      "B/op": 48.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 20.72,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 61.46,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.014,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 16.85,
+      "B/op": 48.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 12.09,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 57.73,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.14,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 6.54,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 25.35,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 76.72,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.998,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 15.81,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 16.55,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 63.12,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.057,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 9.858,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 20.65,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 71.38,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.674,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 13.8,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 19.57,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 69.18,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 5.889,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 14.01,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 7.183,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 35.61,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.218,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 4.229,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 16.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 48.05,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.808,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 12.51,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 11.02,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 38.68,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.32,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 7.37,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 16.78,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 46.95,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.485,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 11.01,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 13.54,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 43.83,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 4.345,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 10.79,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 6.265,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 32.81,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.142,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 3.969,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 22.44,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 52.59,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 4.006,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 13.1,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 9.636,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 37.7,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.256,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 7.024,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 13.16,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 44.47,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.416,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 10.36,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 11.52,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 38.15,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.15,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 9.726,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 214.2,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1658.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 187.2,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 200.1,
+      "B/op": 32.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 224.3,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1659.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 185.7,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 191.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 218.7,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1662.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 185.2,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 190.3,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 223.8,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1647.0,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 185.6,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 203.3,
+      "B/op": 48.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 238.0,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1642.0,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 187.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 217.6,
+      "B/op": 48.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 220.3,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1985.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 195.8,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 201.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 224.2,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1686.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 195.8,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 194.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 225.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1780.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 190.2,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 207.1,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 239.8,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1849.0,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 190.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 226.5,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 236.0,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1863.0,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 217.1,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 213.1,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 64.21,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 450.1,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 48.92,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 52.84,
+      "B/op": 10.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 75.04,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 463.7,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 50.26,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 59.23,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 67.3,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 459.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 51.15,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 56.16,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 73.05,
+      "B/op": 21.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 456.2,
+      "B/op": 21.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 48.59,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 58.73,
+      "B/op": 29.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 71.5,
+      "B/op": 21.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 461.6,
+      "B/op": 21.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 49.82,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 60.26,
+      "B/op": 29.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 20.33,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 102.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 10.72,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 10.65,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 28.41,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 109.2,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.394,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 18.87,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 23.3,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 113.1,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.754,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 13.2,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 25.19,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 113.1,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.595,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 15.9,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 24.16,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 102.9,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 8.976,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 16.31,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2/Cell16": {
+      "samples": 5,
+      "ns/op": 11.63,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2/Current128": {
+      "samples": 5,
+      "ns/op": 9.503,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2/Inline40": {
+      "samples": 5,
+      "ns/op": 8.755,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2/Interface16": {
+      "samples": 5,
+      "ns/op": 9.294,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2/Pointer8": {
+      "samples": 5,
+      "ns/op": 10.12,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2InlineKey/Cell16": {
+      "samples": 5,
+      "ns/op": 9.506,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2InlineKey/Current128": {
+      "samples": 5,
+      "ns/op": 9.266,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2InlineKey/Inline40": {
+      "samples": 5,
+      "ns/op": 8.884,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2InlineKey/Interface16": {
+      "samples": 5,
+      "ns/op": 9.414,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2InlineKey/Pointer8": {
+      "samples": 5,
+      "ns/op": 9.602,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2/Cell16": {
+      "samples": 5,
+      "ns/op": 7.103,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2/Current128": {
+      "samples": 5,
+      "ns/op": 6.268,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2/Inline40": {
+      "samples": 5,
+      "ns/op": 5.459,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2/Interface16": {
+      "samples": 5,
+      "ns/op": 6.124,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2/Pointer8": {
+      "samples": 5,
+      "ns/op": 5.841,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2InlineKey/Cell16": {
+      "samples": 5,
+      "ns/op": 5.962,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2InlineKey/Current128": {
+      "samples": 5,
+      "ns/op": 6.3,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2InlineKey/Inline40": {
+      "samples": 5,
+      "ns/op": 5.61,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2InlineKey/Interface16": {
+      "samples": 5,
+      "ns/op": 6.108,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2InlineKey/Pointer8": {
+      "samples": 5,
+      "ns/op": 5.82,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2InlineKey/StaticFast2": {
+      "samples": 5,
+      "ns/op": 4.315,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Generated/Cell16": {
+      "samples": 5,
+      "ns/op": 2.879,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Generated/Current128": {
+      "samples": 5,
+      "ns/op": 3.456,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Generated/Inline40": {
+      "samples": 5,
+      "ns/op": 2.562,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Generated/Interface16": {
+      "samples": 5,
+      "ns/op": 2.849,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Generated/Pointer8": {
+      "samples": 5,
+      "ns/op": 2.776,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Memory/Cell16": {
+      "samples": 5,
+      "ns/op": 2.946,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Memory/Current128": {
+      "samples": 5,
+      "ns/op": 3.837,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Memory/Inline40": {
+      "samples": 5,
+      "ns/op": 2.501,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Memory/Interface16": {
+      "samples": 5,
+      "ns/op": 2.831,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Memory/Pointer8": {
+      "samples": 5,
+      "ns/op": 2.748,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePack/Cell16": {
+      "samples": 5,
+      "ns/op": 187.6,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePack/Current128": {
+      "samples": 5,
+      "ns/op": 183.3,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePack/Inline40": {
+      "samples": 5,
+      "ns/op": 186.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePack/Interface16": {
+      "samples": 5,
+      "ns/op": 187.1,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePack/Pointer8": {
+      "samples": 5,
+      "ns/op": 190.7,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePackInlineKey/Cell16": {
+      "samples": 5,
+      "ns/op": 182.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePackInlineKey/Current128": {
+      "samples": 5,
+      "ns/op": 186.1,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePackInlineKey/Inline40": {
+      "samples": 5,
+      "ns/op": 181.1,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePackInlineKey/Interface16": {
+      "samples": 5,
+      "ns/op": 185.2,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePackInlineKey/Pointer8": {
+      "samples": 5,
+      "ns/op": 182.9,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Mixed/Cell16": {
+      "samples": 5,
+      "ns/op": 49.24,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Mixed/Current128": {
+      "samples": 5,
+      "ns/op": 50.14,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Mixed/Inline40": {
+      "samples": 5,
+      "ns/op": 49.9,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Mixed/Interface16": {
+      "samples": 5,
+      "ns/op": 48.76,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Mixed/Pointer8": {
+      "samples": 5,
+      "ns/op": 49.32,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Reflected/Cell16": {
+      "samples": 5,
+      "ns/op": 8.644,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Reflected/Current128": {
+      "samples": 5,
+      "ns/op": 8.992,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Reflected/Inline40": {
+      "samples": 5,
+      "ns/op": 7.965,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Reflected/Interface16": {
+      "samples": 5,
+      "ns/op": 8.532,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Reflected/Pointer8": {
+      "samples": 5,
+      "ns/op": 8.603,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    }
+  },
+  "tagged-layouts.txt": {
+    "BenchmarkRecordCellScope/Direct": {
+      "samples": 5,
+      "ns/op": 1488.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordCellScope/NewScope": {
+      "samples": 5,
+      "ns/op": 2765.0,
+      "B/op": 4896.0,
+      "allocs/op": 2.0
+    },
+    "BenchmarkRecordCellScope/PreallocatedScope": {
+      "samples": 5,
+      "ns/op": 2235.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 24.27,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 198.9,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 11.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 22.25,
+      "B/op": 32.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 30.73,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 188.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 8.957,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 19.05,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 24.69,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 189.6,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.906,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 13.89,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 30.01,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 201.8,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 10.8,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 21.62,
+      "B/op": 48.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 29.53,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 195.5,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.798,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 21.66,
+      "B/op": 48.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 23.07,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 189.2,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.944,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 11.25,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 30.02,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 187.7,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.007,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 18.68,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 24.73,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 188.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.553,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 13.89,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 29.83,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 199.7,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 10.48,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 18.36,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 28.78,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 198.7,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.819,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Compact2InlineKey/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 18.69,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 28.35,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 71.13,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 7.531,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 19.57,
+      "B/op": 32.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 25.69,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 90.01,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.409,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 16.41,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 17.21,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 66.34,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.137,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 9.885,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 24.93,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 83.05,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 11.23,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 22.5,
+      "B/op": 48.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 20.84,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 65.22,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.026,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 17.34,
+      "B/op": 48.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 12.87,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 62.49,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.003,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 6.597,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 25.12,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 77.84,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.291,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 16.05,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 16.33,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 70.82,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.035,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 9.968,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 20.67,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 71.73,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 6.564,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 14.33,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 19.52,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 67.26,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 5.817,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Fast2InlineKey/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 14.01,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 7.378,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 37.46,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.197,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 3.977,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 16.05,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 50.81,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.593,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 12.91,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 10.01,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 41.85,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.304,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 6.824,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 15.99,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 47.87,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.467,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 10.78,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 12.96,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 43.07,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.291,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Generated/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 10.48,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 6.146,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 37.96,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.094,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 3.969,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 22.75,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 56.5,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 4.046,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 12.97,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 9.951,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 42.98,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.29,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 7.201,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 12.55,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 48.96,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.404,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 10.15,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 11.58,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 44.46,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 3.169,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Memory/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 10.34,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 212.8,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1665.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 186.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 196.8,
+      "B/op": 32.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 228.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1685.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 187.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 195.5,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 217.3,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1673.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 186.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 195.2,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 221.2,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1655.0,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 184.8,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 196.8,
+      "B/op": 48.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 219.6,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1651.0,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 183.9,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePack/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 200.4,
+      "B/op": 48.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 211.6,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1668.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 184.8,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 185.9,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 230.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1698.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 187.6,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 197.1,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 214.6,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1628.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 181.2,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 186.5,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 221.1,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1651.0,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 183.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 193.8,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 219.9,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 1650.0,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 183.3,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/MessagePackInlineKey/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 192.9,
+      "B/op": 24.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 64.6,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 500.4,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 50.38,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 53.79,
+      "B/op": 10.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 75.32,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 474.7,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 51.06,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 59.5,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 68.78,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 464.8,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 51.01,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 55.69,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 73.0,
+      "B/op": 21.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 468.2,
+      "B/op": 21.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 49.43,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 58.33,
+      "B/op": 29.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 71.86,
+      "B/op": 21.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 461.2,
+      "B/op": 21.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 50.03,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Mixed/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 58.69,
+      "B/op": 29.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Cell16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 19.03,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Cell16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 103.7,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Cell16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 8.551,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Cell16/Retain": {
+      "samples": 5,
+      "ns/op": 9.956,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Current128/ChildRetain": {
+      "samples": 5,
+      "ns/op": 27.57,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Current128/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 115.2,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Current128/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.664,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Current128/Retain": {
+      "samples": 5,
+      "ns/op": 18.9,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Inline40/ChildRetain": {
+      "samples": 5,
+      "ns/op": 21.41,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Inline40/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 106.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Inline40/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 8.788,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Inline40/Retain": {
+      "samples": 5,
+      "ns/op": 12.71,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Interface16/ChildRetain": {
+      "samples": 5,
+      "ns/op": 24.99,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Interface16/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 110.3,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Interface16/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 9.237,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Interface16/Retain": {
+      "samples": 5,
+      "ns/op": 15.76,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Pointer8/ChildRetain": {
+      "samples": 5,
+      "ns/op": 24.24,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Pointer8/FieldsAndChild": {
+      "samples": 5,
+      "ns/op": 104.2,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Pointer8/OpaqueRead": {
+      "samples": 5,
+      "ns/op": 8.577,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayout/Reflected/Pointer8/Retain": {
+      "samples": 5,
+      "ns/op": 16.0,
+      "B/op": 16.0,
+      "allocs/op": 1.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2/Cell16": {
+      "samples": 5,
+      "ns/op": 11.34,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2/Current128": {
+      "samples": 5,
+      "ns/op": 8.962,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2/Inline40": {
+      "samples": 5,
+      "ns/op": 8.644,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2/Interface16": {
+      "samples": 5,
+      "ns/op": 9.856,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2/Pointer8": {
+      "samples": 5,
+      "ns/op": 9.733,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2InlineKey/Cell16": {
+      "samples": 5,
+      "ns/op": 9.511,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2InlineKey/Current128": {
+      "samples": 5,
+      "ns/op": 8.832,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2InlineKey/Inline40": {
+      "samples": 5,
+      "ns/op": 8.44,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2InlineKey/Interface16": {
+      "samples": 5,
+      "ns/op": 9.156,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Compact2InlineKey/Pointer8": {
+      "samples": 5,
+      "ns/op": 9.399,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2/Cell16": {
+      "samples": 5,
+      "ns/op": 7.247,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2/Current128": {
+      "samples": 5,
+      "ns/op": 6.627,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2/Inline40": {
+      "samples": 5,
+      "ns/op": 5.467,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2/Interface16": {
+      "samples": 5,
+      "ns/op": 6.121,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2/Pointer8": {
+      "samples": 5,
+      "ns/op": 5.83,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2InlineKey/Cell16": {
+      "samples": 5,
+      "ns/op": 6.025,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2InlineKey/Current128": {
+      "samples": 5,
+      "ns/op": 6.244,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2InlineKey/Inline40": {
+      "samples": 5,
+      "ns/op": 5.494,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2InlineKey/Interface16": {
+      "samples": 5,
+      "ns/op": 6.148,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2InlineKey/Pointer8": {
+      "samples": 5,
+      "ns/op": 5.858,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Fast2InlineKey/StaticFast2": {
+      "samples": 5,
+      "ns/op": 3.943,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Generated/Cell16": {
+      "samples": 5,
+      "ns/op": 2.83,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Generated/Current128": {
+      "samples": 5,
+      "ns/op": 3.424,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Generated/Inline40": {
+      "samples": 5,
+      "ns/op": 2.372,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Generated/Interface16": {
+      "samples": 5,
+      "ns/op": 2.865,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Generated/Pointer8": {
+      "samples": 5,
+      "ns/op": 2.788,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Memory/Cell16": {
+      "samples": 5,
+      "ns/op": 2.811,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Memory/Current128": {
+      "samples": 5,
+      "ns/op": 3.81,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Memory/Inline40": {
+      "samples": 5,
+      "ns/op": 2.455,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Memory/Interface16": {
+      "samples": 5,
+      "ns/op": 2.888,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Memory/Pointer8": {
+      "samples": 5,
+      "ns/op": 2.759,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePack/Cell16": {
+      "samples": 5,
+      "ns/op": 184.9,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePack/Current128": {
+      "samples": 5,
+      "ns/op": 185.6,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePack/Inline40": {
+      "samples": 5,
+      "ns/op": 184.3,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePack/Interface16": {
+      "samples": 5,
+      "ns/op": 184.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePack/Pointer8": {
+      "samples": 5,
+      "ns/op": 184.1,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePackInlineKey/Cell16": {
+      "samples": 5,
+      "ns/op": 182.5,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePackInlineKey/Current128": {
+      "samples": 5,
+      "ns/op": 185.7,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePackInlineKey/Inline40": {
+      "samples": 5,
+      "ns/op": 182.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePackInlineKey/Interface16": {
+      "samples": 5,
+      "ns/op": 183.2,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/MessagePackInlineKey/Pointer8": {
+      "samples": 5,
+      "ns/op": 183.6,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Mixed/Cell16": {
+      "samples": 5,
+      "ns/op": 49.36,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Mixed/Current128": {
+      "samples": 5,
+      "ns/op": 50.14,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Mixed/Inline40": {
+      "samples": 5,
+      "ns/op": 49.23,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Mixed/Interface16": {
+      "samples": 5,
+      "ns/op": 49.03,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Mixed/Pointer8": {
+      "samples": 5,
+      "ns/op": 49.64,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Reflected/Cell16": {
+      "samples": 5,
+      "ns/op": 8.497,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Reflected/Current128": {
+      "samples": 5,
+      "ns/op": 9.12,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Reflected/Inline40": {
+      "samples": 5,
+      "ns/op": 7.93,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Reflected/Interface16": {
+      "samples": 5,
+      "ns/op": 8.284,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordHandleLayoutDirect/Reflected/Pointer8": {
+      "samples": 5,
+      "ns/op": 8.211,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    }
+  },
+  "scopes.txt": {
+    "BenchmarkRecordCellScope/Direct": {
+      "samples": 5,
+      "ns/op": 1522.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    },
+    "BenchmarkRecordCellScope/NewScope": {
+      "samples": 5,
+      "ns/op": 2486.0,
+      "B/op": 4896.0,
+      "allocs/op": 2.0
+    },
+    "BenchmarkRecordCellScope/RetainedScope": {
+      "samples": 5,
+      "ns/op": 1550.0,
+      "B/op": 0.0,
+      "allocs/op": 0.0
+    }
+  }
+}

@@ -1,0 +1,21 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkRecordCellScope/Direct-18         	   82363	      1511 ns/op	        16.00 handle-B	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordCellScope/Direct-18         	   79872	      1522 ns/op	        16.00 handle-B	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordCellScope/Direct-18         	   70285	      1636 ns/op	        16.00 handle-B	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordCellScope/Direct-18         	   79375	      1555 ns/op	        16.00 handle-B	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordCellScope/Direct-18         	   80965	      1493 ns/op	        16.00 handle-B	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordCellScope/RetainedScope-18  	   75457	      1547 ns/op	      4096 arena-B	        16.00 handle-B	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordCellScope/RetainedScope-18  	   77114	      1550 ns/op	      4096 arena-B	        16.00 handle-B	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordCellScope/RetainedScope-18  	   77775	      1561 ns/op	      4096 arena-B	        16.00 handle-B	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordCellScope/RetainedScope-18  	   75476	      1527 ns/op	      4096 arena-B	        16.00 handle-B	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordCellScope/RetainedScope-18  	   77116	      1565 ns/op	      4096 arena-B	        16.00 handle-B	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordCellScope/NewScope-18       	   48091	      2431 ns/op	      4096 arena-B	        16.00 handle-B	       256.0 rows/op	    4896 B/op	       2 allocs/op
+BenchmarkRecordCellScope/NewScope-18       	   48481	      2486 ns/op	      4096 arena-B	        16.00 handle-B	       256.0 rows/op	    4896 B/op	       2 allocs/op
+BenchmarkRecordCellScope/NewScope-18       	   48708	      2445 ns/op	      4096 arena-B	        16.00 handle-B	       256.0 rows/op	    4896 B/op	       2 allocs/op
+BenchmarkRecordCellScope/NewScope-18       	   49612	      2629 ns/op	      4096 arena-B	        16.00 handle-B	       256.0 rows/op	    4896 B/op	       2 allocs/op
+BenchmarkRecordCellScope/NewScope-18       	   47784	      2549 ns/op	      4096 arena-B	        16.00 handle-B	       256.0 rows/op	    4896 B/op	       2 allocs/op
+PASS
+ok  	github.com/andreyvit/edb/kvo/record	2.185s

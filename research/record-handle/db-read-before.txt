@@ -1,0 +1,96 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb
+cpu: Apple M5 Max
+BenchmarkRecordRead/MessagePack-18         	  617283	       165.5 ns/op	     328 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/MessagePack-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_1355783317.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_2790413785.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3547595405.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_1237696726.db
+BenchmarkRecordRead/MessagePack-18         	  669300	       161.1 ns/op	     328 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/MessagePack-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_443170914.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_1674862593.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_981590110.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3995110145.db
+BenchmarkRecordRead/MessagePack-18         	  631232	       162.9 ns/op	     328 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/MessagePack-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_1081596194.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_2737727578.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_401446788.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_2188297414.db
+BenchmarkRecordRead/MessagePack-18         	  656679	       164.3 ns/op	     328 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/MessagePack-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_2174917351.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_2543475069.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_4274370022.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3625760056.db
+BenchmarkRecordRead/MessagePack-18         	  686106	       163.8 ns/op	     328 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/MessagePack-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_217953933.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_405073279.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_2142270119.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_1726857464.db
+BenchmarkRecordRead/Fast2-18               	  696610	       153.5 ns/op	     344 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/Fast2-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3239772736.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_2461939714.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_1786635735.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_168959562.db
+BenchmarkRecordRead/Fast2-18               	  697218	       146.3 ns/op	     344 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/Fast2-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_1499903749.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_2837737263.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_2812416601.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_1475600535.db
+BenchmarkRecordRead/Fast2-18               	  709848	       155.5 ns/op	     344 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/Fast2-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_1302143390.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_542792576.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3681661968.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3708419010.db
+BenchmarkRecordRead/Fast2-18               	  717631	       154.4 ns/op	     344 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/Fast2-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_104263431.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_1439352486.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_584816233.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_217956040.db
+BenchmarkRecordRead/Fast2-18               	  744763	       151.5 ns/op	     344 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/Fast2-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_4292489510.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3162002768.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3494773065.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_1043241542.db
+BenchmarkRecordRead/Compact2-18            	  711760	       160.0 ns/op	     328 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/Compact2-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_466874994.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_1272247197.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_4113837190.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_921917221.db
+BenchmarkRecordRead/Compact2-18            	  726355	       154.0 ns/op	     328 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/Compact2-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_2970314792.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_185169515.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3131155951.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_2994419905.db
+BenchmarkRecordRead/Compact2-18            	  733364	       154.7 ns/op	     328 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/Compact2-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3191453499.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3196026567.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3571227226.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_650540584.db
+BenchmarkRecordRead/Compact2-18            	  705156	       149.7 ns/op	     328 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/Compact2-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3964523215.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3749065742.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_784180722.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3959261521.db
+BenchmarkRecordRead/Compact2-18            	  688566	       154.8 ns/op	     328 B/op	       8 allocs/op
+--- BENCH: BenchmarkRecordRead/Compact2-18
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_2372929129.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3080577924.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_2962498487.db
+    record_read_test.go:65: DB: /var/folders/nx/zwn4wl_n20sfkkd6k_bz_f_h0000gn/T/db_test_3211916743.db
+PASS
+ok  	github.com/andreyvit/edb	2.360s

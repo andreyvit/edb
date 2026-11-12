@@ -1,0 +1,3564 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/one-18         	20997529	         5.926 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/one-18         	21611072	         5.832 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/one-18         	19353277	         6.533 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/one-18         	23323614	         5.503 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/one-18         	20342712	         6.943 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/one-18         	17636359	         6.222 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/scalars-18         	 1443426	        71.47 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/scalars-18         	 1701943	        80.79 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/scalars-18         	 1582108	        90.11 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/scalars-18         	 1534197	        79.51 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/scalars-18         	 1524790	        80.32 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/scalars-18         	 1499232	        76.56 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/write-18         	 6892722	        15.94 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/write-18         	 7371346	        16.94 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/write-18         	 7217412	        16.84 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/write-18         	 7697302	        15.89 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/write-18         	 7664568	        15.97 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Fast2/write-18         	 7428097	        15.80 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/one-18         	35427408	         3.550 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/one-18         	36585364	         3.640 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/one-18         	35269905	         4.062 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/one-18         	28557258	         4.068 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/one-18         	23858520	         4.912 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/one-18         	26339373	         4.301 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/scalars-18         	 2488189	        50.33 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/scalars-18         	 2543126	        47.98 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/scalars-18         	 2502728	        48.80 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/scalars-18         	 2473081	        48.65 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/scalars-18         	 2496862	        47.09 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/scalars-18         	 2546160	        54.63 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/write-18         	13067862	         9.717 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/write-18         	12195585	         9.229 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/write-18         	11856339	         9.767 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/write-18         	12364174	         9.237 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/write-18         	13508887	         8.832 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/Decoded/write-18         	13398338	         8.771 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/one-18         	35349136	         3.476 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/one-18         	35145524	         3.672 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/one-18         	35275960	         3.567 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/one-18         	34540245	         3.595 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/one-18         	34810770	         3.557 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/one-18         	35584993	         3.522 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/scalars-18         	 2801654	        42.42 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/scalars-18         	 2824431	        42.18 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/scalars-18         	 2581172	        43.38 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/scalars-18         	 2821225	        45.65 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/scalars-18         	 2707296	        44.53 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/scalars-18         	 2752977	        45.16 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/write-18         	12007704	        11.58 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/write-18         	11061988	        11.16 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/write-18         	10877528	        10.74 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/write-18         	11063052	        10.81 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/write-18         	 8237325	        13.47 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/GeneratedNative/write-18         	 7229049	        16.78 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/one-18         	10202743	        14.74 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/one-18         	 8577325	        14.42 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/one-18         	11995752	        10.29 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/one-18         	12488182	        10.19 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/one-18         	10431531	        10.99 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/one-18         	11993902	        11.45 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/scalars-18         	  915390	       125.6 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/scalars-18         	  918160	       165.6 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/scalars-18         	  894547	       160.8 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/scalars-18         	  851113	       160.9 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/scalars-18         	  884384	       146.5 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/scalars-18         	  740073	       145.1 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/write-18         	 3584532	        28.58 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/write-18         	 4051726	        28.48 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/write-18         	 4408420	        29.94 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/write-18         	 4347116	        28.21 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/write-18         	 4567773	        26.91 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/ReflectedNative/write-18         	 4668246	        28.47 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/DirectGo/one-18         	490943121	         0.2535 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/DirectGo/one-18         	476967270	         0.2573 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/DirectGo/one-18         	443847174	         0.2636 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/DirectGo/one-18         	436528326	         0.2719 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/DirectGo/one-18         	343681152	         0.2994 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkDecodedAccess/DirectGo/one-18         	405640087	         0.2925 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/0-18         	25458112	         4.679 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/0-18         	27807548	         4.532 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/0-18         	30519789	         4.485 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/0-18         	26074440	         4.482 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/0-18         	20098677	         5.701 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/0-18         	21010396	         5.227 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/1-18         	 1454287	        80.99 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/1-18         	 1562098	        76.86 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/1-18         	 1478944	        87.29 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/1-18         	 1322343	        86.37 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/1-18         	 1624056	        76.56 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/1-18         	 1559182	        75.82 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/16-18         	  102238	      1220 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/16-18         	  101664	      1190 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/16-18         	   98568	      1242 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/16-18         	   99404	      1169 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/16-18         	   90508	      1173 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/16-18         	  107528	      1177 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/256-18         	    6602	     18801 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/256-18         	    6595	     18307 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/256-18         	    6229	     19255 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/256-18         	    6714	     18080 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/256-18         	    6001	     18198 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/direct/256-18         	    6956	     18081 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/0-18         	  243872	       487.8 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/0-18         	  213721	       527.5 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/0-18         	  238471	       492.5 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/0-18         	  243588	       492.5 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/0-18         	  226459	       551.1 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/0-18         	  240001	       540.7 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/1-18         	  214819	       619.3 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/1-18         	  212191	       592.7 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/1-18         	  186777	       629.3 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/1-18         	  213986	       691.8 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/1-18         	  175210	       592.5 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/1-18         	  211749	       595.8 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/16-18         	   88886	      1346 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/16-18         	   86174	      1289 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/16-18         	   90272	      1235 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/16-18         	   97693	      1326 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/16-18         	   84386	      1370 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/16-18         	   83460	      1366 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/256-18         	   10000	     12099 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/256-18         	    9619	     12878 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/256-18         	    8631	     14605 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/256-18         	   10000	     12572 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/256-18         	   10000	     12443 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generated/256-18         	    9814	     12455 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/0-18         	  145509	       884.5 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/0-18         	  134502	       872.0 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/0-18         	  136405	       840.2 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/0-18         	  138367	       906.8 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/0-18         	  146239	       869.0 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/0-18         	  109491	       948.2 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/1-18         	  116486	       999.7 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/1-18         	  120686	      1000 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/1-18         	  120439	       975.5 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/1-18         	  119194	       960.1 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/1-18         	  122811	       980.4 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/1-18         	  127658	       984.9 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/16-18         	   44305	      2791 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/16-18         	   45255	      2850 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/16-18         	   37508	      3162 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/16-18         	   36750	      4400 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/16-18         	   37753	      3812 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/16-18         	   27812	      3722 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/256-18         	    3668	     33972 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/256-18         	    3374	     35141 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/256-18         	    3409	     32094 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/256-18         	    3862	     31344 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/256-18         	    3105	     32499 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/reflected/256-18         	    3988	     36955 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/0-18         	  296512	       458.0 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/0-18         	  298450	       654.9 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/0-18         	  300333	       437.1 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/0-18         	  262884	       435.4 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/0-18         	  284168	       378.8 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/0-18         	  314708	       372.5 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/1-18         	  279408	       426.3 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/1-18         	  285776	       439.4 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/1-18         	  279972	       434.2 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/1-18         	  290175	       426.3 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/1-18         	  223082	       469.1 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/1-18         	  273836	       440.0 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/16-18         	  100266	      1330 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/16-18         	   97777	      1251 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/16-18         	   98514	      1309 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/16-18         	   97830	      1306 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/16-18         	   89247	      1457 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/16-18         	   78896	      1564 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/256-18         	    7687	     14668 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/256-18         	    7063	     14839 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/256-18         	    7618	     15745 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/256-18         	    8115	     15617 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/256-18         	    7252	     15588 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Fast2/generic/256-18         	    9273	     15022 ns/op	    1008 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/0-18         	28351474	         4.528 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/0-18         	26188722	         4.394 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/0-18         	30049768	         4.097 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/0-18         	30901950	         4.133 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/0-18         	31132442	         4.101 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/0-18         	28795104	         4.262 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/1-18         	  554026	       215.1 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/1-18         	  586856	       219.9 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/1-18         	  621439	       234.0 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/1-18         	  485682	       213.7 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/1-18         	  501610	       206.4 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/1-18         	  537964	       217.9 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/16-18         	   36354	      3353 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/16-18         	   35612	      3425 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/16-18         	   32397	      3724 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/16-18         	   33703	      3464 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/16-18         	   37065	      3228 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/16-18         	   38168	      3156 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/256-18         	    2368	     48699 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/256-18         	    2558	     48096 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/256-18         	    2316	     48773 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/256-18         	    2458	     50880 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/256-18         	    2193	     49878 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/direct/256-18         	    2449	     50256 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/0-18         	  185025	       805.3 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/0-18         	  183562	       882.4 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/0-18         	  133248	       863.7 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/0-18         	  135553	       829.5 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/0-18         	  149029	       753.0 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/0-18         	  158492	       775.2 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/1-18         	  115459	      1210 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/1-18         	  139612	       827.7 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/1-18         	  175742	       809.4 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/1-18         	  150708	       866.8 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/1-18         	  128544	       907.1 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/1-18         	  148789	       832.1 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/16-18         	   89872	      1484 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/16-18         	   74836	      1444 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/16-18         	   80652	      1395 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/16-18         	   80682	      1389 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/16-18         	   89346	      1393 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/16-18         	   83055	      1347 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/256-18         	    7275	     19099 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/256-18         	    7414	     17315 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/256-18         	    8749	     13352 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/256-18         	    8877	     13158 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/256-18         	   10000	     12396 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generated/256-18         	    7712	     13419 ns/op	     448 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/0-18         	  108843	      1057 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/0-18         	  110986	      1016 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/0-18         	  116370	       982.7 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/0-18         	  120584	       947.8 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/0-18         	  111280	       995.0 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/0-18         	  117762	       989.5 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/1-18         	   95786	      1232 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/1-18         	  106348	      1114 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/1-18         	  104288	      1167 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/1-18         	  112308	      1066 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/1-18         	  104281	      1214 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/1-18         	   74942	      1438 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/16-18         	   36507	      3594 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/16-18         	   30492	      4520 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/16-18         	   35180	      3353 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/16-18         	   38188	      3044 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/16-18         	   34692	      3634 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/16-18         	   36832	      4155 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/256-18         	    3594	     35257 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/256-18         	    3655	     39195 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/256-18         	    3069	     34323 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/256-18         	    3141	     34660 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/256-18         	    4300	     35616 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/reflected/256-18         	    3825	     29354 ns/op	     608 B/op	      17 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/0-18         	  251102	       410.2 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/0-18         	  257696	       407.5 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/0-18         	  306555	       473.1 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/0-18         	  220171	       506.0 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/0-18         	  281060	       400.5 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/0-18         	  263440	       439.5 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/1-18         	  255715	       643.5 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/1-18         	  250222	       498.3 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/1-18         	  251916	       511.7 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/1-18         	  237807	       560.6 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/1-18         	  221858	       520.1 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/1-18         	  194014	       686.8 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/16-18         	   75747	      1458 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/16-18         	   93030	      1178 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/16-18         	   93415	      1244 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/16-18         	   90511	      1220 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/16-18         	   94825	      1232 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/16-18         	   82660	      1226 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/256-18         	    9781	     13291 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/256-18         	    8960	     16190 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/256-18         	    9505	     26175 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/256-18         	    5205	     32307 ns/op	     897 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/256-18         	    6056	     19788 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/Compact2/generic/256-18         	    7022	     19570 ns/op	     896 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/0-18         	28199079	         4.578 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/0-18         	28487208	         4.747 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/0-18         	27124515	         4.569 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/0-18         	28257453	         4.859 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/0-18         	25719337	         5.077 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/0-18         	24673801	         4.962 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/1-18         	   55935	      1924 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/1-18         	   56599	      1866 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/1-18         	   49585	      2444 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/1-18         	   51429	      2345 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/1-18         	   69573	      2051 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/1-18         	   66510	      2121 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/16-18         	    4266	     31253 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/16-18         	    4117	     28891 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/16-18         	    3254	     45053 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/16-18         	    2476	     43034 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/16-18         	    2683	     46431 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/16-18         	    3249	     40193 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/256-18         	     222	    646636 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/256-18         	     219	    524822 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/256-18         	     270	    471735 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/256-18         	     253	    488556 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/256-18         	     234	    487343 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/direct/256-18         	     244	    491925 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/0-18         	   87163	      1454 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/0-18         	   80653	      1542 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/0-18         	   72414	      1508 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/0-18         	   79366	      1506 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/0-18         	   73531	      1498 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/0-18         	   80241	      1661 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/1-18         	   81308	      1492 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/1-18         	   81877	      1519 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/1-18         	   80820	      1600 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/1-18         	   72712	      1606 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/1-18         	   82627	      1496 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/1-18         	   73237	      1632 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/16-18         	   39679	      2808 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/16-18         	   50610	      2253 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/16-18         	   53228	      2317 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/16-18         	   48348	      2551 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/16-18         	   52352	      2176 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/16-18         	   52891	      2142 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/256-18         	    9134	     13431 ns/op	     721 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/256-18         	   10000	     12795 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/256-18         	    9687	     13371 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/256-18         	    8344	     13771 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/256-18         	    7484	     18191 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/generated/256-18         	    7082	     16495 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/0-18         	   59680	      1956 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/0-18         	   55688	      2030 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/0-18         	   72091	      1561 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/0-18         	   73293	      1441 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/0-18         	   82765	      1405 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/0-18         	   80947	      1407 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/1-18         	   73918	      1788 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/1-18         	   72420	      1718 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/1-18         	   69554	      1622 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/1-18         	   68493	      1594 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/1-18         	   75561	      1588 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/1-18         	   74588	      1539 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/16-18         	   33190	      3320 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/16-18         	   33333	      3296 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/16-18         	   35017	      3305 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/16-18         	   36604	      3272 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/16-18         	   29920	      3978 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/16-18         	   28063	      4274 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/256-18         	    2642	     42703 ns/op	     721 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/256-18         	    3033	     38493 ns/op	     721 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/256-18         	    4225	     37721 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/256-18         	    3556	     36268 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/256-18         	    3064	     36512 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkMaterialization/MessagePack/reflected/256-18         	    3808	     49777 ns/op	     720 B/op	      21 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/Int-18     	16667050	         9.331 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/Int-18     	13106398	         7.785 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/Int-18     	18530193	         7.650 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/Int-18     	16399042	         7.375 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/Int-18     	21066690	         5.631 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/Int-18     	24089733	         5.694 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/String-18  	 6495717	        21.69 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/String-18  	 4957635	        26.07 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/String-18  	 5524363	        18.70 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/String-18  	 5983892	        17.81 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/String-18  	 6478460	        20.95 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/String-18  	 6190885	        22.08 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/BorrowString-18         	18423981	         6.328 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/BorrowString-18         	21912973	         5.681 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/BorrowString-18         	21717490	         6.008 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/BorrowString-18         	18265534	         5.935 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/BorrowString-18         	16288579	         6.536 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/BorrowString-18         	18789878	         7.612 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/Bytes-18   	20257864	         6.106 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/Bytes-18   	21438141	         5.844 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/Bytes-18   	19385842	         6.187 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/Bytes-18   	19897197	         6.273 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/Bytes-18   	19181842	         5.830 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/Bytes-18   	21074662	         6.827 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/List-18    	18642102	         7.237 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/List-18    	19128586	         7.959 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/List-18    	17968552	         6.903 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/List-18    	17813845	         6.424 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/List-18    	19145754	         6.168 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/List-18    	20446994	         6.140 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/EditString-18         	  552639	       215.8 ns/op	     448 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/EditString-18         	  632590	       214.3 ns/op	     448 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/EditString-18         	  643617	       174.8 ns/op	     448 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/EditString-18         	  711170	       196.7 ns/op	     448 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/EditString-18         	  537884	       193.5 ns/op	     448 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/EditString-18         	  640926	       201.5 ns/op	     448 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/EVMString-18         	  442260	       235.8 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/EVMString-18         	  536732	       255.5 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/EVMString-18         	  846087	       152.0 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/EVMString-18         	  940438	       156.0 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/EVMString-18         	 1000000	       139.5 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Fast2/EVMString-18         	  892413	       168.0 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/Int-18     	11065431	         9.648 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/Int-18     	12801762	         9.977 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/Int-18     	 9870044	        12.05 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/Int-18     	10086505	        12.38 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/Int-18     	12587095	         8.909 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/Int-18     	13767190	         8.917 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/String-18  	 4936636	        22.62 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/String-18  	 5590017	        21.95 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/String-18  	 5014101	        22.03 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/String-18  	 5163519	        22.18 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/String-18  	 4974170	        26.94 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/String-18  	 4795555	        22.58 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/BorrowString-18         	11243982	        10.08 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/BorrowString-18         	11246748	        10.39 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/BorrowString-18         	11020548	        10.47 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/BorrowString-18         	 9372345	        11.53 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/BorrowString-18         	 9284242	        12.39 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/BorrowString-18         	10246702	        13.05 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/Bytes-18   	 5803245	        23.17 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/Bytes-18   	 5989168	        22.29 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/Bytes-18   	 5837096	        23.73 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/Bytes-18   	 5290498	        23.88 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/Bytes-18   	 6354879	        19.45 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/Bytes-18   	 6165597	        17.80 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/List-18    	 4489239	        26.41 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/List-18    	 4486455	        24.77 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/List-18    	 5576314	        20.17 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/List-18    	 5709674	        22.76 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/List-18    	 3833702	        31.11 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/List-18    	 4004215	        26.81 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/EditString-18         	  429421	       256.7 ns/op	     384 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/EditString-18         	  523773	       223.2 ns/op	     384 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/EditString-18         	  583574	       230.3 ns/op	     384 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/EditString-18         	  576818	       191.7 ns/op	     384 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/EditString-18         	  406759	       315.5 ns/op	     384 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/EditString-18         	  461596	       316.4 ns/op	     384 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/EVMString-18         	  703605	       187.1 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/EVMString-18         	  596396	       176.2 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/EVMString-18         	  705474	       142.8 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/EVMString-18         	  815493	       155.1 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/EVMString-18         	  767959	       172.8 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Compact2/EVMString-18         	  753765	       140.4 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/Int-18     	 1862565	        62.87 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/Int-18     	 1923045	        60.49 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/Int-18     	 1531032	        71.54 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/Int-18     	 1400184	        78.72 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/Int-18     	 1000000	       128.0 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/Int-18     	 1384602	        74.29 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/String-18  	 1000000	       101.5 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/String-18  	 1334247	        87.91 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/String-18  	 1216106	        92.75 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/String-18  	 1000000	       107.7 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/String-18  	 1000000	       111.1 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/String-18  	 1369809	        85.70 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/BorrowString-18         	 1613258	       107.3 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/BorrowString-18         	 1531660	        79.52 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/BorrowString-18         	 1520258	        80.31 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/BorrowString-18         	 1609268	        64.94 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/BorrowString-18         	 1542034	        74.38 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/BorrowString-18         	 1784594	        68.37 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/Bytes-18   	 1892763	        63.77 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/Bytes-18   	 1878636	        65.59 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/Bytes-18   	 1856610	        64.86 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/Bytes-18   	 1836205	        64.34 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/Bytes-18   	 1899567	        62.96 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/Bytes-18   	 1809153	        72.80 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/List-18    	  467395	       274.1 ns/op	     312 B/op	       6 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/List-18    	  460381	       275.4 ns/op	     312 B/op	       6 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/List-18    	  470618	       253.4 ns/op	     312 B/op	       6 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/List-18    	  507900	       268.9 ns/op	     312 B/op	       6 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/List-18    	  471342	       302.7 ns/op	     312 B/op	       6 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/List-18    	  337591	       307.8 ns/op	     312 B/op	       6 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/EditString-18         	  390884	       298.5 ns/op	     704 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/EditString-18         	  359061	       320.6 ns/op	     704 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/EditString-18         	  443882	       286.0 ns/op	     704 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/EditString-18         	  342705	       344.7 ns/op	     704 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/EditString-18         	  461278	       228.6 ns/op	     704 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/EditString-18         	  513633	       240.7 ns/op	     704 B/op	       5 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/EVMString-18         	  628065	       200.5 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/EVMString-18         	  543333	       194.0 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/EVMString-18         	  575056	       204.0 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/EVMString-18         	  606327	       304.1 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/EVMString-18         	  417892	       274.1 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/MessagePack/EVMString-18         	  456736	       316.4 ns/op	      64 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/Int-18     	22163222	         5.767 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/Int-18     	21385132	         6.934 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/Int-18     	32554052	         3.667 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/Int-18     	35356072	         3.537 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/Int-18     	28321370	         3.564 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/Int-18     	35285036	         3.538 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/String-18  	20964360	         6.864 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/String-18  	17041924	         6.767 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/String-18  	22115566	         5.803 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/String-18  	20593935	         5.991 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/String-18  	17965528	         5.793 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/String-18  	18533774	         5.981 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/BorrowString-18         	32662686	         4.268 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/BorrowString-18         	32936874	         4.121 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/BorrowString-18         	28368512	         4.347 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/BorrowString-18         	24916296	         4.301 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/BorrowString-18         	33354178	         3.907 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/BorrowString-18         	28622252	         4.282 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/Bytes-18   	 2485730	        59.67 ns/op	     256 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/Bytes-18   	 1721401	        61.82 ns/op	     256 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/Bytes-18   	 2493780	        51.23 ns/op	     256 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/Bytes-18   	 1898702	        56.68 ns/op	     256 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/Bytes-18   	 1794318	        74.34 ns/op	     256 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/Bytes-18   	 1849466	        75.15 ns/op	     256 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/List-18    	  227274	       499.6 ns/op	     384 B/op	       8 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/List-18    	  231332	       479.8 ns/op	     384 B/op	       8 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/List-18    	  334626	       403.8 ns/op	     384 B/op	       8 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/List-18    	  259138	       401.4 ns/op	     384 B/op	       8 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/List-18    	  351649	       343.6 ns/op	     384 B/op	       8 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/List-18    	  467359	       258.7 ns/op	     384 B/op	       8 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/EditString-18         	 7802445	        15.36 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/EditString-18         	 8269921	        13.79 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/EditString-18         	 9313816	        12.06 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/EditString-18         	 9396410	        14.74 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/EditString-18         	 8877626	        13.21 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/EditString-18         	10035506	        11.90 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/EVMString-18         	 1000000	       115.7 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/EVMString-18         	  947149	       111.3 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/EVMString-18         	  994165	       128.0 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/EVMString-18         	 1000000	       118.5 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/EVMString-18         	  973194	       136.6 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Generated/EVMString-18         	  767467	       139.5 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/Int-18     	10604766	        11.19 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/Int-18     	11316084	        10.23 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/Int-18     	12460195	        10.77 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/Int-18     	11264652	        10.48 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/Int-18     	12712369	        10.14 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/Int-18     	10937304	         9.904 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/String-18  	 9645494	        14.59 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/String-18  	 9318879	        12.78 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/String-18  	 9210340	        13.50 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/String-18  	 8932918	        14.55 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/String-18  	10734692	        11.87 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/String-18  	10941584	        12.27 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/BorrowString-18         	11851802	        10.87 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/BorrowString-18         	10757708	        10.96 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/BorrowString-18         	12185162	        12.53 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/BorrowString-18         	11384209	        11.15 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/BorrowString-18         	 9620620	        13.79 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/BorrowString-18         	10153786	        10.92 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/Bytes-18   	 2309457	        57.46 ns/op	     256 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/Bytes-18   	 1912531	        62.71 ns/op	     256 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/Bytes-18   	 1912281	        63.05 ns/op	     256 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/Bytes-18   	 2086656	        64.10 ns/op	     256 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/Bytes-18   	 2404485	        50.49 ns/op	     256 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/Bytes-18   	 2287326	        47.59 ns/op	     256 B/op	       1 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/List-18    	  532750	       207.8 ns/op	     384 B/op	       8 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/List-18    	  555436	       224.7 ns/op	     384 B/op	       8 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/List-18    	  515796	       219.1 ns/op	     384 B/op	       8 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/List-18    	  517845	       213.5 ns/op	     384 B/op	       8 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/List-18    	  520540	       266.4 ns/op	     384 B/op	       8 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/List-18    	  441358	       281.0 ns/op	     384 B/op	       8 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/EditString-18         	 5934081	        22.90 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/EditString-18         	 6413152	        18.85 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/EditString-18         	 7403122	        17.49 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/EditString-18         	 5907486	        17.09 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/EditString-18         	 7473219	        21.03 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/EditString-18         	 6538796	        16.96 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/EVMString-18         	  983942	       130.4 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/EVMString-18         	  976336	       128.8 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/EVMString-18         	 1000000	       117.2 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/EVMString-18         	 1000000	       113.9 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/EVMString-18         	 1000000	       122.7 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Reflected/EVMString-18         	 1000000	       117.5 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/Int-18     	34957395	         3.495 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/Int-18     	35120662	         3.511 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/Int-18     	27455505	         4.074 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/Int-18     	35476718	         3.840 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/Int-18     	30747078	         4.339 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/Int-18     	36103797	         3.699 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/String-18  	20516294	         5.813 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/String-18  	22591245	         5.463 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/String-18  	22437421	         5.476 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/String-18  	22704877	         5.522 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/String-18  	21671242	         5.590 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/String-18  	22065584	         5.734 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/BorrowString-18         	34272650	         3.558 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/BorrowString-18         	34543138	         3.535 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/BorrowString-18         	35598188	         3.943 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/BorrowString-18         	33741265	         3.619 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/BorrowString-18         	29158946	         3.906 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/BorrowString-18         	33743019	         4.049 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/Bytes-18   	21745693	         5.325 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/Bytes-18   	23509432	         5.616 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/Bytes-18   	35114239	         3.561 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/Bytes-18   	28562926	         3.573 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/Bytes-18   	33562132	         3.810 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/Bytes-18   	33871197	         3.747 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/List-18    	34035716	         3.575 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/List-18    	34194531	         3.558 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/List-18    	31065612	         3.588 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/List-18    	35421739	         3.576 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/List-18    	34561803	         3.562 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/List-18    	35088570	         3.589 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/EditString-18         	15508551	         8.136 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/EditString-18         	14044053	         8.026 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/EditString-18         	13808379	         8.304 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/EditString-18         	15115651	         8.380 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/EditString-18         	14772747	         8.310 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/EditString-18         	14242054	         8.159 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/EVMString-18         	 1000000	       112.8 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/EVMString-18         	 1000000	       114.7 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/EVMString-18         	 1000000	       114.5 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/EVMString-18         	 1000000	       110.9 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/EVMString-18         	 1000000	       118.9 ns/op	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkSharedValue/Memory/EVMString-18         	 1000000	       117.4 ns/op	       0 B/op	       0 allocs/op
+PASS

@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/andreyvit/edb/kvo"
 )
 
 type corruptValueRow struct {
@@ -21,10 +23,13 @@ type corruptValueWrongPayload struct {
 
 var (
 	corruptValueSchema  = &Schema{}
-	corruptValuesByCode = AddIndex[string]("code")
-	corruptValuesTable  = AddTable(corruptValueSchema, "corrupt_values", 1, func(row *corruptValueRow, ib *IndexBuilder) {
-		ib.Add(corruptValuesByCode, row.Code)
-	}, nil, []*Index{corruptValuesByCode})
+	corruptValuesByCode *IndexDef
+	corruptValuesTable  = DefineTable(corruptValueSchema, "corrupt_values", testIndexAccess[corruptValueRow](indexCode), func(b *TableBuilder[ID]) {
+		corruptValuesByCode = b.AddIndex[string]("code", nil).IndexDef()
+		b.SetIndexer(func(key ID, row kvo.Record, ib *IndexBuilder) {
+			ib.Add(corruptValuesByCode, row.Get(indexCode))
+		})
+	}).TableDef()
 )
 
 func TestCorruptValue_DecodeRowPayloadReturnsErrors(t *testing.T) {
@@ -145,7 +150,7 @@ func encodedCorruptValue(row any, indexRaw []byte) []byte {
 	return putValueHeader(raw, vfDefault, corruptValuesTable.latestSchemaVer, 1, indexOff)
 }
 
-func existingRawTableValue(t testing.TB, tx *Tx, tbl *Table, keyRaw []byte) []byte {
+func existingRawTableValue(t testing.TB, tx *Tx, tbl *TableDef, keyRaw []byte) []byte {
 	t.Helper()
 	raw := tbl.dataBucketIn(tx).Get(keyRaw)
 	if raw == nil {
@@ -154,7 +159,7 @@ func existingRawTableValue(t testing.TB, tx *Tx, tbl *Table, keyRaw []byte) []by
 	return append([]byte(nil), raw...)
 }
 
-func existingValueIndexBytes(t testing.TB, tx *Tx, tbl *Table, keyRaw []byte) []byte {
+func existingValueIndexBytes(t testing.TB, tx *Tx, tbl *TableDef, keyRaw []byte) []byte {
 	t.Helper()
 	raw := existingRawTableValue(t, tx, tbl, keyRaw)
 	var vle value
@@ -164,7 +169,7 @@ func existingValueIndexBytes(t testing.TB, tx *Tx, tbl *Table, keyRaw []byte) []
 	return append([]byte(nil), vle.Index...)
 }
 
-func putRawTableValue(t testing.TB, tx *Tx, tbl *Table, keyRaw, valueRaw []byte) {
+func putRawTableValue(t testing.TB, tx *Tx, tbl *TableDef, keyRaw, valueRaw []byte) {
 	t.Helper()
 	if err := tbl.dataBucketIn(tx).Put(keyRaw, valueRaw); err != nil {
 		t.Fatalf("failed to put raw table value: %v", err)

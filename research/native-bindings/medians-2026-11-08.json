@@ -1,0 +1,287 @@
+{
+  "DecodedAccess/Fast2/one": [
+    5.038,
+    0.0,
+    0.0
+  ],
+  "DecodedAccess/Fast2/scalars": [
+    60.92,
+    0.0,
+    0.0
+  ],
+  "DecodedAccess/Fast2/write": [
+    13.73,
+    0.0,
+    0.0
+  ],
+  "DecodedAccess/Decoded/one": [
+    3.28,
+    0.0,
+    0.0
+  ],
+  "DecodedAccess/Decoded/scalars": [
+    45.34,
+    0.0,
+    0.0
+  ],
+  "DecodedAccess/Decoded/write": [
+    12.51,
+    0.0,
+    0.0
+  ],
+  "DecodedAccess/GeneratedNative/one": [
+    3.9,
+    0.0,
+    0.0
+  ],
+  "DecodedAccess/GeneratedNative/scalars": [
+    44.58,
+    0.0,
+    0.0
+  ],
+  "DecodedAccess/GeneratedNative/write": [
+    10.63,
+    0.0,
+    0.0
+  ],
+  "DecodedAccess/ReflectedNative/one": [
+    9.298,
+    0.0,
+    0.0
+  ],
+  "DecodedAccess/ReflectedNative/scalars": [
+    104.2,
+    0.0,
+    0.0
+  ],
+  "DecodedAccess/ReflectedNative/write": [
+    23.41,
+    0.0,
+    0.0
+  ],
+  "DecodedAccess/DirectGo/one": [
+    0.245,
+    0.0,
+    0.0
+  ],
+  "Materialization/Fast2/direct/0": [
+    3.89,
+    0.0,
+    0.0
+  ],
+  "Materialization/Fast2/direct/1": [
+    66.25,
+    0.0,
+    0.0
+  ],
+  "Materialization/Fast2/direct/16": [
+    1008.0,
+    0.0,
+    0.0
+  ],
+  "Materialization/Fast2/direct/256": [
+    16141.0,
+    0.0,
+    0.0
+  ],
+  "Materialization/Fast2/generated/0": [
+    454.6,
+    448.0,
+    5.0
+  ],
+  "Materialization/Fast2/generated/1": [
+    502.3,
+    448.0,
+    5.0
+  ],
+  "Materialization/Fast2/generated/16": [
+    1232.0,
+    448.0,
+    5.0
+  ],
+  "Materialization/Fast2/generated/256": [
+    12651.0,
+    448.0,
+    5.0
+  ],
+  "Materialization/Fast2/reflected/0": [
+    762.1,
+    608.0,
+    17.0
+  ],
+  "Materialization/Fast2/reflected/1": [
+    875.6,
+    608.0,
+    17.0
+  ],
+  "Materialization/Fast2/reflected/16": [
+    2469.0,
+    608.0,
+    17.0
+  ],
+  "Materialization/Fast2/reflected/256": [
+    27738.0,
+    608.0,
+    17.0
+  ],
+  "Materialization/Fast2/generic/0": [
+    824.4,
+    1288.0,
+    8.0
+  ],
+  "Materialization/Fast2/generic/1": [
+    960.1,
+    1288.0,
+    8.0
+  ],
+  "Materialization/Fast2/generic/16": [
+    1690.0,
+    1288.0,
+    8.0
+  ],
+  "Materialization/Fast2/generic/256": [
+    12389.0,
+    1288.0,
+    8.0
+  ],
+  "Materialization/Compact2/direct/0": [
+    3.882,
+    0.0,
+    0.0
+  ],
+  "Materialization/Compact2/direct/1": [
+    171.1,
+    0.0,
+    0.0
+  ],
+  "Materialization/Compact2/direct/16": [
+    2803.0,
+    0.0,
+    0.0
+  ],
+  "Materialization/Compact2/direct/256": [
+    43909.0,
+    0.0,
+    0.0
+  ],
+  "Materialization/Compact2/generated/0": [
+    539.8,
+    448.0,
+    5.0
+  ],
+  "Materialization/Compact2/generated/1": [
+    605.9,
+    448.0,
+    5.0
+  ],
+  "Materialization/Compact2/generated/16": [
+    1278.0,
+    448.0,
+    5.0
+  ],
+  "Materialization/Compact2/generated/256": [
+    11849.0,
+    448.0,
+    5.0
+  ],
+  "Materialization/Compact2/reflected/0": [
+    893.2,
+    608.0,
+    17.0
+  ],
+  "Materialization/Compact2/reflected/1": [
+    1019.0,
+    608.0,
+    17.0
+  ],
+  "Materialization/Compact2/reflected/16": [
+    2634.0,
+    608.0,
+    17.0
+  ],
+  "Materialization/Compact2/reflected/256": [
+    27582.0,
+    608.0,
+    17.0
+  ],
+  "Materialization/Compact2/generic/0": [
+    901.3,
+    1176.0,
+    8.0
+  ],
+  "Materialization/Compact2/generic/1": [
+    976.9,
+    1176.0,
+    8.0
+  ],
+  "Materialization/Compact2/generic/16": [
+    2215.0,
+    1176.0,
+    8.0
+  ],
+  "Materialization/Compact2/generic/256": [
+    12770.0,
+    1176.0,
+    8.0
+  ],
+  "Materialization/MessagePack/direct/0": [
+    3.876,
+    0.0,
+    0.0
+  ],
+  "Materialization/MessagePack/direct/1": [
+    1652.0,
+    0.0,
+    0.0
+  ],
+  "Materialization/MessagePack/direct/16": [
+    26358.0,
+    0.0,
+    0.0
+  ],
+  "Materialization/MessagePack/direct/256": [
+    419357.0,
+    0.0,
+    0.0
+  ],
+  "Materialization/MessagePack/generated/0": [
+    1271.0,
+    720.0,
+    21.0
+  ],
+  "Materialization/MessagePack/generated/1": [
+    1326.0,
+    720.0,
+    21.0
+  ],
+  "Materialization/MessagePack/generated/16": [
+    1984.0,
+    720.0,
+    21.0
+  ],
+  "Materialization/MessagePack/generated/256": [
+    12688.0,
+    720.0,
+    21.0
+  ],
+  "Materialization/MessagePack/reflected/0": [
+    1346.0,
+    720.0,
+    21.0
+  ],
+  "Materialization/MessagePack/reflected/1": [
+    1480.0,
+    720.0,
+    21.0
+  ],
+  "Materialization/MessagePack/reflected/16": [
+    3016.0,
+    720.0,
+    21.0
+  ],
+  "Materialization/MessagePack/reflected/256": [
+    27734.0,
+    720.0,
+    21.0
+  ]
+}

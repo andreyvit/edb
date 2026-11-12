@@ -1,0 +1,66 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo/record
+cpu: Apple M5 Max
+BenchmarkRecordHandleEVM/Fast2/Scan-18         	    9722	     12117 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Scan-18         	    9937	     12059 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Scan-18         	   10000	     12087 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Scan-18         	    9973	     12058 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Scan-18         	   10000	     12066 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Retain-18       	    5889	     19826 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Retain-18       	    5877	     20011 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Retain-18       	    5995	     20081 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Retain-18       	    6164	     20092 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Retain-18       	    6308	     19616 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Scan-18      	    7672	     15128 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Scan-18      	    7790	     15077 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Scan-18      	    8121	     15029 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Scan-18      	    7981	     15057 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Scan-18      	    8210	     15183 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Retain-18    	    4680	     23072 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Retain-18    	    5239	     22846 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Retain-18    	    5310	     23016 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Retain-18    	    5479	     22921 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Retain-18    	    5300	     22724 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Scan-18   	    1146	    106419 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Scan-18   	    1141	    106184 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Scan-18   	    1146	    107173 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Scan-18   	    1095	    107964 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Scan-18   	    1112	    106939 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Retain-18 	    1050	    115386 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Retain-18 	    1058	    114783 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Retain-18 	    1046	    113981 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Retain-18 	    1070	    114579 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Retain-18 	    1047	    114713 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18     	   10000	     11124 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18     	   10000	     11374 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18     	   10000	     11179 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18     	   10000	     11204 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18     	   10000	     11173 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Retain-18   	    6450	     19227 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Generated/Retain-18   	    6420	     19156 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Generated/Retain-18   	    6304	     19286 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Generated/Retain-18   	    6595	     19376 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Generated/Retain-18   	    6208	     19549 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Scan-18     	    8517	     14480 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Scan-18     	    8166	     14399 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Scan-18     	    8598	     14424 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Scan-18     	    8343	     14303 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Scan-18     	    8508	     14388 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Retain-18   	    4717	     24125 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Retain-18   	    5503	     25022 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Retain-18   	    5060	     25244 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Retain-18   	    4909	     25163 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Retain-18   	    4863	     25277 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Memory/Scan-18        	   12091	      9918 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Memory/Scan-18        	   12049	     10019 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Memory/Scan-18        	   12046	     10056 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Memory/Scan-18        	   12012	      9954 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Memory/Scan-18        	   12027	      9795 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Memory/Retain-18      	    7119	     18166 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Memory/Retain-18      	    7107	     18209 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Memory/Retain-18      	    6788	     18201 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Memory/Retain-18      	    6121	     18268 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Memory/Retain-18      	    6772	     18314 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+PASS
+ok  	github.com/andreyvit/edb/kvo/record	8.004s

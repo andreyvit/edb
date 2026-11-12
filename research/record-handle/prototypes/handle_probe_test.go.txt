@@ -1,0 +1,309 @@
+package record
+
+// These exports are available only to the external test package. The prototypes
+// exercise scalar/string reads and direct object children, not the complete
+// Record API. In particular they are not production codecs or mutable records.
+
+import (
+	"math"
+	"reflect"
+	"unsafe"
+
+	"github.com/andreyvit/edb/kvo"
+	"github.com/andreyvit/edb/kvo/codec/msgpack"
+	"github.com/andreyvit/edb/kvo/codec/row2"
+	"github.com/andreyvit/edb/values"
+)
+
+type HandleProbeData struct {
+	p   unsafe.Pointer
+	n   int
+	key row2.View
+}
+
+type HandleProbeDescriptor struct {
+	id, keyedID uint32
+	encoded     bool
+	prefix      int
+	plan        *nativePlan
+	decodeKey   func([]byte) reflect.Value
+	get         func(unsafe.Pointer, int, uint64) values.Value
+	child       func(unsafe.Pointer, int, row2.Step) (*HandleProbeDescriptor, HandleProbeData)
+}
+
+// Registration is single-threaded in this experiment. A production registry
+// needs safe publication and stable IDs; no per-read locking is acceptable.
+var handleProbeDescriptors = []*HandleProbeDescriptor{nil}
+
+const handleProbeRecordTag = uint64(6) << 60 // currently unused by values.TypeTable
+const handleProbeDescriptorMask = uint64(1<<28 - 1)
+
+func registerHandleProbe(d *HandleProbeDescriptor) uint32 {
+	if uint64(len(handleProbeDescriptors)) > handleProbeDescriptorMask {
+		panic("descriptor ID overflow")
+	}
+	id := uint32(len(handleProbeDescriptors))
+	handleProbeDescriptors = append(handleProbeDescriptors, d)
+	return id
+}
+
+// Inline-key fixtures put key bytes immediately before the payload. This is a
+// synthetic envelope to measure the layout tradeoff, NOT a proposed disk format.
+func HandleProbeInlineKey(r Record) Record {
+	key := r.primaryRaw.Raw()
+	raw := r.wire.Raw()
+	if !r.msg.Missing() {
+		raw = r.msg.Raw()
+	}
+	data := append(append(make([]byte, 0, len(key)+len(raw)), key...), raw...)
+	r.primaryRaw = row2.Trusted(data[:len(key)])
+	if !r.msg.Missing() {
+		r.msg = msgpack.Trusted(data[len(key):])
+	} else {
+		r.wire = row2.Trusted(data[len(key):])
+	}
+	return r
+}
+
+func NewHandleProbeDescriptor(r Record, inlineKey bool) *HandleProbeDescriptor {
+	d := &HandleProbeDescriptor{plan: r.plan, decodeKey: r.primaryDecode}
+	d.id = registerHandleProbe(d)
+	if inlineKey {
+		d.prefix = len(r.primaryRaw.Raw())
+	}
+	layout := r.layout
+	if layout == nil && r.plan != nil {
+		layout = r.plan.layout
+	}
+	children := map[uint64]*HandleProbeDescriptor{}
+	if layout != nil {
+		for _, prop := range layout.model.AllProps() {
+			if _, ok := prop.AnyType().(*kvo.EntityType); ok {
+				children[prop.Code()] = NewHandleProbeDescriptor(r.Child(row2.Step{Key: prop.Code()}), false)
+			}
+		}
+	}
+	// Descriptor children use the same dense-code strategy as modelLayout. The
+	// benchmark schemas have small codes; sparse schemas are outside this probe.
+	var childIndex []*HandleProbeDescriptor
+	for code := range children {
+		if code >= 4096 {
+			panic("probe needs a sparse child index")
+		}
+		if int(code) >= len(childIndex) {
+			childIndex = append(childIndex, make([]*HandleProbeDescriptor, int(code)+1-len(childIndex))...)
+		}
+		childIndex[code] = children[code]
+	}
+	switch {
+	case r.memory != nil:
+		d.get = func(p unsafe.Pointer, _ int, key uint64) values.Value { return (*memoryObject)(p).get(key) }
+		d.child = func(p unsafe.Pointer, _ int, s row2.Step) (*HandleProbeDescriptor, HandleProbeData) {
+			f := (*memoryObject)(p).field(s.Key)
+			return childIndex[s.Key], HandleProbeData{p: unsafe.Pointer(f.child)}
+		}
+	case r.object != nil:
+		d.get = func(p unsafe.Pointer, _ int, key uint64) values.Value {
+			f := d.plan.field(key)
+			if f.plan.kind <= nativeFloat || f.plan.kind == nativeString {
+				return f.access.Get(p)
+			}
+			return nativeFieldValue(f.plan, f.access.Get(p), f.compact)
+		}
+		d.child = func(p unsafe.Pointer, _ int, s row2.Step) (*HandleProbeDescriptor, HandleProbeData) {
+			f := d.plan.field(s.Key)
+			_, v, ok := unwrapValue(f.plan, f.access.Get(p))
+			if !ok {
+				return childIndex[s.Key], HandleProbeData{}
+			}
+			return childIndex[s.Key], HandleProbeData{p: v.P}
+		}
+	case !r.msg.Missing():
+		d.encoded = true
+		d.get = func(p unsafe.Pointer, n int, key uint64) values.Value {
+			f := d.plan.field(key)
+			// The fixture reads plain scalars, not custom marshaler fields.
+			return f.plan.messagePackScalar(msgpack.Trusted(d.bytes(p, n)).Lookup(f.msgName))
+		}
+		d.child = func(p unsafe.Pointer, n int, s row2.Step) (*HandleProbeDescriptor, HandleProbeData) {
+			raw := msgpack.Trusted(d.bytes(p, n)).Lookup(d.plan.field(s.Key).msgName).Raw()
+			return childIndex[s.Key], HandleProbeData{p: unsafe.Pointer(unsafe.SliceData(raw)), n: len(raw)}
+		}
+	default:
+		d.encoded = true
+		if r.wire.Indexed() && (layout == nil || !layout.float32) {
+			d.get = func(p unsafe.Pointer, n int, key uint64) values.Value {
+				return row2.Trusted(d.bytes(p, n)).GetFast(key)
+			}
+		} else {
+			d.get = func(p unsafe.Pointer, n int, key uint64) values.Value {
+				return row2.Trusted(d.bytes(p, n)).RawField(key).Decode(layout.encoding(key))
+			}
+		}
+		d.child = func(p unsafe.Pointer, n int, s row2.Step) (*HandleProbeDescriptor, HandleProbeData) {
+			v := row2.Trusted(d.bytes(p, n)).Child(s)
+			return childIndex[s.Key], HandleProbeData{p: unsafe.Pointer(unsafe.SliceData(v.Raw())), n: len(v.Raw())}
+		}
+	}
+	// A separate primary key cannot fit in the same 16-byte cell as a payload
+	// span. This adapter makes its allocation explicit in the benchmark.
+	keyed := &HandleProbeDescriptor{
+		get: func(p unsafe.Pointer, _ int, k uint64) values.Value { return (*handleProbeKeyed)(p).value.Get(k) },
+		child: func(p unsafe.Pointer, _ int, s row2.Step) (*HandleProbeDescriptor, HandleProbeData) {
+			v := (*handleProbeKeyed)(p).value
+			return v.descriptor().child(v.P, int(uint32(v.R)), s)
+		},
+	}
+	d.keyedID = registerHandleProbe(keyed)
+	return d
+}
+
+func (d *HandleProbeDescriptor) bytes(p unsafe.Pointer, n int) []byte {
+	return unsafe.Slice((*byte)(p), n)[d.prefix:]
+}
+
+func (d *HandleProbeDescriptor) Data(r Record) HandleProbeData {
+	switch {
+	case r.memory != nil:
+		return HandleProbeData{p: unsafe.Pointer(r.memory)}
+	case r.object != nil:
+		return HandleProbeData{p: r.object}
+	default:
+		raw := r.wire.Raw()
+		if !r.msg.Missing() {
+			raw = r.msg.Raw()
+		}
+		if d.prefix != 0 {
+			if len(r.primaryRaw.Raw()) != d.prefix {
+				panic("inline key length mismatch")
+			}
+			return HandleProbeData{p: unsafe.Pointer(unsafe.SliceData(r.primaryRaw.Raw())), n: d.prefix + len(raw)}
+		}
+		return HandleProbeData{p: unsafe.Pointer(unsafe.SliceData(raw)), n: len(raw), key: r.primaryRaw}
+	}
+}
+
+// A descriptor pointer plus data and optional key spans, all inline: 40 bytes.
+type InlineHandleProbe struct {
+	d *HandleProbeDescriptor
+	v HandleProbeData
+}
+
+func (d *HandleProbeDescriptor) Inline(v HandleProbeData) InlineHandleProbe {
+	return InlineHandleProbe{d, v}
+}
+func (r InlineHandleProbe) Get(k uint64) values.Value { return r.d.get(r.v.p, r.v.n, k) }
+func (r InlineHandleProbe) Child(s row2.Step) InlineHandleProbe {
+	d, v := r.d.child(r.v.p, r.v.n, s)
+	return d.Inline(v)
+}
+
+// Data pointer plus packed descriptor ID/length: 16 bytes, with no pointer bits
+// hidden in the integer. The GC sees both encoded and native payload pointers.
+type CellHandleProbe values.Value
+type handleProbeKeyed struct {
+	value CellHandleProbe
+	key   row2.View
+}
+
+func (d *HandleProbeDescriptor) Cell(v HandleProbeData) CellHandleProbe {
+	if v.n < 0 || uint64(v.n) > math.MaxUint32 {
+		panic("record exceeds 32-bit length")
+	}
+	r := CellHandleProbe{P: v.p, R: handleProbeRecordTag | uint64(d.id)<<32 | uint64(v.n)}
+	if !v.key.Missing() {
+		return CellHandleProbe{P: unsafe.Pointer(&handleProbeKeyed{r, v.key}), R: handleProbeRecordTag | uint64(d.keyedID)<<32}
+	}
+	return r
+}
+func (r CellHandleProbe) descriptor() *HandleProbeDescriptor {
+	return handleProbeDescriptors[r.R>>32&handleProbeDescriptorMask]
+}
+func (r CellHandleProbe) Get(k uint64) values.Value {
+	return r.descriptor().get(r.P, int(uint32(r.R)), k)
+}
+func (r CellHandleProbe) Child(s row2.Step) CellHandleProbe {
+	d, v := r.descriptor().child(r.P, int(uint32(r.R)), s)
+	return d.Cell(v)
+}
+func (r CellHandleProbe) PrimaryKey() reflect.Value {
+	d := r.descriptor()
+	if d.decodeKey != nil && d.prefix != 0 {
+		return d.decodeKey(unsafe.Slice((*byte)(r.P), d.prefix))
+	}
+	if d.decodeKey == nil {
+		box := (*handleProbeKeyed)(r.P)
+		return box.value.descriptor().decodeKey(box.key.Raw())
+	}
+	panic("probe has no encoded primary key")
+}
+
+// The pointer and interface variants use the same format-specific backing
+// sizes: native/memory 16 B, encoded 24 B, encoded with separate key 40 B.
+type PointerHandleProbe struct{ d *HandleProbeDescriptor }
+type decodedHandleProbe struct {
+	PointerHandleProbe
+	p unsafe.Pointer
+}
+type encodedHandleProbe struct {
+	decodedHandleProbe
+	n int
+}
+type keyedHandleProbe struct {
+	encodedHandleProbe
+	key row2.View
+}
+
+type InterfaceHandleProbe interface {
+	Get(uint64) values.Value
+	Child(row2.Step) InterfaceHandleProbe
+}
+
+func (d *HandleProbeDescriptor) Interface(v HandleProbeData) InterfaceHandleProbe {
+	base := decodedHandleProbe{PointerHandleProbe{d}, v.p}
+	if !d.encoded {
+		return &decodedHandleProbe{PointerHandleProbe{d}, v.p}
+	}
+	enc := encodedHandleProbe{base, v.n}
+	if !v.key.Missing() {
+		return &keyedHandleProbe{enc, v.key}
+	}
+	return &encodedHandleProbe{base, v.n}
+}
+func (r *decodedHandleProbe) Get(k uint64) values.Value { return r.d.get(r.p, 0, k) }
+func (r *decodedHandleProbe) Child(s row2.Step) InterfaceHandleProbe {
+	d, v := r.d.child(r.p, 0, s)
+	return d.Interface(v)
+}
+func (r *encodedHandleProbe) Get(k uint64) values.Value { return r.d.get(r.p, r.n, k) }
+func (r *encodedHandleProbe) Child(s row2.Step) InterfaceHandleProbe {
+	d, v := r.d.child(r.p, r.n, s)
+	return d.Interface(v)
+}
+func (d *HandleProbeDescriptor) Pointer(v HandleProbeData) *PointerHandleProbe {
+	base := decodedHandleProbe{PointerHandleProbe{d}, v.p}
+	if !d.encoded {
+		return &(&decodedHandleProbe{PointerHandleProbe{d}, v.p}).PointerHandleProbe
+	}
+	enc := encodedHandleProbe{base, v.n}
+	if !v.key.Missing() {
+		return &(&keyedHandleProbe{enc, v.key}).PointerHandleProbe
+	}
+	return &(&encodedHandleProbe{base, v.n}).PointerHandleProbe
+}
+func (r *PointerHandleProbe) data() HandleProbeData {
+	v := HandleProbeData{p: (*decodedHandleProbe)(unsafe.Pointer(r)).p}
+	if r.d.encoded {
+		v.n = (*encodedHandleProbe)(unsafe.Pointer(r)).n
+	}
+	return v
+}
+func (r *PointerHandleProbe) Get(k uint64) values.Value {
+	v := r.data()
+	return r.d.get(v.p, v.n, k)
+}
+func (r *PointerHandleProbe) Child(s row2.Step) *PointerHandleProbe {
+	v := r.data()
+	d, v := r.d.child(v.p, v.n, s)
+	return d.Pointer(v)
+}

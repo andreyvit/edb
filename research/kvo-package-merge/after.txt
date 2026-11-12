@@ -1,0 +1,240 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/kvo
+cpu: Apple M5 Max
+BenchmarkRecordHandle/Fast2/Read-18         	42411255	         5.740 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/Read-18         	41498560	         5.690 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/Read-18         	42337995	         5.715 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/ValueBoundary-18         	40293531	         5.965 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/ValueBoundary-18         	39083434	         5.971 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/ValueBoundary-18         	40367227	         5.976 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/PointerBoundary-18       	40250444	         5.997 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/PointerBoundary-18       	39525144	         6.906 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/PointerBoundary-18       	39473410	         6.034 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/FieldsAndChild-18        	 3728552	        64.65 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/FieldsAndChild-18        	 3728386	        64.06 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/FieldsAndChild-18        	 3713734	        65.92 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/OpenRead-18              	32068412	         7.599 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/OpenRead-18              	32301115	         7.554 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/OpenRead-18              	31873389	         7.666 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/Retain-18                	30373340	         8.066 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/Retain-18                	31009254	         8.169 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/Retain-18                	28942250	         7.791 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Fast2/Fastest-18               	  485002	       488.2 ns/op	       216.0 editor-B	        16.00 handle-B	     437 B/op	       4 allocs/op
+BenchmarkRecordHandle/Fast2/Fastest-18               	  509571	       479.9 ns/op	       216.0 editor-B	        16.00 handle-B	     437 B/op	       4 allocs/op
+BenchmarkRecordHandle/Fast2/Fastest-18               	  502951	       477.0 ns/op	       216.0 editor-B	        16.00 handle-B	     437 B/op	       4 allocs/op
+BenchmarkRecordHandle/Compact2/Read-18               	24505944	         9.616 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/Read-18               	25731400	         9.697 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/Read-18               	24478035	         9.421 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/ValueBoundary-18      	23025078	        10.07 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/ValueBoundary-18      	23127328	        10.08 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/ValueBoundary-18      	23317948	         9.991 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/PointerBoundary-18    	23205220	        10.06 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/PointerBoundary-18    	25340622	        10.04 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/PointerBoundary-18    	23291737	        10.11 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/FieldsAndChild-18     	 1242489	       191.8 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/FieldsAndChild-18     	 1251068	       189.2 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/FieldsAndChild-18     	 1263184	       195.2 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/OpenRead-18           	18743714	        12.56 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/OpenRead-18           	18748717	        12.48 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/OpenRead-18           	19018185	        12.59 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/Retain-18             	19257450	        12.90 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/Retain-18             	19516359	        12.56 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/Retain-18             	19528468	        12.47 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Compact2/Fastest-18            	  411422	       573.1 ns/op	       216.0 editor-B	        16.00 handle-B	     437 B/op	       4 allocs/op
+BenchmarkRecordHandle/Compact2/Fastest-18            	  421662	       576.4 ns/op	       216.0 editor-B	        16.00 handle-B	     437 B/op	       4 allocs/op
+BenchmarkRecordHandle/Compact2/Fastest-18            	  414381	       573.2 ns/op	       216.0 editor-B	        16.00 handle-B	     437 B/op	       4 allocs/op
+BenchmarkRecordHandle/MessagePack/Read-18            	 1268576	       187.8 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/Read-18            	 1248148	       190.5 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/Read-18            	 1270995	       188.8 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/ValueBoundary-18   	 1273071	       191.0 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/ValueBoundary-18   	 1282170	       187.9 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/ValueBoundary-18   	 1277991	       188.0 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/PointerBoundary-18 	 1271155	       189.6 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/PointerBoundary-18 	 1269261	       188.4 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/PointerBoundary-18 	 1261309	       189.3 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/FieldsAndChild-18  	  144055	      1683 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/FieldsAndChild-18  	  143866	      1680 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/FieldsAndChild-18  	  144668	      1678 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/OpenRead-18        	 1252237	       191.6 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/OpenRead-18        	 1261456	       192.0 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/OpenRead-18        	 1250800	       191.5 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/Retain-18          	 1257166	       190.9 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/Retain-18          	 1257033	       190.8 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/Retain-18          	 1255800	       191.3 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/MessagePack/Fastest-18         	  190268	      1257 ns/op	       216.0 editor-B	        16.00 handle-B	     646 B/op	      17 allocs/op
+BenchmarkRecordHandle/MessagePack/Fastest-18         	  191902	      1259 ns/op	       216.0 editor-B	        16.00 handle-B	     646 B/op	      17 allocs/op
+BenchmarkRecordHandle/MessagePack/Fastest-18         	  193692	      1271 ns/op	       216.0 editor-B	        16.00 handle-B	     646 B/op	      17 allocs/op
+BenchmarkRecordHandle/Generated/Read-18              	77408966	         3.257 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/Read-18              	78334298	         3.044 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/Read-18              	84659816	         2.885 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/ValueBoundary-18     	76283299	         3.223 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/ValueBoundary-18     	71536791	         3.512 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/ValueBoundary-18     	73877409	         3.222 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/PointerBoundary-18   	76354092	         3.262 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/PointerBoundary-18   	71976621	         3.180 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/PointerBoundary-18   	76633441	         3.158 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/FieldsAndChild-18    	 5861938	        41.09 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/FieldsAndChild-18    	 5878179	        43.53 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/FieldsAndChild-18    	 5778513	        40.99 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/OpenRead-18          	28828828	         8.045 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/OpenRead-18          	31507603	         8.179 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/OpenRead-18          	29738548	         8.004 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/Retain-18            	28969182	         7.929 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/Retain-18            	30871144	         7.814 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/Retain-18            	31360082	         7.755 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/Fastest-18           	28871311	         8.745 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/Fastest-18           	28321784	         8.391 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Generated/Fastest-18           	29249269	         8.322 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/Read-18              	27612524	         8.636 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/Read-18              	29245256	         8.420 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/Read-18              	27564819	         8.410 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/ValueBoundary-18     	26851770	         8.826 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/ValueBoundary-18     	27578414	         8.836 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/ValueBoundary-18     	26850015	         8.840 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/PointerBoundary-18   	26997636	         8.767 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/PointerBoundary-18   	27456420	         8.778 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/PointerBoundary-18   	27428307	         8.753 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/FieldsAndChild-18    	 2425894	        99.22 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/FieldsAndChild-18    	 2420073	        99.27 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/FieldsAndChild-18    	 2412206	        99.06 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/OpenRead-18          	17638358	        13.87 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/OpenRead-18          	17038546	        14.05 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/OpenRead-18          	17567509	        13.88 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/Retain-18            	17067981	        14.09 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/Retain-18            	17572064	        13.81 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/Retain-18            	17731314	        13.92 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/Fastest-18           	16023321	        14.61 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/Fastest-18           	15565356	        14.46 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Reflected/Fastest-18           	16272565	        14.37 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Read-18                 	83274289	         2.924 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Read-18                 	83302008	         2.912 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Read-18                 	83175674	         2.920 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/ValueBoundary-18        	74475390	         3.288 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/ValueBoundary-18        	72202165	         3.263 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/ValueBoundary-18        	74295722	         3.241 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/PointerBoundary-18      	74298620	         3.929 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/PointerBoundary-18      	65064171	         4.359 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/PointerBoundary-18      	74076931	         3.474 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/FieldsAndChild-18       	 4912516	        47.18 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/FieldsAndChild-18       	 4844740	        47.72 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/FieldsAndChild-18       	 5216460	        51.62 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/OpenRead-18             	67646926	         3.793 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/OpenRead-18             	70923724	         4.977 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/OpenRead-18             	44459881	         5.444 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Retain-18               	41058388	         5.603 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Retain-18               	40539964	         5.607 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Retain-18               	51602179	         4.063 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Fastest-18              	53198374	         4.811 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Fastest-18              	51180891	         6.149 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandle/Memory/Fastest-18              	39953938	         5.677 ns/op	       216.0 editor-B	        16.00 handle-B	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Scan-18               	   17224	     13928 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Scan-18               	   17244	     13018 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Scan-18               	   18307	     13092 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Retain-18             	   10000	     22631 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Retain-18             	   10000	     27366 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Fast2/Retain-18             	   10000	     25167 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Scan-18            	   13165	     16499 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Scan-18            	   13828	     18649 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Scan-18            	   14040	     16779 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Retain-18          	    9771	     25512 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Retain-18          	    8444	     25593 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Compact2/Retain-18          	   10000	     25700 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Scan-18         	    2120	    110596 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Scan-18         	    2162	    110083 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Scan-18         	    2196	    109487 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Retain-18       	    2028	    119268 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Retain-18       	    1998	    118676 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/MessagePack/Retain-18       	    2056	    118806 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18           	   21007	     11323 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18           	   21108	     11350 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Scan-18           	   21192	     11329 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Generated/Retain-18         	   12232	     19662 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Generated/Retain-18         	   12184	     19768 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Generated/Retain-18         	   12174	     19694 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Scan-18           	   16267	     15100 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Scan-18           	   15976	     14709 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Scan-18           	   16366	     14787 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Retain-18         	    9464	     26058 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Retain-18         	    9334	     25979 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Reflected/Retain-18         	    9354	     25886 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Memory/Scan-18              	   23661	     10198 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Memory/Scan-18              	   23670	     10125 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Memory/Scan-18              	   23744	     10125 ns/op	       256.0 rows/op	       0 B/op	       0 allocs/op
+BenchmarkRecordHandleEVM/Memory/Retain-18            	   13084	     18309 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Memory/Retain-18            	   13149	     18277 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkRecordHandleEVM/Memory/Retain-18            	   13160	     18366 ns/op	       256.0 rows/op	    4864 B/op	       1 allocs/op
+BenchmarkTypedProperty/Fast2/Value-18                	21844328	        10.88 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/Value-18                	21805710	        10.89 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/Value-18                	21236588	        11.04 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/Descriptor-18           	16002843	        15.18 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/Descriptor-18           	15630300	        15.78 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/Descriptor-18           	13775784	        15.37 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/TypedCode-18            	20679849	        11.76 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/TypedCode-18            	20841850	        11.83 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/TypedCode-18            	20364366	        11.74 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/DirectCode-18           	22089277	        10.92 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/DirectCode-18           	22265515	        10.87 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Fast2/DirectCode-18           	22058737	        10.91 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Compact2/Value-18             	 3923574	        60.03 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Compact2/Value-18             	 3936324	        60.87 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Compact2/Value-18             	 3875944	        60.23 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Compact2/Descriptor-18        	 3806497	        63.08 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Compact2/Descriptor-18        	 3748650	        62.80 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Compact2/Descriptor-18        	 3818516	        62.12 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Compact2/TypedCode-18         	 3992599	        60.47 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Compact2/TypedCode-18         	 3914247	        60.14 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Compact2/TypedCode-18         	 4000162	        60.25 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Compact2/DirectCode-18        	 4034132	        60.03 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Compact2/DirectCode-18        	 3914401	        60.52 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Compact2/DirectCode-18        	 3917095	        60.77 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/MessagePack/Value-18          	  614557	       385.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/MessagePack/Value-18          	  615646	       387.3 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/MessagePack/Value-18          	  608229	       387.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/MessagePack/Descriptor-18     	  611763	       391.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/MessagePack/Descriptor-18     	  613464	       390.3 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/MessagePack/Descriptor-18     	  634549	       388.5 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/MessagePack/TypedCode-18      	  621807	       389.7 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/MessagePack/TypedCode-18      	  618722	       387.9 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/MessagePack/TypedCode-18      	  617065	       387.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/MessagePack/DirectCode-18     	  614222	       389.1 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/MessagePack/DirectCode-18     	  616120	       389.0 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/MessagePack/DirectCode-18     	  624477	       386.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/Value-18            	40932349	         5.835 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/Value-18            	36932076	         7.519 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/Value-18            	34957680	         6.479 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/Descriptor-18       	21450436	        10.39 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/Descriptor-18       	20466972	        10.41 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/Descriptor-18       	24909184	         9.771 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/TypedCode-18        	36454539	         6.811 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/TypedCode-18        	35262567	         9.068 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/TypedCode-18        	24155299	         9.480 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/DirectCode-18       	33925257	         8.340 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/DirectCode-18       	27398954	         8.625 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Generated/DirectCode-18       	24740108	         8.506 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Reflected/Value-18            	10522796	        24.97 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Reflected/Value-18            	10186810	        22.97 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Reflected/Value-18            	10507152	        23.07 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Reflected/Descriptor-18       	 9685978	        26.28 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Reflected/Descriptor-18       	 9364162	        25.00 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Reflected/Descriptor-18       	 9533282	        23.45 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Reflected/TypedCode-18        	12652944	        19.46 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Reflected/TypedCode-18        	13015065	        19.75 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Reflected/TypedCode-18        	12409460	        18.39 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Reflected/DirectCode-18       	13731090	        17.63 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Reflected/DirectCode-18       	13330988	        17.37 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Reflected/DirectCode-18       	14207348	        22.32 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/Value-18               	27879958	         8.309 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/Value-18               	35263003	         7.062 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/Value-18               	37808671	         6.788 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/Descriptor-18          	24819027	        11.78 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/Descriptor-18          	20260716	        13.14 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/Descriptor-18          	20348612	        12.58 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/TypedCode-18           	32080380	         9.907 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/TypedCode-18           	29472261	         9.013 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/TypedCode-18           	26910981	         8.639 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/DirectCode-18          	28198250	         9.011 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/DirectCode-18          	27108306	         8.645 ns/op	       0 B/op	       0 allocs/op
+BenchmarkTypedProperty/Memory/DirectCode-18          	34068126	         8.265 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/andreyvit/edb/kvo	67.905s

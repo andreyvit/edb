@@ -2,3 +2,7 @@ cover.out
 cover.html
 modd.one.conf
 .gocache
+
+# Local KVO measurements and collected replay data; keep experiment code tracked.
+/research/kvo/results/
+/research/kvo/experiments/testdata/workload-shapes.json.gz

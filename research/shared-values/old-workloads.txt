@@ -1,0 +1,396 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVO/ReadCustomers-18         	    2166	     63582 ns/op	       512.0 rows/op	    1512 B/op	      15 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVO/ReadCustomers-18         	    2188	     60976 ns/op	       512.0 rows/op	    1514 B/op	      15 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVO/ReadCustomers-18         	    2041	     65677 ns/op	       512.0 rows/op	    1514 B/op	      15 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVO/ReadCustomers-18         	    1768	     64932 ns/op	       512.0 rows/op	    1515 B/op	      15 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVO/ReadCustomers-18         	    2005	     66984 ns/op	       512.0 rows/op	    1514 B/op	      15 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVO/ReadCustomers-18         	    2128	     59150 ns/op	       512.0 rows/op	    1514 B/op	      15 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVO/WriteCustomers-18         	     229	    532932 ns/op	       512.0 rows/op	  845328 B/op	    4801 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVO/WriteCustomers-18         	     225	    539104 ns/op	       512.0 rows/op	  847812 B/op	    4801 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVO/WriteCustomers-18         	     210	    561383 ns/op	       512.0 rows/op	  846644 B/op	    4801 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVO/WriteCustomers-18         	     211	    575264 ns/op	       512.0 rows/op	  846034 B/op	    4801 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVO/WriteCustomers-18         	     200	    561196 ns/op	       512.0 rows/op	  844505 B/op	    4801 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVO/WriteCustomers-18         	     219	    525356 ns/op	       512.0 rows/op	  843373 B/op	    4800 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOBolt/ReadCustomers-18         	    1830	     59246 ns/op	       512.0 rows/op	    1987 B/op	      24 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOBolt/ReadCustomers-18         	    2142	     61054 ns/op	       512.0 rows/op	    1984 B/op	      24 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOBolt/ReadCustomers-18         	    1881	     58936 ns/op	       512.0 rows/op	    1984 B/op	      24 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOBolt/ReadCustomers-18         	    1875	     59971 ns/op	       512.0 rows/op	    1984 B/op	      24 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOBolt/ReadCustomers-18         	    1903	     59683 ns/op	       512.0 rows/op	    1984 B/op	      24 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOBolt/ReadCustomers-18         	    2128	     64733 ns/op	       512.0 rows/op	    1984 B/op	      24 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOBolt/WriteCustomers-18         	     180	    703784 ns/op	       512.0 rows/op	 1005272 B/op	    8980 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOBolt/WriteCustomers-18         	     170	    685888 ns/op	       512.0 rows/op	 1003286 B/op	    8979 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOBolt/WriteCustomers-18         	     172	    677664 ns/op	       512.0 rows/op	 1001443 B/op	    8979 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOBolt/WriteCustomers-18         	     162	    747128 ns/op	       512.0 rows/op	 1002526 B/op	    8979 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOBolt/WriteCustomers-18         	     160	    819446 ns/op	       512.0 rows/op	 1004152 B/op	    8980 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOBolt/WriteCustomers-18         	     174	    697155 ns/op	       512.0 rows/op	 1003284 B/op	    8979 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompact/ReadCustomers-18         	    1888	     66841 ns/op	       512.0 rows/op	    1512 B/op	      15 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompact/ReadCustomers-18         	    1470	     89570 ns/op	       512.0 rows/op	    1512 B/op	      15 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompact/ReadCustomers-18         	    1317	     99855 ns/op	       512.0 rows/op	    1512 B/op	      15 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompact/ReadCustomers-18         	    1520	     73894 ns/op	       512.0 rows/op	    1512 B/op	      15 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompact/ReadCustomers-18         	    1642	     70024 ns/op	       512.0 rows/op	    1515 B/op	      15 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompact/ReadCustomers-18         	    1726	     73618 ns/op	       512.0 rows/op	    1512 B/op	      15 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompact/WriteCustomers-18         	     150	    847007 ns/op	       512.0 rows/op	  830338 B/op	    5218 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompact/WriteCustomers-18         	     121	    942218 ns/op	       512.0 rows/op	  831296 B/op	    5218 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompact/WriteCustomers-18         	     140	    955440 ns/op	       512.0 rows/op	  832582 B/op	    5218 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompact/WriteCustomers-18         	     116	   1023945 ns/op	       512.0 rows/op	  831402 B/op	    5218 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompact/WriteCustomers-18         	     123	    849186 ns/op	       512.0 rows/op	  832687 B/op	    5218 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompact/WriteCustomers-18         	     138	    755181 ns/op	       512.0 rows/op	  832007 B/op	    5218 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompactBolt/ReadCustomers-18         	    1912	     72707 ns/op	       512.0 rows/op	    1984 B/op	      24 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompactBolt/ReadCustomers-18         	    1839	     67013 ns/op	       512.0 rows/op	    1984 B/op	      24 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompactBolt/ReadCustomers-18         	    1839	     68469 ns/op	       512.0 rows/op	    1984 B/op	      24 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompactBolt/ReadCustomers-18         	    1885	     67013 ns/op	       512.0 rows/op	    1984 B/op	      24 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompactBolt/ReadCustomers-18         	    1808	     67589 ns/op	       512.0 rows/op	    1984 B/op	      24 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompactBolt/ReadCustomers-18         	    1576	     72461 ns/op	       512.0 rows/op	    1984 B/op	      24 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompactBolt/WriteCustomers-18         	     109	    985250 ns/op	       512.0 rows/op	 1014306 B/op	    9384 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompactBolt/WriteCustomers-18         	     141	    876556 ns/op	       512.0 rows/op	 1008377 B/op	    9383 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompactBolt/WriteCustomers-18         	     100	   1150946 ns/op	       512.0 rows/op	 1013560 B/op	    9383 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompactBolt/WriteCustomers-18         	     104	   1333387 ns/op	       512.0 rows/op	 1010145 B/op	    9383 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompactBolt/WriteCustomers-18         	      94	   1184404 ns/op	       512.0 rows/op	 1010252 B/op	    9383 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkKVOCompactBolt/WriteCustomers-18         	     136	    875869 ns/op	       512.0 rows/op	 1011808 B/op	    9383 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/WordMap-18         	   20742	      5901 ns/op	       100.8 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/WordMap-18         	   20894	      5634 ns/op	       100.8 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/WordMap-18         	   21004	      5445 ns/op	       100.8 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/WordMap-18         	   21842	      5463 ns/op	       100.8 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/WordMap-18         	   21058	      6926 ns/op	       100.8 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/WordMap-18         	   19338	      6883 ns/op	       100.8 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/Fast-18         	    8286	     12381 ns/op	        54.21 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/Fast-18         	    7484	     17745 ns/op	        54.21 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/Fast-18         	    7018	     15650 ns/op	        54.21 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/Fast-18         	   10000	     12566 ns/op	        54.21 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/Fast-18         	    8047	     15669 ns/op	        54.21 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/Fast-18         	   10250	     11945 ns/op	        54.21 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/Compact-18         	    4852	     26064 ns/op	        15.09 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/Compact-18         	    4436	     26609 ns/op	        15.09 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/Compact-18         	    4644	     27580 ns/op	        15.09 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/Compact-18         	    5158	     24904 ns/op	        15.09 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/Compact-18         	    5144	     23891 ns/op	        15.09 bytes/row	       0 B/op	       0 allocs/op
+PASS
+goos: darwin
+goarch: arm64
+pkg: github.com/andreyvit/edb/evm/bench
+cpu: Apple M5 Max
+BenchmarkCustomerRowCodec/Compact-18         	    5254	     24051 ns/op	        15.09 bytes/row	       0 B/op	       0 allocs/op
+PASS

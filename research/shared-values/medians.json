@@ -1,0 +1,2092 @@
+{
+  "DecodedAccess/Fast2/one": {
+    "old": {
+      "samples": 6,
+      "median": [
+        6.41,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        6.074,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.947581903276131
+  },
+  "DecodedAccess/Fast2/scalars": {
+    "old": {
+      "samples": 6,
+      "median": [
+        77.895,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        79.91499999999999,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0259323448231594
+  },
+  "DecodedAccess/Fast2/write": {
+    "old": {
+      "samples": 6,
+      "median": [
+        14.75,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        15.955,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0816949152542372
+  },
+  "DecodedAccess/Decoded/one": {
+    "old": {
+      "samples": 6,
+      "median": [
+        3.824,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        4.0649999999999995,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0630230125523012
+  },
+  "DecodedAccess/Decoded/scalars": {
+    "old": {
+      "samples": 6,
+      "median": [
+        48.595,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        48.724999999999994,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0026751723428335
+  },
+  "DecodedAccess/Decoded/write": {
+    "old": {
+      "samples": 6,
+      "median": [
+        13.620000000000001,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        9.233,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.6779001468428781
+  },
+  "DecodedAccess/GeneratedNative/one": {
+    "old": {
+      "samples": 6,
+      "median": [
+        3.9085,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        3.5620000000000003,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.9113470640910836
+  },
+  "DecodedAccess/GeneratedNative/scalars": {
+    "old": {
+      "samples": 6,
+      "median": [
+        47.040000000000006,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        43.955,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.9344175170068025
+  },
+  "DecodedAccess/GeneratedNative/write": {
+    "old": {
+      "samples": 6,
+      "median": [
+        11.58,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        11.370000000000001,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.9818652849740933
+  },
+  "DecodedAccess/ReflectedNative/one": {
+    "old": {
+      "samples": 6,
+      "median": [
+        11.795,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        11.219999999999999,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.9512505298855446
+  },
+  "DecodedAccess/ReflectedNative/scalars": {
+    "old": {
+      "samples": 6,
+      "median": [
+        177.4,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        153.65,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.8661217587373168
+  },
+  "DecodedAccess/ReflectedNative/write": {
+    "old": {
+      "samples": 6,
+      "median": [
+        28.905,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        28.475,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.9851236810240442
+  },
+  "DecodedAccess/DirectGo/one": {
+    "old": {
+      "samples": 6,
+      "median": [
+        0.52475,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        0.26775,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.5102429728442115
+  },
+  "Materialization/Fast2/direct/0": {
+    "old": {
+      "samples": 6,
+      "median": [
+        4.769,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        4.6055,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.965716083036276
+  },
+  "Materialization/Fast2/direct/1": {
+    "old": {
+      "samples": 6,
+      "median": [
+        73.405,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        78.925,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0751992371091887
+  },
+  "Materialization/Fast2/direct/16": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1172.5,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        1183.5,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0093816631130064
+  },
+  "Materialization/Fast2/direct/256": {
+    "old": {
+      "samples": 6,
+      "median": [
+        17844.0,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        18252.5,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0228928491369649
+  },
+  "Materialization/Fast2/generated/0": {
+    "old": {
+      "samples": 6,
+      "median": [
+        496.85,
+        448.0,
+        5.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        510.0,
+        448.0,
+        5.0
+      ]
+    },
+    "time_ratio": 1.026466740464929
+  },
+  "Materialization/Fast2/generated/1": {
+    "old": {
+      "samples": 6,
+      "median": [
+        597.4000000000001,
+        448.0,
+        5.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        607.55,
+        448.0,
+        5.0
+      ]
+    },
+    "time_ratio": 1.0169902912621356
+  },
+  "Materialization/Fast2/generated/16": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1377.5,
+        448.0,
+        5.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        1336.0,
+        448.0,
+        5.0
+      ]
+    },
+    "time_ratio": 0.9698729582577132
+  },
+  "Materialization/Fast2/generated/256": {
+    "old": {
+      "samples": 6,
+      "median": [
+        13391.5,
+        448.0,
+        5.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        12513.5,
+        448.0,
+        5.0
+      ]
+    },
+    "time_ratio": 0.9344360228503155
+  },
+  "Materialization/Fast2/reflected/0": {
+    "old": {
+      "samples": 6,
+      "median": [
+        847.0,
+        608.0,
+        17.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        878.25,
+        608.0,
+        17.0
+      ]
+    },
+    "time_ratio": 1.0368949232585596
+  },
+  "Materialization/Fast2/reflected/1": {
+    "old": {
+      "samples": 6,
+      "median": [
+        963.9000000000001,
+        608.0,
+        17.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        982.65,
+        608.0,
+        17.0
+      ]
+    },
+    "time_ratio": 1.0194522253345781
+  },
+  "Materialization/Fast2/reflected/16": {
+    "old": {
+      "samples": 6,
+      "median": [
+        3051.0,
+        608.0,
+        17.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        3442.0,
+        608.0,
+        17.0
+      ]
+    },
+    "time_ratio": 1.1281547033759423
+  },
+  "Materialization/Fast2/reflected/256": {
+    "old": {
+      "samples": 6,
+      "median": [
+        33895.0,
+        608.0,
+        17.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        33235.5,
+        608.0,
+        17.0
+      ]
+    },
+    "time_ratio": 0.9805428529281605
+  },
+  "Materialization/Fast2/generic/0": {
+    "old": {
+      "samples": 6,
+      "median": [
+        987.9,
+        1288.0,
+        8.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        436.25,
+        1008.0,
+        5.0
+      ]
+    },
+    "time_ratio": 0.4415932786719304
+  },
+  "Materialization/Fast2/generic/1": {
+    "old": {
+      "samples": 6,
+      "median": [
+        985.7,
+        1288.0,
+        8.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        436.79999999999995,
+        1008.0,
+        5.0
+      ]
+    },
+    "time_ratio": 0.4431368570558993
+  },
+  "Materialization/Fast2/generic/16": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1844.0,
+        1288.0,
+        8.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        1319.5,
+        1008.0,
+        5.0
+      ]
+    },
+    "time_ratio": 0.7155639913232104
+  },
+  "Materialization/Fast2/generic/256": {
+    "old": {
+      "samples": 6,
+      "median": [
+        16490.5,
+        1288.0,
+        8.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        15305.0,
+        1008.0,
+        5.0
+      ]
+    },
+    "time_ratio": 0.9281101240107941
+  },
+  "Materialization/Compact2/direct/0": {
+    "old": {
+      "samples": 6,
+      "median": [
+        4.1725,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        4.1975,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.005991611743559
+  },
+  "Materialization/Compact2/direct/1": {
+    "old": {
+      "samples": 6,
+      "median": [
+        232.15,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        216.5,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.9325866896403188
+  },
+  "Materialization/Compact2/direct/16": {
+    "old": {
+      "samples": 6,
+      "median": [
+        3142.5,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        3389.0,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0784407319013525
+  },
+  "Materialization/Compact2/direct/256": {
+    "old": {
+      "samples": 6,
+      "median": [
+        47605.0,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        49325.5,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0361411616426845
+  },
+  "Materialization/Compact2/generated/0": {
+    "old": {
+      "samples": 6,
+      "median": [
+        707.05,
+        448.0,
+        5.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        817.4,
+        448.0,
+        5.0
+      ]
+    },
+    "time_ratio": 1.15607099922212
+  },
+  "Materialization/Compact2/generated/1": {
+    "old": {
+      "samples": 6,
+      "median": [
+        835.0,
+        448.0,
+        5.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        849.45,
+        448.0,
+        5.0
+      ]
+    },
+    "time_ratio": 1.0173053892215569
+  },
+  "Materialization/Compact2/generated/16": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1508.0,
+        448.0,
+        5.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        1394.0,
+        448.0,
+        5.0
+      ]
+    },
+    "time_ratio": 0.9244031830238727
+  },
+  "Materialization/Compact2/generated/256": {
+    "old": {
+      "samples": 6,
+      "median": [
+        14673.0,
+        448.0,
+        5.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        13385.5,
+        448.0,
+        5.0
+      ]
+    },
+    "time_ratio": 0.9122537994956723
+  },
+  "Materialization/Compact2/reflected/0": {
+    "old": {
+      "samples": 6,
+      "median": [
+        972.3,
+        608.0,
+        17.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        992.25,
+        608.0,
+        17.0
+      ]
+    },
+    "time_ratio": 1.0205183585313176
+  },
+  "Materialization/Compact2/reflected/1": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1175.5,
+        608.0,
+        17.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        1190.5,
+        608.0,
+        17.0
+      ]
+    },
+    "time_ratio": 1.012760527435134
+  },
+  "Materialization/Compact2/reflected/16": {
+    "old": {
+      "samples": 6,
+      "median": [
+        3619.5,
+        608.0,
+        17.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        3614.0,
+        608.0,
+        17.0
+      ]
+    },
+    "time_ratio": 0.9984804531012571
+  },
+  "Materialization/Compact2/reflected/256": {
+    "old": {
+      "samples": 6,
+      "median": [
+        36657.0,
+        608.0,
+        17.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        34958.5,
+        608.0,
+        17.0
+      ]
+    },
+    "time_ratio": 0.9536650571514308
+  },
+  "Materialization/Compact2/generic/0": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1042.5,
+        1176.0,
+        8.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        424.85,
+        896.0,
+        5.0
+      ]
+    },
+    "time_ratio": 0.40752997601918467
+  },
+  "Materialization/Compact2/generic/1": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1190.0,
+        1176.0,
+        8.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        540.35,
+        896.0,
+        5.0
+      ]
+    },
+    "time_ratio": 0.45407563025210085
+  },
+  "Materialization/Compact2/generic/16": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1852.5,
+        1176.0,
+        8.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        1229.0,
+        896.0,
+        5.0
+      ]
+    },
+    "time_ratio": 0.6634278002699056
+  },
+  "Materialization/Compact2/generic/256": {
+    "old": {
+      "samples": 6,
+      "median": [
+        18947.0,
+        1176.0,
+        8.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        19679.0,
+        896.0,
+        5.0
+      ]
+    },
+    "time_ratio": 1.038634084551644
+  },
+  "Materialization/MessagePack/direct/0": {
+    "old": {
+      "samples": 6,
+      "median": [
+        4.9045000000000005,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        4.803,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.9793047201549596
+  },
+  "Materialization/MessagePack/direct/1": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1928.5,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        2086.0,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0816696914700545
+  },
+  "Materialization/MessagePack/direct/16": {
+    "old": {
+      "samples": 6,
+      "median": [
+        35589.0,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        41613.5,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.169279833656467
+  },
+  "Materialization/MessagePack/direct/256": {
+    "old": {
+      "samples": 6,
+      "median": [
+        464287.5,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        490240.5,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.05589855423633
+  },
+  "Materialization/MessagePack/generated/0": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1499.5,
+        720.0,
+        21.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        1507.0,
+        720.0,
+        21.0
+      ]
+    },
+    "time_ratio": 1.0050016672224076
+  },
+  "Materialization/MessagePack/generated/1": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1679.0,
+        720.0,
+        21.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        1559.5,
+        720.0,
+        21.0
+      ]
+    },
+    "time_ratio": 0.9288266825491364
+  },
+  "Materialization/MessagePack/generated/16": {
+    "old": {
+      "samples": 6,
+      "median": [
+        2273.5,
+        720.0,
+        21.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        2285.0,
+        720.0,
+        21.0
+      ]
+    },
+    "time_ratio": 1.0050582801847372
+  },
+  "Materialization/MessagePack/generated/256": {
+    "old": {
+      "samples": 6,
+      "median": [
+        14755.0,
+        720.0,
+        21.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        13601.0,
+        720.0,
+        21.0
+      ]
+    },
+    "time_ratio": 0.9217892239918671
+  },
+  "Materialization/MessagePack/reflected/0": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1448.0,
+        720.0,
+        21.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        1501.0,
+        720.0,
+        21.0
+      ]
+    },
+    "time_ratio": 1.0366022099447514
+  },
+  "Materialization/MessagePack/reflected/1": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1786.0,
+        720.0,
+        21.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        1608.0,
+        720.0,
+        21.0
+      ]
+    },
+    "time_ratio": 0.9003359462486002
+  },
+  "Materialization/MessagePack/reflected/16": {
+    "old": {
+      "samples": 6,
+      "median": [
+        3640.0,
+        720.0,
+        21.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        3312.5,
+        720.0,
+        21.0
+      ]
+    },
+    "time_ratio": 0.9100274725274725
+  },
+  "Materialization/MessagePack/reflected/256": {
+    "old": {
+      "samples": 6,
+      "median": [
+        37084.5,
+        720.0,
+        21.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        38107.0,
+        720.0,
+        21.0
+      ]
+    },
+    "time_ratio": 1.0275721662689263
+  },
+  "SharedValue/Fast2/Int": {
+    "old": {
+      "samples": 6,
+      "median": [
+        6.722,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        7.5125,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.1175989288902113
+  },
+  "SharedValue/Fast2/String": {
+    "old": {
+      "samples": 6,
+      "median": [
+        16.939999999999998,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        21.32,
+        64.0,
+        1.0
+      ]
+    },
+    "time_ratio": 1.258559622195986
+  },
+  "SharedValue/Fast2/BorrowString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        6.0535,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        6.168,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0189146774593212
+  },
+  "SharedValue/Fast2/Bytes": {
+    "old": {
+      "samples": 6,
+      "median": [
+        5.7989999999999995,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        6.1465,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.059924124849112
+  },
+  "SharedValue/Fast2/List": {
+    "old": {
+      "samples": 6,
+      "median": [
+        6.455500000000001,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        6.6635,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0322205870962744
+  },
+  "SharedValue/Fast2/EditString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        183.85,
+        448.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        199.1,
+        448.0,
+        1.0
+      ]
+    },
+    "time_ratio": 1.0829480554800108
+  },
+  "SharedValue/Fast2/EVMString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        185.8,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        162.0,
+        64.0,
+        1.0
+      ]
+    },
+    "time_ratio": 0.8719052744886975
+  },
+  "SharedValue/Compact2/Int": {
+    "old": {
+      "samples": 6,
+      "median": [
+        9.736,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        9.8125,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0078574363188166
+  },
+  "SharedValue/Compact2/String": {
+    "old": {
+      "samples": 6,
+      "median": [
+        19.96,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        22.38,
+        64.0,
+        1.0
+      ]
+    },
+    "time_ratio": 1.1212424849699398
+  },
+  "SharedValue/Compact2/BorrowString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        9.690999999999999,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        11.0,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.135073779795687
+  },
+  "SharedValue/Compact2/Bytes": {
+    "old": {
+      "samples": 6,
+      "median": [
+        20.475,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        22.73,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.1101343101343102
+  },
+  "SharedValue/Compact2/List": {
+    "old": {
+      "samples": 6,
+      "median": [
+        22.73,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        25.59,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.1258249010118786
+  },
+  "SharedValue/Compact2/EditString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        215.85,
+        384.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        243.5,
+        384.0,
+        1.0
+      ]
+    },
+    "time_ratio": 1.1280982163539495
+  },
+  "SharedValue/Compact2/EVMString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        164.35000000000002,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        163.95,
+        64.0,
+        1.0
+      ]
+    },
+    "time_ratio": 0.9975661697596591
+  },
+  "SharedValue/MessagePack/Int": {
+    "old": {
+      "samples": 6,
+      "median": [
+        85.15,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        72.915,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.8563123899001762
+  },
+  "SharedValue/MessagePack/String": {
+    "old": {
+      "samples": 6,
+      "median": [
+        94.97,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        97.125,
+        64.0,
+        1.0
+      ]
+    },
+    "time_ratio": 1.0226913762240708
+  },
+  "SharedValue/MessagePack/BorrowString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        76.76,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        76.94999999999999,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0024752475247523
+  },
+  "SharedValue/MessagePack/Bytes": {
+    "old": {
+      "samples": 6,
+      "median": [
+        63.905,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        64.6,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.010875518347547
+  },
+  "SharedValue/MessagePack/List": {
+    "old": {
+      "samples": 6,
+      "median": [
+        310.6,
+        312.0,
+        6.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        274.75,
+        312.0,
+        6.0
+      ]
+    },
+    "time_ratio": 0.8845782356728911
+  },
+  "SharedValue/MessagePack/EditString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        312.1,
+        704.0,
+        5.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        292.25,
+        704.0,
+        5.0
+      ]
+    },
+    "time_ratio": 0.9363985901954501
+  },
+  "SharedValue/MessagePack/EVMString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        247.3,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        239.05,
+        64.0,
+        1.0
+      ]
+    },
+    "time_ratio": 0.9666397088556409
+  },
+  "SharedValue/Generated/Int": {
+    "old": {
+      "samples": 6,
+      "median": [
+        5.2005,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        3.6155,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.6952216133064129
+  },
+  "SharedValue/Generated/String": {
+    "old": {
+      "samples": 6,
+      "median": [
+        18.425,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        5.986,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.3248846675712347
+  },
+  "SharedValue/Generated/BorrowString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        5.725,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        4.275,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.7467248908296944
+  },
+  "SharedValue/Generated/Bytes": {
+    "old": {
+      "samples": 6,
+      "median": [
+        58.905,
+        256.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        60.745000000000005,
+        256.0,
+        1.0
+      ]
+    },
+    "time_ratio": 1.03123673711909
+  },
+  "SharedValue/Generated/List": {
+    "old": {
+      "samples": 6,
+      "median": [
+        398.9,
+        384.0,
+        8.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        402.6,
+        384.0,
+        8.0
+      ]
+    },
+    "time_ratio": 1.0092755076460267
+  },
+  "SharedValue/Generated/EditString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        31.765,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        13.5,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.42499606485125135
+  },
+  "SharedValue/Generated/EVMString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        149.0,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        123.25,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.8271812080536913
+  },
+  "SharedValue/Reflected/Int": {
+    "old": {
+      "samples": 6,
+      "median": [
+        11.075,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        10.355,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.9349887133182845
+  },
+  "SharedValue/Reflected/String": {
+    "old": {
+      "samples": 6,
+      "median": [
+        27.935000000000002,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        13.14,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.47037766243064255
+  },
+  "SharedValue/Reflected/BorrowString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        13.985,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        11.055,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.7904898105112621
+  },
+  "SharedValue/Reflected/Bytes": {
+    "old": {
+      "samples": 6,
+      "median": [
+        52.989999999999995,
+        256.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        60.085,
+        256.0,
+        1.0
+      ]
+    },
+    "time_ratio": 1.133893187393848
+  },
+  "SharedValue/Reflected/List": {
+    "old": {
+      "samples": 6,
+      "median": [
+        220.0,
+        384.0,
+        8.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        221.89999999999998,
+        384.0,
+        8.0
+      ]
+    },
+    "time_ratio": 1.0086363636363636
+  },
+  "SharedValue/Reflected/EditString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        31.115000000000002,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        18.17,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.5839627189458461
+  },
+  "SharedValue/Reflected/EVMString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        137.35000000000002,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        120.1,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.8744084455769929
+  },
+  "SharedValue/Memory/Int": {
+    "old": {
+      "samples": 6,
+      "median": [
+        4.221,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        3.7695,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.8930348258706468
+  },
+  "SharedValue/Memory/String": {
+    "old": {
+      "samples": 6,
+      "median": [
+        16.08,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        5.556,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.34552238805970154
+  },
+  "SharedValue/Memory/BorrowString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        3.693,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        3.7625,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0188193880314107
+  },
+  "SharedValue/Memory/Bytes": {
+    "old": {
+      "samples": 6,
+      "median": [
+        3.5845000000000002,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        3.7785,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0541219137955085
+  },
+  "SharedValue/Memory/List": {
+    "old": {
+      "samples": 6,
+      "median": [
+        3.551,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        3.5755,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0068994649394536
+  },
+  "SharedValue/Memory/EditString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        22.555,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        8.2315,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.3649523387275549
+  },
+  "SharedValue/Memory/EVMString": {
+    "old": {
+      "samples": 6,
+      "median": [
+        134.9,
+        64.0,
+        1.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        114.6,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 0.849518161601186
+  },
+  "KVO/ReadCustomers": {
+    "old": {
+      "samples": 6,
+      "median": [
+        64257.0,
+        1514.0,
+        15.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        66425.5,
+        1513.0,
+        15.0
+      ]
+    },
+    "time_ratio": 1.033747296014442
+  },
+  "KVO/WriteCustomers": {
+    "old": {
+      "samples": 6,
+      "median": [
+        550150.0,
+        845681.0,
+        4801.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        593338.5,
+        845080.5,
+        4801.0
+      ]
+    },
+    "time_ratio": 1.0785031355084977
+  },
+  "KVOBolt/ReadCustomers": {
+    "old": {
+      "samples": 6,
+      "median": [
+        59827.0,
+        1984.0,
+        24.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        64511.0,
+        1984.0,
+        24.0
+      ]
+    },
+    "time_ratio": 1.0782924097815367
+  },
+  "KVOBolt/WriteCustomers": {
+    "old": {
+      "samples": 6,
+      "median": [
+        700469.5,
+        1003285.0,
+        8979.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        746509.0,
+        1005478.0,
+        8980.0
+      ]
+    },
+    "time_ratio": 1.065726630495689
+  },
+  "KVOCompact/ReadCustomers": {
+    "old": {
+      "samples": 6,
+      "median": [
+        73756.0,
+        1512.0,
+        15.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        80550.5,
+        1512.0,
+        15.0
+      ]
+    },
+    "time_ratio": 1.0921213189435435
+  },
+  "KVOCompact/WriteCustomers": {
+    "old": {
+      "samples": 6,
+      "median": [
+        895702.0,
+        831704.5,
+        5218.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        1033063.0,
+        830993.5,
+        5218.0
+      ]
+    },
+    "time_ratio": 1.1533556919600492
+  },
+  "KVOCompactBolt/ReadCustomers": {
+    "old": {
+      "samples": 6,
+      "median": [
+        68029.0,
+        1984.0,
+        24.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        75997.5,
+        1987.0,
+        24.0
+      ]
+    },
+    "time_ratio": 1.1171338693792354
+  },
+  "KVOCompactBolt/WriteCustomers": {
+    "old": {
+      "samples": 6,
+      "median": [
+        1068098.0,
+        1011030.0,
+        9383.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        1125118.0,
+        1010331.5,
+        9383.0
+      ]
+    },
+    "time_ratio": 1.0533846145203904
+  },
+  "CustomerRowCodec/WordMap": {
+    "old": {
+      "samples": 6,
+      "median": [
+        5767.5,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        5788.0,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0035543996532292
+  },
+  "CustomerRowCodec/Fast": {
+    "old": {
+      "samples": 6,
+      "median": [
+        14108.0,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        15949.5,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.1305287779982989
+  },
+  "CustomerRowCodec/Compact": {
+    "old": {
+      "samples": 6,
+      "median": [
+        25484.0,
+        0.0,
+        0.0
+      ]
+    },
+    "new": {
+      "samples": 6,
+      "median": [
+        26953.5,
+        0.0,
+        0.0
+      ]
+    },
+    "time_ratio": 1.0576636320828756
+  }
+}

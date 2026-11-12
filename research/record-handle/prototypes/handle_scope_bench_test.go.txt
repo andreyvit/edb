@@ -1,0 +1,186 @@
+package record_test
+
+import (
+	"math"
+	"testing"
+	"unsafe"
+
+	"github.com/andreyvit/edb/kvo/record"
+	"github.com/andreyvit/edb/values"
+)
+
+// A separate prototype for borrowed lifetime enforcement. P identifies a scope,
+// not mmap bytes. R contains tag 0111, a 28-bit descriptor ID, and a 32-bit slot.
+// The arena holds 16-byte direct record cells; it has no per-row wrapper object.
+// Scope identities are never reopened or reused. An old cell keeps its closed
+// scope identity alive, preventing address reuse while that cell still exists.
+// These are NOT yet recognized by EVM or values.TypeTable.
+const borrowedProbeTag = uint64(7) << 60
+
+type recordScopeProbe struct {
+	rows   []record.CellHandleProbe
+	closed bool
+}
+
+func newRecordScopeProbe(capacity int) *recordScopeProbe {
+	return &recordScopeProbe{rows: make([]record.CellHandleProbe, 0, capacity)}
+}
+
+func (s *recordScopeProbe) borrow(r record.CellHandleProbe) values.Value {
+	if s.closed || uint64(len(s.rows)) > math.MaxUint32 {
+		panic("invalid record scope")
+	}
+	index := len(s.rows)
+	s.rows = append(s.rows, r)
+	return values.Value{R: borrowedProbeTag | r.R&(uint64(1<<28-1)<<32) | uint64(index), P: unsafe.Pointer(s)}
+}
+
+func (s *recordScopeProbe) lookup(v values.Value) (record.CellHandleProbe, bool) {
+	if v.P != unsafe.Pointer(s) || s.closed || v.R>>60 != 7 {
+		return record.CellHandleProbe{}, false
+	}
+	index := uint32(v.R)
+	if uint64(index) >= uint64(len(s.rows)) {
+		return record.CellHandleProbe{}, false
+	}
+	if (v.R^s.rows[index].R)&(uint64(1<<28-1)<<32) != 0 {
+		return record.CellHandleProbe{}, false
+	}
+	return s.rows[index], true
+}
+
+func (s *recordScopeProbe) close() {
+	clear(s.rows)
+	s.rows = nil
+	s.closed = true
+}
+
+var recordScopeProbeSink values.Value
+
+func TestHandleProbeTagsAndScopes(t *testing.T) {
+	fixtures := handleLayoutFixtures(t)
+	f := fixtures[1] // Fast2 with the key inside the synthetic envelope
+	r := f.meta[0].Cell(f.data[0])
+	v := values.Value(r) // ordinary Go conversion: same R+P layout, no boxing
+	if unsafe.Sizeof(r) != 16 || v.R>>60 != 6 || record.CellHandleProbe(v).Get(1).AsUint() != 1 {
+		t.Fatal("record cell conversion")
+	}
+	// Full-width scalars can contain any proposed tag in R. Existing scalar
+	// marker recognition must remain ahead of record tag recognition.
+	ts := values.NewTypeTable([]values.DynamicType{{}, {Shape: &values.Shape{Type: values.Uint64, Kind: values.UintKind, Bits: 64}}})
+	for _, tag := range []uint64{6, 7} {
+		want := values.Uint(tag<<60 | 0x12345)
+		boxed, ok := ts.Inline(1, want)
+		_, got, err := ts.Unpack(boxed)
+		if !ok || ts.Index(boxed) != 1 || err != nil || got != want {
+			t.Fatal("record tag collides with full-width scalar")
+		}
+	}
+	if ts.Index(v) != math.MaxUint64 {
+		t.Fatal("the proposed record tag is no longer unused; revisit layout")
+	}
+	s := newRecordScopeProbe(2)
+	first := s.borrow(r)
+	secondRow := f.meta[1].Cell(f.data[1])
+	second := s.borrow(secondRow)
+	if got, ok := s.lookup(first); !ok || got.Get(1).AsUint() != 1 {
+		t.Fatal("first retained record changed")
+	}
+	if got, ok := s.lookup(second); !ok || got.Get(1).AsUint() != 2 {
+		t.Fatal("second retained record changed")
+	}
+	other := newRecordScopeProbe(2)
+	_ = other.borrow(r)
+	if _, ok := other.lookup(first); ok {
+		t.Fatal("accepted foreign scope")
+	}
+	wrongType := first
+	wrongType.R ^= 1 << 32
+	if _, ok := s.lookup(wrongType); ok {
+		t.Fatal("accepted mismatched descriptor")
+	}
+	live := s.borrow(r)
+	s.close()
+	if _, ok := s.lookup(live); ok || s.rows != nil {
+		t.Fatal("closed scope retained live data")
+	}
+	if live.R>>32&(1<<28-1) != r.R>>32&(1<<28-1) {
+		t.Fatal("expired value lost type identity")
+	}
+	func() {
+		defer func() {
+			if recover() == nil {
+				t.Fatal("closed scope reopened")
+			}
+		}()
+		s.borrow(r)
+	}()
+}
+
+// This isolates the proposed lifetime adapter; it is not an end-to-end EVM
+// benchmark. Report arena capacity as well as allocations so a two-word token
+// cannot conceal its 16-byte retained entry in the scope.
+func BenchmarkRecordCellScope(b *testing.B) {
+	f := handleLayoutFixtures(b)[1]
+	var rows [handleRows]record.CellHandleProbe
+	for i := range rows {
+		rows[i] = f.meta[i].Cell(f.data[i])
+	}
+	for _, work := range []string{"Direct", "RetainedScope", "NewScope"} {
+		b.Run(work, func(b *testing.B) {
+			s := newRecordScopeProbe(handleRows)
+			var saved [handleRows]values.Value
+			if work == "RetainedScope" {
+				for j, row := range rows {
+					saved[j] = s.borrow(row)
+				}
+			}
+			var sum uint64
+			b.ReportAllocs()
+			b.ResetTimer()
+			if work == "Direct" {
+				for i := 0; i < b.N; i++ {
+					for j, row := range rows {
+						saved[j] = values.Value(row)
+					}
+					for _, v := range saved {
+						sum += record.CellHandleProbe(v).Get(1).AsUint()
+					}
+				}
+			} else {
+				for i := 0; i < b.N; i++ {
+					if work == "NewScope" {
+						s = newRecordScopeProbe(handleRows)
+					}
+					if work == "NewScope" {
+						for j, row := range rows {
+							saved[j] = s.borrow(row)
+						}
+					}
+					for _, v := range saved {
+						r, ok := s.lookup(v)
+						if !ok {
+							b.Fatal("invalid scoped value")
+						}
+						sum += r.Get(1).AsUint()
+					}
+					if work == "NewScope" {
+						s.close()
+					}
+				}
+			}
+			b.StopTimer()
+			if sum != uint64(b.N)*handleRows*(handleRows+1)/2 {
+				b.Fatal("wrong record sum")
+			}
+			s.close()
+			recordScopeProbeSink = saved[handleRows-1]
+			accessSum = sum
+			b.ReportMetric(handleRows, "rows/op")
+			b.ReportMetric(16, "handle-B")
+			if work != "Direct" {
+				b.ReportMetric(handleRows*16, "arena-B")
+			}
+		})
+	}
+}

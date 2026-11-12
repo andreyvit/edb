@@ -1,0 +1,27 @@
+goos: darwin
+goarch: arm64
+cpu: Apple M5 Max
+BenchmarkResumableScan/1000/Keys-18    	   15651	     22730 ns/op	    1753 B/op	      26 allocs/op
+BenchmarkResumableScan/1000/ChunkKeys-18         	   15159	     23685 ns/op	    1857 B/op	      29 allocs/op
+BenchmarkResumableScan/1000/ChunkJoin-18         	    1870	    187641 ns/op	    2531 B/op	      43 allocs/op
+BenchmarkResumableScan/10000/Keys-18             	    1676	    224932 ns/op	    1752 B/op	      25 allocs/op
+BenchmarkResumableScan/10000/ChunkKeys-18        	    1440	    250819 ns/op	   19008 B/op	     308 allocs/op
+BenchmarkResumableScan/10000/ChunkJoin-18        	     180	   1989473 ns/op	   25745 B/op	     448 allocs/op
+goos: darwin
+goarch: arm64
+cpu: Apple M5 Max
+BenchmarkResumableScan/1000/Keys-18    	   16130	     22194 ns/op	    1753 B/op	      26 allocs/op
+BenchmarkResumableScan/1000/ChunkKeys-18         	   15276	     23671 ns/op	    1857 B/op	      29 allocs/op
+BenchmarkResumableScan/1000/ChunkJoin-18         	    1897	    189176 ns/op	    2531 B/op	      43 allocs/op
+BenchmarkResumableScan/10000/Keys-18             	    1652	    216765 ns/op	    1752 B/op	      25 allocs/op
+BenchmarkResumableScan/10000/ChunkKeys-18        	    1468	    243010 ns/op	   19008 B/op	     308 allocs/op
+BenchmarkResumableScan/10000/ChunkJoin-18        	     183	   1956068 ns/op	   25743 B/op	     448 allocs/op
+goos: darwin
+goarch: arm64
+cpu: Apple M5 Max
+BenchmarkResumableScan/1000/Keys-18    	   16437	     21962 ns/op	    1753 B/op	      26 allocs/op
+BenchmarkResumableScan/1000/ChunkKeys-18         	   15280	     23454 ns/op	    1857 B/op	      29 allocs/op
+BenchmarkResumableScan/1000/ChunkJoin-18         	    1885	    189897 ns/op	    2531 B/op	      43 allocs/op
+BenchmarkResumableScan/10000/Keys-18             	    1669	    214875 ns/op	    1753 B/op	      25 allocs/op
+BenchmarkResumableScan/10000/ChunkKeys-18        	    1502	    239987 ns/op	   19008 B/op	     308 allocs/op
+BenchmarkResumableScan/10000/ChunkJoin-18        	     183	   1954185 ns/op	   25742 B/op	     448 allocs/op

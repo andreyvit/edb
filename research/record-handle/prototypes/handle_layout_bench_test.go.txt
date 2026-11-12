@@ -1,0 +1,245 @@
+package record_test
+
+import (
+	"reflect"
+	"testing"
+	"unsafe"
+
+	"github.com/andreyvit/edb/internal/valuebench"
+	"github.com/andreyvit/edb/kvo/codec/row2"
+	"github.com/andreyvit/edb/kvo/record"
+	"github.com/andreyvit/edb/nativebind"
+	"github.com/andreyvit/edb/values"
+)
+
+type handleLayoutFixture struct {
+	name string
+	rows [handleRows]record.Record
+	meta [handleRows]*record.HandleProbeDescriptor
+	data [handleRows]record.HandleProbeData
+}
+
+func handleLayoutFixtures(b testing.TB) []handleLayoutFixture {
+	b.Helper()
+	_, _, originals := recordHandleFixtures(b)
+	var fixtures []handleLayoutFixture
+	for _, f := range originals {
+		for _, inlineKey := range []bool{false, true} {
+			encoded := f.name == "Fast2" || f.name == "Compact2" || f.name == "MessagePack"
+			if inlineKey && !encoded {
+				continue
+			}
+			c := handleLayoutFixture{name: f.name, rows: f.rows}
+			if inlineKey {
+				c.name += "InlineKey"
+				for i := range c.rows {
+					c.rows[i] = record.HandleProbeInlineKey(c.rows[i])
+				}
+			}
+			d := record.NewHandleProbeDescriptor(c.rows[0], inlineKey)
+			for i, r := range c.rows {
+				c.meta[i], c.data[i] = d, d.Data(r)
+				if encoded {
+					if got := d.Cell(c.data[i]).PrimaryKey().Uint(); got != uint64(i+1) {
+						b.Fatalf("%s: primary key = %d for row %d", c.name, got, i)
+					}
+				}
+			}
+			fixtures = append(fixtures, c)
+		}
+	}
+	// Unlike a permanently monomorphic fixture, this exercises the runtime type
+	// lookup with different encodings and native access modes at the same site.
+	mixed := handleLayoutFixture{name: "Mixed"}
+	for i := range handleRows {
+		c := &fixtures[i%len(fixtures)]
+		mixed.rows[i], mixed.meta[i], mixed.data[i] = c.rows[i], c.meta[i], c.data[i]
+	}
+	return append(fixtures, mixed)
+}
+
+type handleProbeReader[T any] interface {
+	Get(uint64) values.Value
+	Child(row2.Step) T
+}
+
+// All alternatives go through the same opaque generic consumer here. The Go
+// dictionary call is intentional, and adds overhead to every alternative.
+// BenchmarkRecordHandleLayoutDirect separately measures ordinary direct calls.
+func benchmarkHandleLayout[T handleProbeReader[T]](b *testing.B, open func(int) T, size uintptr) {
+	rows := make([]T, handleRows)
+	for i := range rows {
+		rows[i] = open(i)
+	}
+	for _, work := range []string{"OpaqueRead", "FieldsAndChild", "Retain", "ChildRetain"} {
+		b.Run(work, func(b *testing.B) {
+			retained := make([]T, handleRows)
+			var sum uint64
+			b.ReportAllocs()
+			b.ResetTimer()
+			switch work {
+			case "OpaqueRead":
+				for i := 0; i < b.N; i++ {
+					sum += rows[i&(handleRows-1)].Get(1).AsUint()
+				}
+			case "FieldsAndChild":
+				for i := 0; i < b.N; i++ {
+					r := rows[i&(handleRows-1)]
+					for _, k := range [...]uint64{1, 3, 11, 12, 19, 20, 21} {
+						sum += r.Get(k).AsUint()
+					}
+					child := r.Child(row2.Step{Key: 9})
+					sum += child.Get(5).AsUint() + child.Get(7).AsUint()
+				}
+			case "Retain":
+				for i := 0; i < b.N; i++ {
+					j := i & (handleRows - 1)
+					retained[j] = open(j)
+					sum += retained[j].Get(1).AsUint()
+				}
+			case "ChildRetain":
+				for i := 0; i < b.N; i++ {
+					j := i & (handleRows - 1)
+					retained[j] = rows[j].Child(row2.Step{Key: 9})
+					sum += retained[j].Get(5).AsUint()
+				}
+			}
+			b.StopTimer()
+			if work == "Retain" || work == "ChildRetain" {
+				for i := 0; i < min(b.N, handleRows); i++ {
+					key, want := uint64(1), uint64(i+1)
+					if work == "ChildRetain" {
+						key, want = 5, 100+uint64(i+1)%37
+					}
+					if got := retained[i].Get(key).AsUint(); got != want {
+						b.Fatalf("retained row %d changed: got %d, want %d", i, got, want)
+					}
+				}
+			}
+			accessSum = sum
+			b.ReportMetric(float64(size), "handle-B")
+		})
+	}
+}
+
+func BenchmarkRecordHandleLayout(b *testing.B) {
+	for _, f := range handleLayoutFixtures(b) {
+		b.Run(f.name+"/Current128", func(b *testing.B) {
+			benchmarkHandleLayout(b, func(i int) record.Record { return f.rows[i] }, unsafe.Sizeof(record.Record{}))
+		})
+		b.Run(f.name+"/Inline40", func(b *testing.B) {
+			benchmarkHandleLayout(b, func(i int) record.InlineHandleProbe { return f.meta[i].Inline(f.data[i]) }, unsafe.Sizeof(record.InlineHandleProbe{}))
+		})
+		b.Run(f.name+"/Cell16", func(b *testing.B) {
+			benchmarkHandleLayout(b, func(i int) record.CellHandleProbe { return f.meta[i].Cell(f.data[i]) }, unsafe.Sizeof(record.CellHandleProbe{}))
+		})
+		b.Run(f.name+"/Interface16", func(b *testing.B) {
+			benchmarkHandleLayout(b, func(i int) record.InterfaceHandleProbe { return f.meta[i].Interface(f.data[i]) }, unsafe.Sizeof(*new(record.InterfaceHandleProbe)))
+		})
+		b.Run(f.name+"/Pointer8", func(b *testing.B) {
+			benchmarkHandleLayout(b, func(i int) *record.PointerHandleProbe { return f.meta[i].Pointer(f.data[i]) }, unsafe.Sizeof((*record.PointerHandleProbe)(nil)))
+		})
+	}
+}
+
+func BenchmarkRecordHandleLayoutDirect(b *testing.B) {
+	for _, f := range handleLayoutFixtures(b) {
+		var cells [handleRows]record.CellHandleProbe
+		var inline [handleRows]record.InlineHandleProbe
+		var pointers [handleRows]*record.PointerHandleProbe
+		var interfaces [handleRows]record.InterfaceHandleProbe
+		for i := range handleRows {
+			cells[i], inline[i] = f.meta[i].Cell(f.data[i]), f.meta[i].Inline(f.data[i])
+			pointers[i], interfaces[i] = f.meta[i].Pointer(f.data[i]), f.meta[i].Interface(f.data[i])
+		}
+		for _, shape := range []string{"Current128", "Inline40", "Cell16", "Interface16", "Pointer8"} {
+			b.Run(f.name+"/"+shape, func(b *testing.B) {
+				var sum uint64
+				b.ReportAllocs()
+				switch shape {
+				case "Current128":
+					for i := 0; i < b.N; i++ {
+						sum += f.rows[i&(handleRows-1)].Get(1).AsUint()
+					}
+				case "Inline40":
+					for i := 0; i < b.N; i++ {
+						sum += inline[i&(handleRows-1)].Get(1).AsUint()
+					}
+				case "Cell16":
+					for i := 0; i < b.N; i++ {
+						sum += cells[i&(handleRows-1)].Get(1).AsUint()
+					}
+				case "Interface16":
+					for i := 0; i < b.N; i++ {
+						sum += interfaces[i&(handleRows-1)].Get(1).AsUint()
+					}
+				case "Pointer8":
+					for i := 0; i < b.N; i++ {
+						sum += pointers[i&(handleRows-1)].Get(1).AsUint()
+					}
+				}
+				accessSum = sum
+			})
+		}
+		if f.name == "Fast2InlineKey" {
+			// Lower-bound control for a wrapper that statically knows the codec
+			// and property encoding. It does NOT preserve full Record semantics.
+			var raw [handleRows]row2.View
+			for i, r := range f.rows {
+				raw[i] = r.Snapshot()
+			}
+			b.Run(f.name+"/StaticFast2", func(b *testing.B) {
+				var sum uint64
+				b.ReportAllocs()
+				for i := 0; i < b.N; i++ {
+					sum += raw[i&(handleRows-1)].GetFast(1).AsUint()
+				}
+				accessSum = sum
+			})
+		}
+	}
+}
+
+func checkHandleProbe[T handleProbeReader[T]](t *testing.T, expected record.Record, r T) {
+	t.Helper()
+	for _, k := range [...]uint64{1, 3, 11, 12, 19, 20, 21} {
+		if got, want := r.Get(k).R, expected.Get(k).R; got != want {
+			t.Fatalf("field %d: got %d, want %d", k, got, want)
+		}
+	}
+	c, want := r.Child(row2.Step{Key: 9}), expected.Child(row2.Step{Key: 9})
+	for _, k := range [...]uint64{5, 7} {
+		if got := c.Get(k).R; got != want.Get(k).R {
+			t.Fatalf("child field %d: %d", k, got)
+		}
+	}
+}
+
+func TestHandleProbeEquivalence(t *testing.T) {
+	for _, f := range handleLayoutFixtures(t) {
+		t.Run(f.name, func(t *testing.T) {
+			for i, r := range f.rows {
+				d, data := f.meta[i], f.data[i]
+				checkHandleProbe(t, r, d.Cell(data))
+				checkHandleProbe(t, r, d.Inline(data))
+				checkHandleProbe(t, r, d.Interface(data))
+				checkHandleProbe(t, r, d.Pointer(data))
+			}
+		})
+	}
+	// Independently check that the packed carrier preserves strings as ordinary
+	// pointer/length runtime values, not only unboxed integer fields.
+	_, model := valuebench.Model()
+	binding := record.Bind(reflect.TypeFor[valuebench.Row](), model).WithGenerated(&valuebench.Static, nativebind.StaticOnly)
+	src := valuebench.Sample()
+	native := binding.Record(reflect.ValueOf(src))
+	for _, r := range []record.Record{native, binding.Encoded(native.Snapshot()), record.Encoded(native.Snapshot()).WithModel(model).Fastest()} {
+		d := record.NewHandleProbeDescriptor(r, false)
+		v := d.Data(r)
+		for _, got := range []string{d.Cell(v).Get(2).AsString(), d.Inline(v).Get(2).AsString(), d.Interface(v).Get(2).AsString(), d.Pointer(v).Get(2).AsString()} {
+			if got != src.Name {
+				t.Fatalf("string = %q", got)
+			}
+		}
+	}
+}
