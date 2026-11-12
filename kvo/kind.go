@@ -8,4 +8,5 @@ const (
 	ValueKindMap
 	ValueKindScalarData
 	ValueKindPIIData
+	ValueKindList
 )

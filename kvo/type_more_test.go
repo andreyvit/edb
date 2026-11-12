@@ -1,8 +1,36 @@
 package kvo
 
 import (
+	"math"
 	"testing"
 )
+
+func TestScalarSubtypeArithmetic(t *testing.T) {
+	base := NewIntType[int64]("base", func(*FmtContext, int64) string { return "base" })
+	sub := NewScalarSubtype[int64]("sub", base)
+	if SameType(sub, base) {
+		t.Fatal("subtype lost its logical identity")
+	}
+	if sub.Add(5, 2) != 7 || sub.Sub(5, 2) != 3 || sub.Sign(uint64(1)<<63) != -1 || int64(sub.Neg(5)) != -5 || int64(sub.MulInt(5, -3)) != -15 {
+		t.Fatal("subtype did not inherit arithmetic")
+	}
+}
+
+func TestFloatIntegerMultiplication(t *testing.T) {
+	base := NewFloatType[float64]("float", nil)
+	for _, typ := range []*WordType{base, NewScalarSubtype[float64]("subfloat", base)} {
+		for _, factor := range []int64{-3, 0, 2} {
+			if got := math.Float64frombits(typ.MulInt(math.Float64bits(1.5), factor)); got != 1.5*float64(factor) {
+				t.Fatalf("%s: 1.5 * %d = %v", typ, factor, got)
+			}
+		}
+	}
+	float32Type := NewFloatType[float32]("float32", nil)
+	conv := floatScalarConverter[float32]{}
+	if got := conv.ScalarToValue(float32Type.MulInt(conv.ValueToScalar(1.5), 3)); got != 4.5 {
+		t.Fatal(got)
+	}
+}
 
 type myInt uint64
 
@@ -63,7 +91,7 @@ func TestWordTypeAndConstructors(t *testing.T) {
 	_ = TDoodad.Model()
 
 	// Exercise MapType methods.
-	mt := Map(TUint64, TUint64)
+	mt := MapOf(TUint64, TUint64)
 	_ = mt.Name()
 	_ = mt.String()
 	_ = mt.Schema()
@@ -95,7 +123,6 @@ func TestWordTypeAndConstructors(t *testing.T) {
 	_ = TMachineString.MapProp(0)
 	_ = TMachineString.MapValueType(0)
 	_ = TMachineString.typeCodeSet()
-	assertPanics(t, "reportCannotAccessKey", func() { reportCannotAccessKey(TMachineString, 1) })
 }
 
 func assertPanics(t *testing.T, name string, fn func()) {

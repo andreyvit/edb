@@ -22,4 +22,3 @@ func TestScalarConverters(t *testing.T) {
 	word := tc.ValueToScalar(tm)
 	eq(t, tc.ScalarToValue(word), Uint64ToTime(word))
 }
-
