@@ -2,13 +2,21 @@ package edb
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"reflect"
 	"time"
 )
 
-func (db *DB) tableState(tbl *Table) *tableState {
-	return db.tableStates[tbl.pos]
+func (db *DB) tableState(tbl *TableDef) *tableState {
+	if tbl.schema == db.schema {
+		return db.tableStates[tbl.pos]
+	}
+	pos, ok := db.schema.tablePositions[tbl]
+	if !ok {
+		panic(fmt.Errorf("table %s is not included in this database schema", tbl.name))
+	}
+	return db.tableStates[pos]
 }
 
 type tableState struct {
@@ -18,16 +26,16 @@ type tableState struct {
 	LastSeen         time.Time              `msgpack:"t"`
 	DeletionCounter  int                    `msgpack:"delcnt,omitempty"`
 
-	table            *Table                 `msgpack:"-"`
+	table            *TableDef                 `msgpack:"-"`
 	indexStates      []*indexState          `msgpack:"-"`
 	indexStatesByOrd map[uint64]*indexState `msgpack:"-"`
 }
 
-func (ts *tableState) indexOrdinal(idx *Index) uint64 {
+func (ts *tableState) indexOrdinal(idx *IndexDef) uint64 {
 	return ts.indexStates[idx.pos].IndexOrdinal
 }
 
-func (ts *tableState) indexByOrdinal(ord uint64) *Index {
+func (ts *tableState) indexByOrdinal(ord uint64) *IndexDef {
 	is := ts.indexStatesByOrd[ord]
 	if is == nil {
 		return nil
@@ -45,7 +53,7 @@ func (ts *tableState) hasPendingIndices() bool {
 }
 
 type indexState struct {
-	index        *Index `msgpack:"-"`
+	index        *IndexDef `msgpack:"-"`
 	IndexOrdinal uint64 `msgpack:"o"`
 	Built        bool   `msgpack:"f"`
 }
@@ -54,7 +62,7 @@ var tableStateKey = []byte("_state")
 
 const tableStateEncoding = MsgPack
 
-func prepareTable(tx *Tx, tbl *Table, now time.Time) *tableState {
+func prepareTable(tx *Tx, tbl *TableDef, now time.Time) *tableState {
 	tableRootB := must(tx.stx.CreateBucket(tbl.name, ""))
 	_ = must(tx.stx.CreateBucket(tbl.name, dataBucketName))
 	for _, idx := range tbl.indices {
@@ -111,11 +119,10 @@ func (ts *tableState) migrate(tx *Tx) {
 		}
 	}
 	if ts.hasPendingIndices() {
-		// log.Printf("Re-indexing table %s...", tbl.Name())
 		start := time.Now()
 		var rows, failed int64
 		for c := tx.TableScan(tbl, FullScan()); c.Next(); {
-			ok := upgradeRow(c, tx, tbl)
+			ok := upgradeRow(c, tx)
 			rows++
 			if !ok {
 				failed++
@@ -137,26 +144,24 @@ func (ts *tableState) migrate(tx *Tx) {
 	}
 }
 
-func upgradeRow(c *RawTableCursor, tx *Tx, tbl *Table) (ok bool) {
+func upgradeRow(c *RawTableCursor, tx *Tx) (ok bool) {
 	defer func() {
 		if e := recover(); e != nil {
 			log.Printf("Re-indexing error: %v", e)
 			ok = false
 		}
 	}()
-	rowVal, _ := c.RowVal()
-	tx.PutVal(tbl, rowVal)
+	tx.reindexRow(c)
 	return true
 }
 
 func (ts *tableState) save(tx *Tx) {
-	// log.Printf("table state for %s: %s", ts.table.Name(), must(json.Marshal(ts)))
 	rawTS := tableStateEncoding.EncodeValue(nil, reflect.ValueOf(ts))
 	tableRootB := ts.table.rootBucketIn(tx)
 	ensure(tableRootB.Put(tableStateKey, rawTS))
 }
 
-func dropDeletedIndex(tx *Tx, tbl *Table, name string) {
+func dropDeletedIndex(tx *Tx, tbl *TableDef, name string) {
 	err := tx.stx.DeleteBucket(tbl.name, indexBucketName(name))
 	if errors.Is(err, ErrBucketNotFound) {
 		return

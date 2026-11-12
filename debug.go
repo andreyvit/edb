@@ -37,7 +37,7 @@ func (tx *Tx) Dump(f DumpFlags) string {
 	return buf.String()
 }
 
-func (tx *Tx) dumpTable(w *strings.Builder, prefix string, f DumpFlags, tbl *Table, tblPos, tblCount int) {
+func (tx *Tx) dumpTable(w *strings.Builder, prefix string, f DumpFlags, tbl *TableDef, tblPos, tblCount int) {
 	prefix = prefix + tbl.Name()
 	s := tx.TableStats(tbl)
 	ts := tx.db.tableState(tbl)
@@ -69,7 +69,7 @@ func (tx *Tx) dumpTable(w *strings.Builder, prefix string, f DumpFlags, tbl *Tab
 	}
 }
 
-func (tx *Tx) dumpIndex(w *strings.Builder, prefix string, f DumpFlags, idx *Index, ts *tableState) {
+func (tx *Tx) dumpIndex(w *strings.Builder, prefix string, f DumpFlags, idx *IndexDef, ts *tableState) {
 	fmt.Fprintln(w, dumpSep2)
 	prefix = prefix + ".i." + idx.ShortName()
 	is := ts.indexStates[idx.pos]
@@ -86,7 +86,7 @@ func (tx *Tx) dumpIndex(w *strings.Builder, prefix string, f DumpFlags, idx *Ind
 	}
 }
 
-func (tx *Tx) dumpRow(w *strings.Builder, prefix string, f DumpFlags, tbl *Table, rowPos int, k, v []byte, migratorTx *Tx) {
+func (tx *Tx) dumpRow(w *strings.Builder, prefix string, f DumpFlags, tbl *TableDef, rowPos int, k, v []byte, migratorTx *Tx) {
 	rowVal, rowMeta, err := decodeTableRow(tbl, k, v, migratorTx, false)
 	if err != nil {
 		fmt.Fprintf(w, "%s.%d = (m%d s%d) ** ERROR: %v\n", prefix, rowPos, rowMeta.ModCount, rowMeta.SchemaVer, err)
@@ -95,7 +95,7 @@ func (tx *Tx) dumpRow(w *strings.Builder, prefix string, f DumpFlags, tbl *Table
 	fmt.Fprintf(w, "%s.%d = (m%d s%d) %s\n", prefix, rowPos, rowMeta.ModCount, rowMeta.SchemaVer, must(json.Marshal(rowVal.Interface())))
 }
 
-func (tx *Tx) dumpIndexRow(w *strings.Builder, prefix string, f DumpFlags, idx *Index, rowPos int, k, v []byte) {
+func (tx *Tx) dumpIndexRow(w *strings.Builder, prefix string, f DumpFlags, idx *IndexDef, rowPos int, k, v []byte) {
 	indexKeyTup, keyRaw := decodeIndexRow(idx, k, v)
 	indexKeyStr := idx.keyTupleToString(indexKeyTup)
 	keyStr := idx.table.RawKeyString(keyRaw)

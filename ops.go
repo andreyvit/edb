@@ -12,13 +12,15 @@ func Proto[T any]() any {
 	return ((*T)(nil))
 }
 
-func SGetRaw(txh Txish, sk *SKey) []byte {
+// SGetRaw returns the encoded value, bypassing the key's declared value type.
+func SGetRaw[T any](txh Txish, sk *SKey[T]) []byte {
 	tx := txh.DBTx()
 	buck := nonNil(tx.stx.Bucket(sk.mp.name, ""))
 	return buck.Get(sk.keyBytes)
 }
 
-func SPutRaw(txh Txish, sk *SKey, raw []byte) {
+// SPutRaw stores encoded bytes without validating their value type.
+func SPutRaw[T any](txh Txish, sk *SKey[T], raw []byte) {
 	tx := txh.DBTx()
 	buck := nonNil(tx.stx.Bucket(sk.mp.name, ""))
 	tx.markWritten()
@@ -28,7 +30,7 @@ func SPutRaw(txh Txish, sk *SKey, raw []byte) {
 	}
 }
 
-func SGet[T any](txh Txish, sk *SKey, v *T) bool {
+func SGet[T any](txh Txish, sk *SKey[T], v *T) bool {
 	tx := txh.DBTx()
 	raw := SGetRaw(tx, sk)
 	if raw == nil {
@@ -41,7 +43,7 @@ func SGet[T any](txh Txish, sk *SKey, v *T) bool {
 	return true
 }
 
-func SPut[T any](txh Txish, sk *SKey, v *T) {
+func SPut[T any](txh Txish, sk *SKey[T], v *T) {
 	tx := txh.DBTx()
 	valueBuf := acquireValueBuffer()
 	tx.addValueBuf(valueBuf)
@@ -50,7 +52,9 @@ func SPut[T any](txh Txish, sk *SKey, v *T) {
 	SPutRaw(tx, sk, valueRaw)
 }
 
-func CountAll(txh Txish, tbl *Table) int {
+func CountAll(txh Txish, tblArg AnyTable) int {
+	tbl := tblArg.TableDef()
+
 	tx := txh.DBTx()
 	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 	return dataBuck.KeyCount()

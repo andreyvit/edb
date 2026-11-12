@@ -22,6 +22,7 @@ type indexRowBuffers struct {
 }
 
 type indexRowsBuffer struct {
+	builder IndexBuilder
 	data    indexRows
 	buffers []indexRowBuffers
 }

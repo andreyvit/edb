@@ -1,60 +1,54 @@
-# Repository Guidelines
+# Repository guide
 
-EDB is an in-process document database for Go using Bolt (bbolt) as the backend. It enables single-server deployments by providing fast in-memory data access with serialized writes. The philosophy is that looping over data in code is simpler than optimizing complex SQL queries.
+EDB is an in-process Go database: bbolt, concurrent reads, serialized writes.
+Keep business logic in ordinary loops; keep storage contracts explicit.
 
-## Project Structure
+## Layout
 
-- Root package `edb`: core database, schema, encoding (`*.go` in repo root).
-- `kvo/`: key-value-objects layer used by KV tables.
-- `mmap/`: cross-platform memory-mapped file helpers.
-- Tests live alongside code as `*_test.go`.
+- Root `edb`: database, tables, schemas, indexes, transactions and row envelopes.
+- `kvo`: models, typed properties, records, collections, editors and Go bindings.
+- `values` / `nativebind`: shared runtime values and native field operations.
+- `kvo/codec/row2`: Fast2/Compact2. `fast1` and `msgpack`: supported legacy codecs.
+- `evm`: compiler/runtime. `gox`: Go/markup templates.
+- `research`: experiments and benchmark controls, not application APIs.
+- `mmap`: platform memory-map helpers.
 
-## Build, Test, and Development Commands
+Keep tests beside code. Keep package entry docs in `README.md`; other Markdown
+belongs in root `_docs/` or `<component>/_docs/`. Use descriptive filenames.
+Docs state current contracts; dates belong on measurements and audit evidence.
 
-- `go test ./...`: run the full suite (uses Bolt/bbolt-backed storage by default).
-- `go test -short ./...`: run faster tests using the in-memory backend (see `setup()` in `db_test.go`).
-- `go test -run TestName ./...`: run a single test.
-- `go test -coverprofile=cover.out ./...`: write coverage profile (`go tool cover -html=cover.out -o cover.html`).
-- `modd`: auto-run tests on file changes (install: `go install github.com/cortesi/modd/cmd/modd@latest`).
+## Tests
 
-## Storage & Testing Notes
+```sh
+go test ./...                    # bbolt
+go test -short ./...             # in-memory test backend
+go test -run TestName ./...
+go test -coverprofile=cover.out ./...
+go tool cover -html=cover.out -o cover.html
+```
 
-- Storage is abstracted behind `storage`/`storageTx`/`storageBucket`/`storageCursor` in `storage.go`.
-- `storage_bolt.go` is the production Bolt adapter; `storage_mem.go` is a simple in-memory backend intended for tests.
-- Test helper `setup()` runs Bolt by default; pass `-short` to switch to the in-memory backend.
-- When changing `storage_mem.go` or scan semantics, run both:
-  - `go test -short ./...` (exercise in-memory backend)
-  - `go test ./...` (exercise Bolt backend)
+Run both full and short suites after scan or storage changes. `setup()` in
+`db_test.go` selects the backend. If cache permissions block coverage, prefix
+Go commands with `env GOCACHE="$PWD/.gocache"`.
 
-## Architecture Notes
+`modd` reruns tests on edits (`go install github.com/cortesi/modd/cmd/modd@latest`).
+Rebuild book examples with `go run ./evm/EVMBook-rebuild.go`.
 
-- All operations require a transaction: `db.Tx(writable, func(*Tx) error)`, `db.Read(func(*Tx))`, or `db.Write(func(*Tx))`.
-- Schema layer: `schema.go`, `schematable.go`, `schemaindex.go` (`Schema.Include` composes schemas; `Table` is a collection; `Index` is a secondary index).
-- Operations live in `op*.go`:
-  - CRUD: `Put/Get/Delete`
-  - Scans: `TableScan/IndexScan` + helpers `FullScan/ExactScan/RangeScan/LowerBoundScan/UpperBoundScan`
-  - KV scans use `RawRange` in `scan.go` (`Prefix`/`Lower`/`Upper`, inclusive/exclusive, `Reverse`)
-- Encoding: keys are tuple-encoded (`enctuple.go`); values are `value header + msgpack row data + index keys` (`encvalue.go` + `encoding.go`).
+## Storage
 
-## Bolt Bucket Layout (Implementation Detail)
+- Every operation needs a transaction: `Tx`, `Read` or `Write`.
+- `storage.go` defines storage/transaction/bucket/cursor interfaces;
+  `storage_bolt.go` and `storage_mem.go` implement them.
+- `schema*.go` defines registration; `op*.go` implements operations.
+- Keys use `enctuple.go`; `encvalue.go` and `encoding.go` handle row envelopes.
+  Ordinary rows default to MessagePack; explicit storage selects Fast2/Compact2.
+- Table buckets: `tablename/data`, `tablename/i_<indexname>`.
+- KV buckets: `kvtname/`, `kvtname_i_<indexname>/`.
+- `DB.Bolt()` and `Tx.BoltTx()` expose bbolt; both return nil for memory storage.
+- KV scans use `RawRange`: prefix, lower/upper bounds, inclusion and direction.
 
-- Table row data: `tablename/data`
-- Table index data: `tablename/i_<indexname>`
-- KV table data: `kvtname/` (root bucket)
-- KV index data: `kvtname_i_<indexname>/` (root bucket)
+## Code
 
-## Escape Hatches
-
-- `db.Bolt()` returns the underlying `*bbolt.DB` (nil for in-memory backend).
-- `tx.BoltTx()` returns the underlying `*bbolt.Tx` (nil for in-memory backend).
-
-## Coverage in Sandbox
-
-- If coverage or `go tool cover` fails due to Go build cache permissions, run with a repo-local cache:
-  - `env GOCACHE="$PWD/.gocache" go test -coverprofile=cover.out ./...`
-  - `env GOCACHE="$PWD/.gocache" go tool cover -func=cover.out`
-
-## Coding Style
-
-- Run `gofmt`; follow idiomatic Go naming (`CamelCase` exported, `camelCase` unexported).
-- Prefer extending existing file groupings (`schema*.go`, `op*.go`, `enc*.go`) over introducing new patterns.
+Run `gofmt`. Use idiomatic Go names and existing `schema*`, `op*`, `enc*` groupings.
+Use named enum types/constants for modes, states and kinds, preferably with
+`String()`. Preserve numeric wire values when replacing discriminators.

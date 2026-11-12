@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"path/filepath"
 	"testing"
+
+	"github.com/andreyvit/edb/kvo"
 )
 
 type benchmarkRow struct {
@@ -14,7 +16,7 @@ type benchmarkRow struct {
 
 type benchmarkFixture struct {
 	db    *DB
-	index *Index
+	index *IndexDef
 	rows  []*benchmarkRow
 	keys  []any
 }
@@ -173,13 +175,13 @@ func benchmarkMutation(b *testing.B, operation string) {
 func newBenchmarkFixture(b *testing.B) *benchmarkFixture {
 	b.Helper()
 	schema := &Schema{}
-	index := AddIndex[uint64]("group")
-	DefineTable[benchmarkRow, uint64](schema, "rows", func(builder *TableBuilder[benchmarkRow, uint64]) {
-		builder.AddIndex(index)
-		builder.Indexer(func(row *benchmarkRow, ib *IndexBuilder) {
-			ib.Add(index, row.Group)
+	var index *IndexDef
+	DefineTable[uint64](schema, "rows", testIndexAccess[benchmarkRow](indexGroupNumber), func(builder *TableBuilder[uint64]) {
+		index = builder.AddIndex[uint64]("group", nil).IndexDef()
+		builder.SetIndexer(func(key uint64, row kvo.Record, ib *IndexBuilder) {
+			ib.Add(index, row.Get(indexGroupNumber))
 		})
-	})
+	}).TableDef()
 	db, err := Open(filepath.Join(b.TempDir(), "bench.db"), schema, Options{})
 	if err != nil {
 		b.Fatal(err)

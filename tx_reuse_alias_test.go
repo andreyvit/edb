@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"reflect"
 	"testing"
+
+	"github.com/andreyvit/edb/kvo"
 )
 
 type reuseAliasRow struct {
@@ -15,9 +17,9 @@ type reuseAliasRow struct {
 
 type reuseAliasFixture struct {
 	db        *DB
-	table     *Table
-	index     *Index
-	singleton *SKey
+	table     *TableDef
+	index     *IndexDef
+	singleton *SKey[[]byte]
 }
 
 type reuseAliasSnapshot struct {
@@ -69,13 +71,13 @@ func TestReuseAliasChangeLifetime(t *testing.T) {
 	defer tx.Close()
 	var changes []*Change
 	var keyScratch [][]byte
-	indexer := f.table.indexer
-	f.table.indexer = func(row any, ib *IndexBuilder) {
+	indexer := f.table.recordIndexer
+	f.table.recordIndexer = func(row kvo.Record, ib *IndexBuilder) {
 		keyScratch = append(keyScratch, ib.key[:cap(ib.key)])
 		indexer(row, ib)
 	}
-	tx.OnChange(map[*Table]ChangeFlags{
-		f.table: ChangeFlagNotify | ChangeFlagIncludeKey | ChangeFlagIncludeMutableRow | ChangeFlagIncludeOldRow,
+	tx.OnChange(map[*TableDef]ChangeFlags{
+		f.table: ChangeFlagNotify | ChangeFlagIncludeKey | ChangeFlagIncludeNewGoStruct | ChangeFlagIncludeOldGoStruct,
 	}, func(_ *Tx, change *Change) {
 		changes = append(changes, change)
 	})
@@ -95,7 +97,7 @@ func TestReuseAliasChangeLifetime(t *testing.T) {
 		t.Fatalf("change count = %d, want 2", len(changes))
 	}
 	for i, change := range changes {
-		if change.Table() != f.table || change.Op() != OpPut || !change.HasKey() || !change.HasRow() || change.HasOldRow() != (i == 1) {
+		if change.Table() != f.table || change.Op() != OpPut || !change.HasKey() || !change.HasNewGoStruct() || change.HasOldGoStruct() != (i == 1) {
 			t.Fatalf("change %d has incorrect shape: %+v", i, change)
 		}
 		if !bytes.Equal(change.RawKey(), f.table.EncodeKey(want.Key)) {
@@ -105,8 +107,8 @@ func TestReuseAliasChangeLifetime(t *testing.T) {
 			t.Fatalf("change %d key = %v, want %x", i, change.Key(), want.Key)
 		}
 	}
-	if !reflect.DeepEqual(changes[0].Row(), old) || !reflect.DeepEqual(changes[1].Row(), want) || !reflect.DeepEqual(changes[1].OldRow(), old) {
-		t.Fatalf("change rows = %#v / %#v / %#v, want %#v / %#v / %#v", changes[0].Row(), changes[1].Row(), changes[1].OldRow(), old, want, old)
+	if !reflect.DeepEqual(changes[0].NewGoStruct(), old) || !reflect.DeepEqual(changes[1].NewGoStruct(), want) || !reflect.DeepEqual(changes[1].OldGoStruct(), old) {
+		t.Fatalf("change rows = %#v / %#v / %#v, want %#v / %#v / %#v", changes[0].NewGoStruct(), changes[1].NewGoStruct(), changes[1].OldGoStruct(), old, want, old)
 	}
 	reuseAliasCheck(t, escaped, want)
 	reuseAliasCheckMemento(t, f, escaped, want)
@@ -126,8 +128,8 @@ func TestReuseAliasDeleteChangeLifetime(t *testing.T) {
 	Put(tx, want)
 	escaped := reuseAliasRead(t, tx, f.index, want)
 	var changes []*Change
-	tx.OnChange(map[*Table]ChangeFlags{
-		f.table: ChangeFlagNotify | ChangeFlagIncludeKey | ChangeFlagIncludeRow,
+	tx.OnChange(map[*TableDef]ChangeFlags{
+		f.table: ChangeFlagNotify | ChangeFlagIncludeKey | ChangeFlagIncludeOldGoStruct,
 	}, func(_ *Tx, change *Change) {
 		changes = append(changes, change)
 	})
@@ -144,7 +146,7 @@ func TestReuseAliasDeleteChangeLifetime(t *testing.T) {
 		t.Fatalf("change count = %d, want 1", len(changes))
 	}
 	change := changes[0]
-	if change.Table() != f.table || change.Op() != OpDelete || !change.HasKey() || !change.HasRow() || change.HasOldRow() {
+	if change.Table() != f.table || change.Op() != OpDelete || !change.HasKey() || change.HasNewGoStruct() || !change.HasOldGoStruct() {
 		t.Fatalf("delete change has incorrect shape: %+v", change)
 	}
 	if expected := f.table.EncodeKey(want.Key); !bytes.Equal(change.RawKey(), expected) {
@@ -153,8 +155,8 @@ func TestReuseAliasDeleteChangeLifetime(t *testing.T) {
 	if !reflect.DeepEqual(change.Key(), want.Key) {
 		t.Fatalf("delete key = %v, want %x", change.Key(), want.Key)
 	}
-	if !reflect.DeepEqual(change.Row(), want) {
-		t.Fatalf("delete row = %#v, want %#v", change.Row(), want)
+	if !reflect.DeepEqual(change.OldGoStruct(), want) {
+		t.Fatalf("delete row = %#v, want %#v", change.OldGoStruct(), want)
 	}
 	reuseAliasCheck(t, escaped, want)
 	f.db.Read(func(tx *Tx) {
@@ -167,10 +169,13 @@ func TestReuseAliasDeleteChangeLifetime(t *testing.T) {
 func reuseAliasOpen(t *testing.T) reuseAliasFixture {
 	t.Helper()
 	schema := &Schema{}
-	index := AddIndex[string]("name").Unique()
-	table := AddTable(schema, "reuse_alias", 1, func(row *reuseAliasRow, ib *IndexBuilder) {
-		ib.Add(index, row.Name)
-	}, nil, []*Index{index})
+	var index *IndexDef
+	table := DefineTable(schema, "reuse_alias", testIndexAccess[reuseAliasRow](indexName), func(b *TableBuilder[[]byte]) {
+		index = b.AddIndex[string]("name", nil, IndexOptDeprecatedUnique).IndexDef()
+		b.SetIndexer(func(key []byte, row kvo.Record, ib *IndexBuilder) {
+			ib.Add(index, row.Get(indexName))
+		})
+	}).TableDef()
 	singleton := AddSingletonKey[[]byte](AddKVMap(schema, "metadata"), "payload")
 	path := filepath.Join(t.TempDir(), "alias.db")
 	if testing.Short() {
@@ -188,7 +193,7 @@ func reuseAliasValue(name string, fill byte) *reuseAliasRow {
 	return &reuseAliasRow{Key: []byte{0x11, 0x00, 0xff, 0x7f}, Name: name, Payload: bytes.Repeat([]byte{fill, 0x00, 0xff}, 513)}
 }
 
-func reuseAliasRead(t *testing.T, tx *Tx, index *Index, want *reuseAliasRow) reuseAliasSnapshot {
+func reuseAliasRead(t *testing.T, tx *Tx, index *IndexDef, want *reuseAliasRow) reuseAliasSnapshot {
 	t.Helper()
 	result := reuseAliasSnapshot{rows: []*reuseAliasRow{
 		Get[reuseAliasRow](tx, want.Key), Lookup[reuseAliasRow](tx, index, want.Name),

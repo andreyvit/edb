@@ -3,13 +3,13 @@ package edb
 import (
 	"log/slog"
 
-	"github.com/andreyvit/edb/kvo"
+	"github.com/andreyvit/edb/kvo/codec/fast1"
 )
 
-func (tx *Tx) KVGet(tbl *KVTable, key []byte) kvo.ImmutableMap {
+func (tx *Tx) KVGet(tbl *KVTable, key []byte) fast1.ImmutableMap {
 	raw := tx.KVGetRaw(tbl, key)
 	if raw == nil {
-		return kvo.ImmutableMap{}
+		return fast1.ImmutableMap{}
 	}
 	return tbl.decodeValue(raw)
 }
@@ -22,15 +22,15 @@ func (tx *Tx) KVGetRaw(tbl *KVTable, key []byte) []byte {
 	return dataBuck.Get(key)
 }
 
-func (tx *Tx) KVPut(tbl *KVTable, key []byte, value kvo.Packable) {
-	var data kvo.ImmutableRecordData
+func (tx *Tx) KVPut(tbl *KVTable, key []byte, value fast1.Packable) {
+	var data fast1.ImmutableRecordData
 	if value != nil {
 		data = value.Pack()
 	}
 	if data == nil {
 		tx.KVPutRaw(tbl, key, nil)
 	} else {
-		tx.KVPutRaw(tbl, key, value.Pack().Bytes())
+		tx.KVPutRaw(tbl, key, data.Bytes())
 	}
 }
 
@@ -132,12 +132,12 @@ func (c *KVCursor) RawIndexKey() []byte { return c.impl.RawIndexKey() }
 func (c *KVCursor) RawKey() []byte      { return c.impl.RawTableKey() }
 func (c *KVCursor) RawValue() []byte    { return c.impl.RawTableValue() }
 
-func (c *KVCursor) Object() kvo.ImmutableMap {
+func (c *KVCursor) Object() fast1.ImmutableMap {
 	return c.tbl.decodeValue(c.impl.RawTableValue())
 }
 
-func (c *KVCursor) Objects() func(yield func(k []byte, o kvo.ImmutableMap) bool) {
-	return func(yield func(k []byte, o kvo.ImmutableMap) bool) {
+func (c *KVCursor) Objects() func(yield func(k []byte, o fast1.ImmutableMap) bool) {
+	return func(yield func(k []byte, o fast1.ImmutableMap) bool) {
 		for c.Next() {
 			if !yield(c.RawKey(), c.Object()) {
 				break

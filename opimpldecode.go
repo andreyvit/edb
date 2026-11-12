@@ -44,7 +44,7 @@ func valToAny(val reflect.Value) any {
 	}
 }
 
-func keyRawToVal(raw []byte, tbl *Table) reflect.Value {
+func keyRawToVal(raw []byte, tbl *TableDef) reflect.Value {
 	if raw == nil {
 		return reflect.Value{}
 	} else {
@@ -52,39 +52,48 @@ func keyRawToVal(raw []byte, tbl *Table) reflect.Value {
 	}
 }
 
-func decodeTableRow(tbl *Table, keyRaw, valueRaw []byte, migrationTx *Tx, isMemento bool) (rowVal reflect.Value, rowMeta ValueMeta, err error) {
+func decodeTableRow(tbl *TableDef, keyRaw, valueRaw []byte, migrationTx *Tx, isMemento bool) (rowVal reflect.Value, rowMeta ValueMeta, err error) {
 	var vle value
 	decodeTableValue(&vle, tbl, keyRaw, valueRaw, isMemento)
-	rowVal, _, rowMeta, err = decodeTableRowFromValue(&vle, tbl, keyRaw, migrationTx)
-	return
+	return decodeTableRowFromValue(&vle, tbl, keyRaw, migrationTx)
 }
 
-func decodeTableRowFromValue(vle *value, tbl *Table, keyRaw []byte, migrationTx *Tx) (rowVal, keyVal reflect.Value, rowMeta ValueMeta, err error) {
-	rowVal = tbl.newRow(vle.SchemaVer)
-	keyVal = tbl.RowKeyVal(rowVal)
-	err = tbl.TryDecodeKeyValInto(keyVal, keyRaw)
-	if err != nil {
-		return
-	}
-
-	keyVal = tbl.DecodeKeyVal(keyRaw)
-
-	err = vle.decodeRowInto(rowVal)
-	if err != nil {
-		err = tableErrf(tbl, nil, keyRaw, err, "data")
-		return
-	}
-	tbl.rowInfo.keyValue(rowVal).Set(keyVal)
-
-	rowMeta = vle.ValueMeta()
-
-	if rowMeta.SchemaVer < tbl.latestSchemaVer && tbl.migrator != nil {
-		tbl.migrator(migrationTx, rowVal.Interface(), rowMeta.SchemaVer)
-	}
-	return
+func decodeTableRowFromValue(vle *value, tbl *TableDef, keyRaw []byte, tx *Tx) (reflect.Value, ValueMeta, error) {
+	row := tbl.newRow(vle.SchemaVer)
+	meta, err := decodeRowValueInto(row, vle, tbl, keyRaw, tx)
+	return row, meta, err
 }
 
-func decodeTableValue(vle *value, tbl *Table, keyRaw, valueRaw []byte, isMemento bool) {
+func decodeRowValueInto(row reflect.Value, vle *value, tbl *TableDef, keyRaw []byte, tx *Tx) (ValueMeta, error) {
+	field := tbl.RowKeyVal(row)
+	if vle.Flags == vfKVO {
+		// KVO excludes the primary key and clears the destination. Supply
+		// the authoritative key once, after decoding the other fields.
+		if err := tbl.decodeRowInto(vle, row); err != nil {
+			return ValueMeta{}, tableErrf(tbl, nil, keyRaw, err, "data")
+		}
+		if err := tbl.TryDecodeKeyValInto(field, keyRaw); err != nil {
+			return ValueMeta{}, err
+		}
+	} else {
+		// Custom MessagePack decoders may inspect or overwrite their key.
+		if err := tbl.TryDecodeKeyValInto(field, keyRaw); err != nil {
+			return ValueMeta{}, err
+		}
+		key := tbl.DecodeKeyVal(keyRaw)
+		if err := tbl.decodeRowInto(vle, row); err != nil {
+			return ValueMeta{}, tableErrf(tbl, nil, keyRaw, err, "data")
+		}
+		field.Set(key)
+	}
+	meta := vle.ValueMeta()
+	if meta.SchemaVer < tbl.latestSchemaVer && tbl.migrator != nil {
+		tbl.migrateRecord(tx, keyRaw, tbl.nativeRecord(row), meta.SchemaVer)
+	}
+	return meta, nil
+}
+
+func decodeTableValue(vle *value, tbl *TableDef, keyRaw, valueRaw []byte, isMemento bool) {
 	err := vle.decode(valueRaw, isMemento)
 	if err != nil {
 		err := tableErrf(tbl, nil, keyRaw, err, "")
@@ -93,11 +102,17 @@ func decodeTableValue(vle *value, tbl *Table, keyRaw, valueRaw []byte, isMemento
 	}
 }
 
-func (vle *value) decodeRowInto(rowVal reflect.Value) error {
-	return vle.Flags.encoding().DecodeValue(vle.Data, rowVal)
+func (tbl *TableDef) decodeRowInto(vle *value, rowVal reflect.Value) error {
+	if vle.Flags == vfKVO {
+		if tbl.binding == nil {
+			return ErrNoRecordBinding
+		}
+		return tbl.binding.TryDecode(vle.Data, rowVal.Elem())
+	}
+	return MsgPack.DecodeValue(vle.Data, rowVal)
 }
 
-func decodeIndexTableKey(indexKeyRaw []byte, indexKeyTup tuple, indexVal []byte, idx *Index) ([]byte, tuple) {
+func decodeIndexTableKey(indexKeyRaw []byte, indexKeyTup tuple, indexVal []byte, idx *IndexDef) ([]byte, tuple) {
 	if indexKeyTup == nil {
 		indexKeyTup = decodeIndexKey(indexKeyRaw, idx)
 	}
@@ -108,8 +123,9 @@ func decodeIndexTableKey(indexKeyRaw []byte, indexKeyTup tuple, indexVal []byte,
 	}
 }
 
-func decodeUniqueIndexTableKey(indexKeyRaw, indexVal []byte, idx *Index) []byte {
-	indexValTup, err := decodeTuple(indexVal)
+func decodeUniqueIndexTableKey(indexKeyRaw, indexVal []byte, idx *IndexDef) []byte {
+	var scratch [1][]byte
+	indexValTup, err := decodeTupleInto(scratch[:0], indexVal)
 	if err != nil {
 		panic(fmt.Errorf("%s: invalid index value tuple for key %x, value is %x: %w", idx.FullName(), indexKeyRaw, indexVal, err))
 	}
@@ -119,13 +135,16 @@ func decodeUniqueIndexTableKey(indexKeyRaw, indexVal []byte, idx *Index) []byte 
 	return indexValTup[0]
 }
 
-func decodeNonUniqueIndexTableKey(indexKeyRaw []byte, idx *Index) (tuple, []byte) {
+func decodeNonUniqueIndexTableKey(indexKeyRaw []byte, idx *IndexDef) (tuple, []byte) {
 	indexKeyTup := decodeIndexKey(indexKeyRaw, idx)
 	return indexKeyTup, indexKeyTup[len(indexKeyTup)-1]
 }
 
-func decodeIndexKey(indexKeyRaw []byte, idx *Index) tuple {
-	indexKeyTup, err := decodeTuple(indexKeyRaw)
+func decodeIndexKey(indexKeyRaw []byte, idx *IndexDef) tuple {
+	return decodeIndexKeyInto(nil, indexKeyRaw, idx)
+}
+func decodeIndexKeyInto(scratch tuple, indexKeyRaw []byte, idx *IndexDef) tuple {
+	indexKeyTup, err := decodeTupleInto(scratch, indexKeyRaw)
 	if err != nil {
 		panic(fmt.Errorf("%s: invalid index key tuple %x: %w", idx.FullName(), indexKeyRaw, err))
 	}
@@ -137,7 +156,7 @@ func extractUniqueIndexKey(indexKeyTup tuple) ([]byte, tuple) {
 	return indexKeyTup[n-1], indexKeyTup[:n-1]
 }
 
-func decodeIndexRow(idx *Index, indexKeyRaw, indexValRaw []byte) (indexKey tuple, keyRaw []byte) {
+func decodeIndexRow(idx *IndexDef, indexKeyRaw, indexValRaw []byte) (indexKey tuple, keyRaw []byte) {
 	indexKeyTup := must(decodeTuple(indexKeyRaw))
 	indexValTup := must(decodeTuple(indexValRaw))
 

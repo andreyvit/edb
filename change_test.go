@@ -4,10 +4,10 @@ import "testing"
 
 func TestChangeFlags_Contains(t *testing.T) {
 	f := ChangeFlagNotify | ChangeFlagIncludeKey
-	if !f.Contains(ChangeFlagNotify) || !f.ContainsAny(ChangeFlagIncludeKey|ChangeFlagIncludeRow) {
+	if !f.Contains(ChangeFlagNotify) || !f.ContainsAny(ChangeFlagIncludeKey|ChangeFlagIncludeNewGoStruct) {
 		t.Fatalf("Contains/ContainsAny returned unexpected values for %v", f)
 	}
-	if f.Contains(ChangeFlagIncludeRow) || f.ContainsAny(0) {
+	if f.Contains(ChangeFlagIncludeNewGoStruct) || f.ContainsAny(0) {
 		t.Fatalf("Contains/ContainsAny returned unexpected values for %v", f)
 	}
 
@@ -25,8 +25,8 @@ func TestTx_OnChange_PutAndDelete(t *testing.T) {
 
 	var got []*Change
 	db.Write(func(tx *Tx) {
-		tx.OnChange(map[*Table]ChangeFlags{
-			usersTable: ChangeFlagNotify | ChangeFlagIncludeKey | ChangeFlagIncludeRow | ChangeFlagIncludeOldRow,
+		tx.OnChange(map[*TableDef]ChangeFlags{
+			usersTable: ChangeFlagNotify | ChangeFlagIncludeKey | ChangeFlagIncludeNewGoStruct | ChangeFlagIncludeOldGoStruct,
 		}, func(tx *Tx, chg *Change) {
 			got = append(got, chg)
 		})
@@ -41,25 +41,25 @@ func TestTx_OnChange_PutAndDelete(t *testing.T) {
 		t.Fatalf("got %d changes, wanted 3", len(got))
 	}
 
-	if got[0].Table() != usersTable || got[0].Op() != OpPut || !got[0].HasKey() || !got[0].HasRow() || got[0].HasOldRow() {
+	if got[0].Table() != usersTable || got[0].Op() != OpPut || !got[0].HasKey() || !got[0].HasNewGoStruct() || got[0].HasOldGoStruct() {
 		t.Fatalf("change[0] fields not set as expected: %+v", got[0])
 	}
 	_ = got[0].RawKey()
 	_ = got[0].KeyVal()
 	_ = got[0].Key()
-	_ = got[0].RowVal()
-	_ = got[0].Row()
+	_ = got[0].NewGoStructVal()
+	_ = got[0].NewGoStruct()
 
-	if got[1].Op() != OpPut || !got[1].HasOldRow() {
+	if got[1].Op() != OpPut || !got[1].HasOldGoStruct() {
 		t.Fatalf("change[1] fields not set as expected: %+v", got[1])
 	}
-	_ = got[1].OldRowVal()
-	_ = got[1].OldRow()
+	_ = got[1].OldGoStructVal()
+	_ = got[1].OldGoStruct()
 
-	if got[2].Op() != OpDelete || !got[2].HasKey() || !got[2].HasRow() {
+	if got[2].Op() != OpDelete || !got[2].HasKey() || !got[2].HasOldGoStruct() || got[2].HasNewGoStruct() {
 		t.Fatalf("change[2] fields not set as expected: %+v", got[2])
 	}
 	_ = got[2].RawKey()
 	_ = got[2].Key()
-	_ = got[2].Row()
+	_ = got[2].OldGoStruct()
 }

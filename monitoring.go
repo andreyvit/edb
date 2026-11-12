@@ -23,7 +23,9 @@ func (ts *TableStats) TotalAlloc() int64 {
 	return ts.DataAlloc + ts.IndexAlloc
 }
 
-func (tx *Tx) TableStats(tbl *Table) TableStats {
+func (tx *Tx) TableStats(tblArg AnyTable) TableStats {
+	tbl := tblArg.TableDef()
+
 	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 	bs := dataBuck.Stats()
 	result := TableStats{
@@ -63,7 +65,7 @@ func (tx *Tx) KVTableStats(tbl *KVTable) TableStats {
 	return result
 }
 
-func loggableRowVal(tbl *Table, rowVal reflect.Value) string {
+func loggableRowVal(tbl *TableDef, rowVal reflect.Value) string {
 	if !rowVal.IsValid() {
 		return "<none>"
 	}

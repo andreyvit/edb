@@ -50,7 +50,7 @@ type TableError struct {
 	Err   error
 }
 
-func tableErrf(tbl *Table, idx *Index, key []byte, err error, format string, args ...any) error {
+func tableErrf(tbl *TableDef, idx *IndexDef, key []byte, err error, format string, args ...any) error {
 	var idxName string
 	if idx != nil {
 		idxName = idx.ShortName()
@@ -60,9 +60,6 @@ func tableErrf(tbl *Table, idx *Index, key []byte, err error, format string, arg
 
 func kvtableErrf(tbl *KVTable, idx any, key []byte, err error, format string, args ...any) error {
 	var idxName string
-	// if idx != nil {
-	// 	idxName = idx.ShortName()
-	// }
 	return &TableError{tbl.Name(), idxName, bytes.Clone(key), fmt.Sprintf(format, args...), err}
 }
 

@@ -10,7 +10,7 @@ import (
 
 type IndexRow struct {
 	IndexOrd uint64
-	Index    *Index
+	Index    *IndexDef
 	KeyRaw   []byte
 	KeyBuf   []byte
 	ValueRaw []byte
@@ -18,35 +18,55 @@ type IndexRow struct {
 }
 
 type IndexBuilder struct {
+	encoder flatEncoder
 	ts      *tableState
 	rows    indexRows
 	rowsBuf *indexRowsBuffer
 	key     []byte
 }
 
-func makeIndexBuilder(ts *tableState, keyRaw []byte) IndexBuilder {
+func makeIndexBuilder(ts *tableState, keyRaw []byte) *IndexBuilder {
 	indexRowsBuf := acquireIndexRowsBuffer()
-	return IndexBuilder{
+	indexRowsBuf.builder = IndexBuilder{
 		ts:      ts,
 		rows:    indexRowsBuf.data,
 		rowsBuf: indexRowsBuf,
 		key:     keyRaw,
 	}
+	return &indexRowsBuf.builder
 }
 
-func (b *IndexBuilder) Add(idx *Index, value any) *IndexRow {
+// PrimaryKey decodes the row key for index expressions that need it.
+// Add already associates each entry with its row.
+func (b *IndexBuilder) PrimaryKey() any {
+	return b.ts.table.DecodeKeyVal(b.key).Interface()
+}
+
+func (b *IndexBuilder) Add(idxArg AnyIndex, value any) *IndexRow {
+	idx := idxArg.IndexDef()
+
 	valueVal := reflect.ValueOf(value)
-	if idx.table != b.ts.table {
-		panic(fmt.Errorf("%s: attempted to add entry to another table's index %s", b.ts.table.Name(), idx.FullName()))
-	}
 	if at, et := valueVal.Type(), idx.keyType(); at != et {
 		panic(fmt.Errorf("%s: attempted to add index entry with incorrect type %v, expected %v", idx.FullName(), at, et))
 	}
 
+	return b.addEncoded(idx, func(enc *flatEncoder) { idx.keyEnc.encodeInto(enc, valueVal) })
+}
+
+func (b *IndexBuilder) addTyped[T any](idx *IndexDef, key T) *IndexRow {
+	return b.addEncoded(idx, func(enc *flatEncoder) { encodeTypedKey(idx.keyEnc, enc, key) })
+}
+
+func (b *IndexBuilder) addEncoded(idx *IndexDef, encode func(*flatEncoder)) *IndexRow {
+	if idx.table != b.ts.table {
+		panic(fmt.Errorf("%s: attempted to add entry to another table's index %s", b.ts.table.Name(), idx.FullName()))
+	}
+
 	keyBuf := acquireKeyBuffer()
 	b.rowsBuf.buffers = append(b.rowsBuf.buffers, indexRowBuffers{key: keyBuf})
-	keyEnc := flatEncoder{buf: keyBuf.data}
-	idx.keyEnc.encodeInto(&keyEnc, valueVal)
+	keyEnc := &b.encoder
+	*keyEnc = flatEncoder{buf: keyBuf.data}
+	encode(keyEnc)
 
 	var valueRaw []byte
 	var valueBuf []byte
@@ -92,7 +112,10 @@ func (b *IndexBuilder) release() {
 			releaseIndexValueBuffer(buffers.value)
 		}
 	}
-	releaseIndexRowsBuffer(b.rowsBuf)
+	buf := b.rowsBuf
+	buf.data = b.rows[:0]
+	*b = IndexBuilder{}
+	releaseIndexRowsBuffer(buf)
 }
 
 func (b *IndexBuilder) finalize() {

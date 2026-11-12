@@ -22,7 +22,6 @@ func TestMarshalFlat(t *testing.T) {
 		{Foo{0x42, "test"}, "0000000000000042 74657374 08 02", Foo{}},
 		{&Foo{0x42, "test"}, "0000000000000042 74657374 08 02", &Foo{}},
 		{[]byte("test"), "74657374 01", []byte(nil)},
-		// {[4]byte{'t', 'e', 's', 't'}, "74657374 01", [4]byte{}},
 	}
 	for _, test := range tests {
 		test.expected = strings.Map(removeSpaces, test.expected)
@@ -33,7 +32,6 @@ func TestMarshalFlat(t *testing.T) {
 		if aStr != test.expected {
 			t.Errorf("** MarshalFlat(%v) = %v, wanted %q", test.input, aStr, test.expected)
 		} else {
-			// t.Logf("✓ MarshalFlat(%v) = %q", test.input, a)
 
 			decodedVal := reflect.New(reflect.TypeOf(test.decodeBase))
 			err := enc.decodePtr(a, decodedVal)

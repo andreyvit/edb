@@ -20,11 +20,11 @@ We rely on scoped namespaces for keys called buckets. Bolt supports them nativel
 A flat database like Redis could simulate buckets via key prefixes.
 We use nested buckets in Bolt, but only for conveninece; flat buckets are fine.
 
-**Index ordinal**
+**IndexDef ordinal**
 We assign a unique positive integer ordinal to each index. These values are never
 reused, even if an index is removed.
 
-**Table states**
+**TableDef states**
 We store a meta document per table, called “table state”. This document holds
 the information about which indexes are defined for the table, and assigns
 a  (an ordinal) to each one. Ordinals are never
@@ -45,7 +45,7 @@ Keys are encoded using a _tuple encoding_.
 
 **Value data**: msgpack of the row struct.
 
-**Index key records** (inside a value) record the keys contributed by this row.
+**IndexDef key records** (inside a value) record the keys contributed by this row.
 If index computation changes in the future, we still need to know which index
 keys to delete when updating the row, so we store all index keys. Format:
 1. Number of entries (uvarint).

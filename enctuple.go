@@ -80,7 +80,6 @@ func decodeTupleInto(tup tuple, raw []byte) (tuple, error) {
 	}
 	for i := int(c) - 2; i >= 0; i-- {
 		lens[i], raw = decodeRuvarint(raw)
-		// log.Printf("lens[%d] = %d", i, lens[i])
 	}
 
 	var explicitLen uint64

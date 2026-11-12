@@ -34,7 +34,8 @@ type Tx struct {
 	commitDespiteErr bool
 	reindexing       bool
 
-	memo map[string]any
+	recordLookups map[*TableDef]storageCursor
+	memo          map[string]any
 
 	indexKeyBufs        []*byteBuffer
 	indexKeyBufBytes    int
@@ -45,7 +46,7 @@ type Tx struct {
 	indexValueBufsOwner *byteBufferList
 
 	changeHandler func(tx *Tx, chg *Change)
-	changeOptions map[*Table]ChangeFlags
+	changeOptions map[*TableDef]ChangeFlags
 }
 
 func (db *DB) newTx(stx storageTx, managed bool, memo map[string]any, stack []byte) *Tx {
@@ -128,7 +129,19 @@ func (tx *Tx) Schema() *Schema {
 	return tx.db.schema
 }
 
-func (tx *Tx) OnChange(opts map[*Table]ChangeFlags, f func(tx *Tx, chg *Change)) {
+// OnChange installs a transaction-local handler. Notifications run after each
+// mutation, before commit (which may still roll back). No-op writes do not notify.
+// Request old/new records or independently decoded Go structs explicitly; deletes
+// have only an old value. Record notifications require a KVO model. The options
+// map must not be modified while installed.
+func (tx *Tx) OnChange(opts map[*TableDef]ChangeFlags, f func(tx *Tx, chg *Change)) {
+	if f != nil {
+		for tbl, flags := range opts {
+			if flags.Contains(ChangeFlagNotify) && flags.ContainsAny(ChangeFlagIncludeNewRecord|ChangeFlagIncludeOldRecord) && (tbl == nil || tbl.kvoModel == nil) {
+				panic(ErrNoRecordBinding)
+			}
+		}
+	}
 	tx.changeOptions = opts
 	tx.changeHandler = f
 }
@@ -186,10 +199,7 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 		}
 
 		var funcErr error
-		// var calls int
 		var memo map[string]any
-		// debug.PrintStack()
-		// log.Printf("Tx.BATCH.BEGIN")
 		pending := true
 		db.PendingWriterCount.Add(1)
 		defer func() {
@@ -212,12 +222,6 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 				return funcErr
 			}
 
-			// calls++
-			// if calls > 1 {
-			// 	log.Printf("Tx.REPEAT: calls = %d, memo = %v, prev err = %v", calls, memo, funcErr)
-			// } else {
-			// 	log.Printf("Tx.START")
-			// }
 			tx := db.newTx(&boltStorageTx{btx: btx}, true, memo, stack)
 			if db.reuseTxBuffers {
 				managedTxs = append(managedTxs, tx)
@@ -225,14 +229,12 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 			defer tx.Close()
 			funcErr = safelyCall(f, tx)
 			memo = tx.memo
-			// log.Printf("Tx.END: calls = %d, memo = %v, w = %v, cde = %v, err = %v", calls, memo, tx.written, tx.commitDespiteErr, funcErr)
 			if funcErr != nil && (!tx.written || tx.commitDespiteErr) {
 				return nil
 			} else {
 				return funcErr
 			}
 		})
-		// log.Printf("Tx.BATCH.END")
 		if err == nil && funcErr != nil {
 			err = funcErr
 		}

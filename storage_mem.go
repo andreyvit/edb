@@ -80,11 +80,13 @@ func (s *memStorage) Close() error {
 }
 
 type memTx struct {
-	base     *memStorage
-	writable bool
-	buckets  map[string]*memBucket
-	owned    map[string]struct{}
-	closed   bool
+	lastHandle        *memBucketHandle
+	lastName, lastSub string
+	base              *memStorage
+	writable          bool
+	buckets           map[string]*memBucket
+	owned             map[string]struct{}
+	closed            bool
 }
 
 func (tx *memTx) Writable() bool { return tx.writable }
@@ -104,11 +106,19 @@ func (tx *memTx) Bucket(name, sub string) storageBucket {
 	if tx.closed {
 		panic("tx is closed")
 	}
+	if tx.lastHandle != nil && tx.lastName == name && tx.lastSub == sub {
+		return tx.lastHandle
+	}
 	key := memBucketKey(name, sub)
 	if tx.buckets[key] == nil {
 		return nil
 	}
-	return memBucketHandle{tx: tx, key: key}
+	if !tx.writable {
+		return memBucketHandle{tx: tx, key: key}
+	}
+	tx.lastName, tx.lastSub = name, sub
+	tx.lastHandle = &memBucketHandle{tx: tx, key: key}
+	return tx.lastHandle
 }
 
 func (tx *memTx) CreateBucket(name, sub string) (storageBucket, error) {
@@ -154,6 +164,7 @@ func (tx *memTx) DeleteBucket(name, sub string) error {
 	if tx.buckets[key] == nil {
 		return ErrBucketNotFound
 	}
+	tx.lastHandle = nil
 	delete(tx.buckets, key)
 	delete(tx.owned, key)
 	return nil

@@ -260,7 +260,7 @@ func reuseBatchRows(tx *Tx, accepted, absent []*User) error {
 	if n := len(All(TableScan[User](tx, FullScan()))); n != len(accepted) {
 		return fmt.Errorf("row count=%d, want=%d", n, len(accepted))
 	}
-	for _, idx := range []*Index{usersByEmail, usersByName} {
+	for _, idx := range []*IndexDef{usersByEmail, usersByName} {
 		if n := len(All(IndexScan[User](tx, idx, FullScan()))); n != len(accepted) {
 			return fmt.Errorf("index %s count=%d, want=%d", idx.FullName(), n, len(accepted))
 		}
@@ -269,7 +269,7 @@ func reuseBatchRows(tx *Tx, accepted, absent []*User) error {
 		if got := Get[User](tx, row.ID); !reflect.DeepEqual(got, row) {
 			return fmt.Errorf("row %d: got=%+v, want=%+v", row.ID, got, row)
 		}
-		for idx, key := range map[*Index]string{usersByEmail: row.Email, usersByName: row.Name} {
+		for idx, key := range map[*IndexDef]string{usersByEmail: row.Email, usersByName: row.Name} {
 			if got := All(IndexScan[User](tx, idx, ExactScan(key))); !reflect.DeepEqual(got, []*User{row}) {
 				return fmt.Errorf("index %s key %q: got=%v, want=%+v", idx.FullName(), key, got, row)
 			}
@@ -279,7 +279,7 @@ func reuseBatchRows(tx *Tx, accepted, absent []*User) error {
 		if Get[User](tx, row.ID) != nil {
 			return fmt.Errorf("rejected row %d persisted", row.ID)
 		}
-		for idx, key := range map[*Index]string{usersByEmail: row.Email, usersByName: row.Name} {
+		for idx, key := range map[*IndexDef]string{usersByEmail: row.Email, usersByName: row.Name} {
 			if LookupExists(tx, idx, key) {
 				return fmt.Errorf("rejected row %d retained index %s", row.ID, idx.FullName())
 			}

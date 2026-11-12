@@ -99,20 +99,23 @@ func (fe *flatEncoder) finalize() []byte {
 var flatEncodings sync.Map
 
 type flatEncoding struct {
-	typ        reflect.Type
-	components []*flatComponent
+	typ         reflect.Type
+	components  []*flatComponent
+	scalarKind  reflect.Kind // built-in scalar encoding, or Invalid for custom/composite keys
+	uintKeyBits uint8        // nonzero for a scalar using the built-in unsigned encoding
 }
 
 type flatComponent struct {
-	Type        reflect.Type
-	Path        string
-	RawParser   func(buf []byte, s string) ([]byte, error)
-	RawStringer func(b []byte) (string, error)
-	Parser      func(s string, val reflect.Value) error
-	Stringer    func(val reflect.Value) string
-	Getters     []func(v reflect.Value, init bool) reflect.Value
-	Decode      func(b []byte, v reflect.Value) error
-	Encode      func(buf []byte, v reflect.Value) []byte
+	minEncodedLen int // zero for variable/custom encodings; excludes tuple footer
+	Type          reflect.Type
+	Path          string
+	RawParser     func(buf []byte, s string) ([]byte, error)
+	RawStringer   func(b []byte) (string, error)
+	Parser        func(s string, val reflect.Value) error
+	Stringer      func(val reflect.Value) string
+	Getters       []func(v reflect.Value, init bool) reflect.Value
+	Decode        func(b []byte, v reflect.Value) error
+	Encode        func(buf []byte, v reflect.Value) []byte
 }
 
 func (fc *flatComponent) valueIn(val reflect.Value, init bool) reflect.Value {
@@ -130,6 +133,15 @@ func flatEncodingOf(typ reflect.Type) *flatEncoding {
 		return e.(*flatEncoding)
 	}
 	enc := &flatEncoding{typ: typ}
+	if !typ.ConvertibleTo(flatMarshallableType) && !reflect.PointerTo(typ).ConvertibleTo(binaryMarshallableType) {
+		kind := typ.Kind()
+		if kind >= reflect.Uint && kind <= reflect.Uintptr {
+			enc.scalarKind = kind
+			enc.uintKeyBits = uint8(typ.Bits())
+		} else if kind == reflect.String {
+			enc.scalarKind = kind
+		}
+	}
 	enumerateFlatComponents(typ, func(fc *flatComponent) {
 		if fc.Type.ConvertibleTo(textMarshalerType) {
 			fc.Stringer = func(val reflect.Value) string {
@@ -169,6 +181,15 @@ func (enc *flatEncoding) decodePtr(buf []byte, ptrVal reflect.Value) error {
 }
 
 func (enc *flatEncoding) decodeVal(buf []byte, val reflect.Value) error {
+	// Single-component keys have no component-length directory.
+	if len(enc.components) == 1 && len(buf) > 0 && buf[len(buf)-1] == 1 {
+		fc := enc.components[0]
+		err := fc.Decode(buf[:len(buf)-1], fc.valueIn(val, true))
+		if err != nil {
+			return dataErrf(buf, len(buf), nil, "%s%s", pathPrefix(fc.Path), err)
+		}
+		return nil
+	}
 	var tupBuf [16][]byte
 	tup, err := decodeTupleInto(tupBuf[:0], buf)
 	if err != nil {
@@ -221,7 +242,6 @@ func (enc *flatEncoding) tryTupleToStrings(tup tuple) ([]string, error) {
 	}
 	result := make([]string, n)
 	for i, fc := range enc.components {
-		// log.Printf("i=%d fc=%T %v tup=%v", i, fc, fc, tup)
 		var err error
 		if fc.Stringer != nil {
 			val := reflect.New(fc.Type)
@@ -249,7 +269,6 @@ func (enc *flatEncoding) tryTupleToStrings(tup tuple) ([]string, error) {
 			}
 			result[i] = fmt.Sprint(val.Elem().Interface())
 		}
-		// log.Printf("i=%d fc=%T %v => %q", i, fc, fc, result[i])
 	}
 	return result, nil
 }
@@ -284,7 +303,8 @@ func (enc *flatEncoding) stringsToRawKey(buf []byte, strs []string) ([]byte, err
 func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 	if typ == timeType {
 		f(&flatComponent{
-			Type: typ,
+			minEncodedLen: 8,
+			Type:          typ,
 			Encode: func(buf []byte, v reflect.Value) []byte {
 				value := v.Interface().(time.Time)
 				return appendUint64(buf, uint64(value.Unix()))
@@ -361,10 +381,8 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 		})
 	case reflect.Uint, reflect.Uint64, reflect.Uint32, reflect.Uint16, reflect.Uint8, reflect.Uintptr:
 		f(&flatComponent{
-			Type: typ,
-			// RawStringer: func(b []byte) string {
-
-			// },
+			minEncodedLen: 8,
+			Type:          typ,
 			Encode: func(buf []byte, v reflect.Value) []byte {
 				return appendUint64(buf, v.Uint())
 			},
@@ -386,7 +404,8 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 		})
 	case reflect.Int, reflect.Int64, reflect.Int32, reflect.Int16, reflect.Int8:
 		f(&flatComponent{
-			Type: typ,
+			minEncodedLen: 8,
+			Type:          typ,
 			Encode: func(buf []byte, v reflect.Value) []byte {
 				return appendUint64(buf, uint64(v.Int()))
 			},
@@ -462,7 +481,8 @@ func enumerateFlatComponents(typ reflect.Type, f func(fc *flatComponent)) {
 	case reflect.Array:
 		if typ.Elem() == byteType {
 			f(&flatComponent{
-				Type: typ,
+				minEncodedLen: typ.Len(),
+				Type:          typ,
 				Encode: func(buf []byte, v reflect.Value) []byte {
 					return appendRawVal(buf, v)
 				},

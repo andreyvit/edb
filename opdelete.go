@@ -3,6 +3,8 @@ package edb
 import (
 	"bytes"
 	"reflect"
+
+	"github.com/andreyvit/edb/kvo"
 )
 
 func DeleteAll(c RawCursor) int {
@@ -31,17 +33,29 @@ func DeleteByKey[Row any](txh Txish, key any) bool {
 	return tx.DeleteByKey(tbl, key)
 }
 
-func (tx *Tx) DeleteByKey(tbl *Table, key any) bool {
+func (tx *Tx) DeleteByKey(tblArg AnyTable, key any) bool {
+	tbl := tblArg.TableDef()
+
 	return tx.DeleteByKeyVal(tbl, reflect.ValueOf(key))
 }
 
-func (tx *Tx) DeleteByKeyVal(tbl *Table, keyVal reflect.Value) bool {
+// DeleteRecord derives the key from an explicitly declared model property.
+// Use DeleteByKey when the record does not store its primary key.
+func (tx *Tx) DeleteRecord(tblArg AnyTable, row kvo.Record) bool {
+	tbl := tblArg.TableDef()
+
+	return tx.DeleteByKeyVal(tbl, tbl.recordKey(row))
+}
+
+func (tx *Tx) DeleteByKeyVal(tblArg AnyTable, keyVal reflect.Value) bool {
+	tbl := tblArg.TableDef()
+
 	keyVal = tbl.ensureCorrectKeyType(keyVal)
 	keyBuf := acquireKeyBuffer()
 	keyRaw := tbl.encodeKeyVal(keyBuf.data, keyVal, false)
 	keyBuf.data = keyRaw[:0]
 	defer releaseKeyBuffer(keyBuf)
-	ok := tx.deleteByKeyRaw(tbl, keyRaw, keyVal)
+	ok := tx.deleteByKeyRaw(tbl, keyRaw)
 	if tx.isVerboseLoggingEnabled() {
 		if ok {
 			tx.db.logf("db: DELETE %s/%v", tbl.name, keyVal.Interface())
@@ -52,8 +66,10 @@ func (tx *Tx) DeleteByKeyVal(tbl *Table, keyVal reflect.Value) bool {
 	return ok
 }
 
-func (tx *Tx) DeleteByKeyRaw(tbl *Table, keyRaw []byte) bool {
-	ok := tx.deleteByKeyRaw(tbl, keyRaw, reflect.Value{})
+func (tx *Tx) DeleteByKeyRaw(tblArg AnyTable, keyRaw []byte) bool {
+	tbl := tblArg.TableDef()
+
+	ok := tx.deleteByKeyRaw(tbl, keyRaw)
 	if tx.isVerboseLoggingEnabled() {
 		if ok {
 			tx.db.logf("db: DELETE %s/%x", tbl.name, keyRaw)
@@ -64,7 +80,7 @@ func (tx *Tx) DeleteByKeyRaw(tbl *Table, keyRaw []byte) bool {
 	return ok
 }
 
-func (tx *Tx) deleteByKeyRaw(tbl *Table, keyRaw []byte, keyValIfKnown reflect.Value) bool {
+func (tx *Tx) deleteByKeyRaw(tbl *TableDef, keyRaw []byte) bool {
 	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 	ts := tx.db.tableState(tbl)
 
@@ -82,34 +98,15 @@ func (tx *Tx) deleteByKeyRaw(tbl *Table, keyRaw []byte, keyValIfKnown reflect.Va
 	del := prepareToDeleteIndexEntries(tx, ts)
 	decodeIndexKeys(old.Index, del)
 
-	if opts := tx.changeOptions[tbl]; opts.Contains(ChangeFlagNotify) && tx.changeHandler != nil {
-		chg := Change{
-			table:  tbl,
-			op:     OpDelete,
-			rawKey: bytes.Clone(keyRaw),
-		}
-		if opts.Contains(ChangeFlagIncludeRow) {
-			var err error
-			chg.rowVal, chg.keyVal, _, err = decodeTableRowFromValue(&old, tbl, keyRaw, tx)
-			if err != nil {
-				chg.rowVal = reflect.Value{}
-				tx.db.logf("db: DELETE %s/%v: cannot decode old row: %v", tbl.name, keyRaw, err)
-			}
-		} else if opts.Contains(ChangeFlagIncludeKey) {
-			if !keyValIfKnown.IsValid() || keyValIfKnown.IsZero() {
-				chg.keyVal = tbl.DecodeKeyVal(keyRaw)
-			} else {
-				chg.keyVal = keyValIfKnown
-			}
-		}
-		tx.changeHandler(tx, &chg)
-	}
-
 	ensure(c.Delete())
+	tx.notifyChange(tbl, OpDelete, keyRaw, &old, nil)
+
 	return true
 }
 
-func (tx *Tx) UnsafeDeleteByKeyRawSkippingIndex(tbl *Table, keyRaw []byte) bool {
+func (tx *Tx) UnsafeDeleteByKeyRawSkippingIndex(tblArg AnyTable, keyRaw []byte) bool {
+	tbl := tblArg.TableDef()
+
 	ok := tx.unsafeDeleteByKeyRawSkippingIndex(tbl, keyRaw)
 	if tx.isVerboseLoggingEnabled() {
 		if ok {
@@ -121,7 +118,7 @@ func (tx *Tx) UnsafeDeleteByKeyRawSkippingIndex(tbl *Table, keyRaw []byte) bool 
 	return ok
 }
 
-func (tx *Tx) unsafeDeleteByKeyRawSkippingIndex(tbl *Table, keyRaw []byte) bool {
+func (tx *Tx) unsafeDeleteByKeyRawSkippingIndex(tbl *TableDef, keyRaw []byte) bool {
 	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 
 	c := dataBuck.Cursor()

@@ -8,6 +8,9 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/andreyvit/edb/kvo"
+	"github.com/andreyvit/edb/values"
 )
 
 type (
@@ -41,21 +44,30 @@ type (
 
 var (
 	basicSchema = &Schema{}
-	usersTable  = AddTable(basicSchema, "Users", 1, func(row *User, ib *IndexBuilder) {
-		ib.Add(usersByEmail, row.Email)
-		if row.Name != "" {
-			ib.Add(usersByName, row.Name)
-		}
-	}, nil, []*Index{usersByEmail, usersByName})
-	usersByEmail = AddIndex[string]("Email").Unique()
-	usersByName  = AddIndex[string]("Name")
-	widgetsTable = AddTable(basicSchema, "Widgets", 1, func(row *Widget, ib *IndexBuilder) {
-		ib.Add(widgetsByCD, CD{len(row.Name), row.Key.B})
-		ib.Add(widgetsByAB, row.Key)
-	}, nil, []*Index{widgetsByCD, widgetsByAB})
-	widgetsByCD = AddIndex[CD]("by_CD")
-	widgetsByAB = AddIndex[AB]("by_AB").Unique()
-	booTable    = AddTable[Post](basicSchema, "posts", 1, nil, nil, nil)
+	usersTable  = DefineTable(basicSchema, "Users", testIndexAccess[User](indexEmail, indexName), func(b *TableBuilder[ID]) {
+		usersByEmail = b.AddIndex[string]("Email", func(_ *Tx, _ values.Value, row kvo.Record, yield func(string)) {
+			yield(row.Get(indexEmail))
+		}, IndexOptDeprecatedUnique).IndexDef()
+		usersByName = b.AddIndex[string]("Name", func(_ *Tx, _ values.Value, row kvo.Record, yield func(string)) {
+			if name := row.Get(indexName); name != "" {
+				yield(name)
+			}
+		}).IndexDef()
+	}).TableDef()
+	usersByEmail *IndexDef
+	usersByName  *IndexDef
+	widgetsTable = DefineTable(basicSchema, "Widgets", testIndexAccess[Widget](indexName), func(b *TableBuilder[AB]) {
+		widgetsByCD = b.AddIndex[CD]("by_CD", func(_ *Tx, pk values.Value, row kvo.Record, yield func(CD)) {
+			key := IndexPrimaryKey[AB](pk)
+			yield(CD{len(row.Get(indexName)), key.B})
+		}).IndexDef()
+		widgetsByAB = b.AddIndex[AB]("by_AB", func(_ *Tx, pk values.Value, _ kvo.Record, yield func(AB)) {
+			yield(IndexPrimaryKey[AB](pk))
+		}, IndexOptDeprecatedUnique).IndexDef()
+	}).TableDef()
+	widgetsByCD *IndexDef
+	widgetsByAB *IndexDef
+	booTable    = DefineTable(basicSchema, "posts", testTableModel[Post](), func(b *TableBuilder[string]) {}).TableDef()
 	kubets      = DefineKVTable(basicSchema, "kubets", nil, nil, nil)
 )
 
@@ -272,29 +284,6 @@ func TestDBCompositeKey(t *testing.T) {
 		rows = All(IndexScan[Widget](tx, widgetsByAB, ExactScan(AB{2, 0}).Prefix(1)))
 		deepEqual(t, rows, []*Widget{u4, u5})
 
-		// rows = All(IndexScan[User](tx, usersByName, FullScan().Reversed()))
-		// deepEqual(t, rows, []*Widget{u1, u2, u5, u4, u3})
-
-		// rows = All(IndexScan[User](tx, usersByName, ExactScan("bar")))
-		// deepEqual(t, rows, []*Widget{u3, u4, u5})
-
-		// rows = All(IndexScan[User](tx, usersByName, ExactScan("bar").Reversed()))
-		// deepEqual(t, rows, []*User{u5, u4, u3})
-
-		// rows = All(IndexScan[User](tx, usersByName, ExactScan("foo")))
-		// deepEqual(t, rows, []*User{u1})
-		// rows = All(IndexScan[User](tx, usersByName, ExactScan("bubble")))
-		// deepEqual(t, rows, []*User{u2})
-		// isempty(t, All(IndexScan[User](tx, usersByName, ExactScan("ba"))))
-		// isempty(t, All(IndexScan[User](tx, usersByName, ExactScan("xxx"))))
-		// isempty(t, All(IndexScan[User](tx, usersByName, ExactScan("a"))))
-		// isempty(t, All(IndexScan[User](tx, usersByName, ExactScan(""))))
-
-		// rows = All(IndexScan[User](tx, usersByEmail, ExactScan("bar2@example.com")))
-		// deepEqual(t, rows, []*User{u4})
-
-		// rows = All(IndexScan[User](tx, usersByEmail, ExactScan("bar2@example.com").Reversed()))
-		// deepEqual(t, rows, []*User{u4})
 	})
 }
 

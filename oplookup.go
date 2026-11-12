@@ -6,7 +6,9 @@ import (
 	"reflect"
 )
 
-func Lookup[Row any](txh Txish, idx *Index, indexKey any) *Row {
+func Lookup[Row any](txh Txish, idxArg AnyIndex, indexKey any) *Row {
+	idx := idxArg.IndexDef()
+
 	tx := txh.DBTx()
 	if tbl := tx.Schema().TableByRow((*Row)(nil)); idx.table != tbl {
 		panic(fmt.Errorf("invalid index %v for table %v", idx.FullName(), tbl.Name()))
@@ -16,7 +18,9 @@ func Lookup[Row any](txh Txish, idx *Index, indexKey any) *Row {
 	return valToRow[Row](rowVal)
 }
 
-func LookupKey[Key any](txh Txish, idx *Index, indexKey any) (Key, bool) {
+func LookupKey[Key any](txh Txish, idxArg AnyIndex, indexKey any) (Key, bool) {
+	idx := idxArg.IndexDef()
+
 	tx := txh.DBTx()
 	if at, et := reflect.TypeOf((*Key)(nil)).Elem(), idx.table.KeyType(); at != et {
 		panic(fmt.Errorf("%s: LookupKey has incorrect return type %v, expected %v", idx.FullName(), at, et))
@@ -31,20 +35,28 @@ func LookupKey[Key any](txh Txish, idx *Index, indexKey any) (Key, bool) {
 	}
 }
 
-func LookupExists(txh Txish, idx *Index, indexKey any) bool {
+func LookupExists(txh Txish, idxArg AnyIndex, indexKey any) bool {
+	idx := idxArg.IndexDef()
+
 	tx := txh.DBTx()
 	return tx.LookupExists(idx, reflect.ValueOf(indexKey))
 }
 
-func (tx *Tx) Lookup(idx *Index, indexKey any) any {
+func (tx *Tx) Lookup(idxArg AnyIndex, indexKey any) any {
+	idx := idxArg.IndexDef()
+
 	rowVal, _ := tx.LookupVal(idx, reflect.ValueOf(indexKey))
 	return valToAny(rowVal)
 }
 
-func (tx *Tx) LookupKey(idx *Index, indexKey any) any {
+func (tx *Tx) LookupKey(idxArg AnyIndex, indexKey any) any {
+	idx := idxArg.IndexDef()
+
 	return valToAny(tx.LookupKeyVal(idx, reflect.ValueOf(indexKey)))
 }
-func (tx *Tx) LookupKeyVal(idx *Index, indexKeyVal reflect.Value) reflect.Value {
+func (tx *Tx) LookupKeyVal(idxArg AnyIndex, indexKeyVal reflect.Value) reflect.Value {
+	idx := idxArg.IndexDef()
+
 	keyRaw := tx.lookupRawKeyByVal(idx, indexKeyVal)
 	result := keyRawToVal(keyRaw, idx.table)
 	if tx.isVerboseLoggingEnabled() {
@@ -56,7 +68,9 @@ func (tx *Tx) LookupKeyVal(idx *Index, indexKeyVal reflect.Value) reflect.Value 
 	}
 	return result
 }
-func (tx *Tx) LookupExists(idx *Index, indexKeyVal reflect.Value) bool {
+func (tx *Tx) LookupExists(idxArg AnyIndex, indexKeyVal reflect.Value) bool {
+	idx := idxArg.IndexDef()
+
 	keyRaw := tx.lookupRawKeyByVal(idx, indexKeyVal)
 	if tx.isVerboseLoggingEnabled() {
 		if keyRaw != nil {
@@ -68,7 +82,9 @@ func (tx *Tx) LookupExists(idx *Index, indexKeyVal reflect.Value) bool {
 	return keyRaw != nil
 }
 
-func (tx *Tx) LookupVal(idx *Index, indexKeyVal reflect.Value) (reflect.Value, ValueMeta) {
+func (tx *Tx) LookupVal(idxArg AnyIndex, indexKeyVal reflect.Value) (reflect.Value, ValueMeta) {
+	idx := idxArg.IndexDef()
+
 	keyRaw := tx.lookupRawKeyByVal(idx, indexKeyVal)
 	if keyRaw == nil {
 		return reflect.Value{}, ValueMeta{}
@@ -86,7 +102,7 @@ func (tx *Tx) LookupVal(idx *Index, indexKeyVal reflect.Value) (reflect.Value, V
 	return row, rowMeta
 }
 
-func (tx *Tx) lookupRawKeyByVal(idx *Index, indexKeyVal reflect.Value) []byte {
+func (tx *Tx) lookupRawKeyByVal(idx *IndexDef, indexKeyVal reflect.Value) []byte {
 	if at, et := indexKeyVal.Type(), idx.keyType(); at != et {
 		panic(fmt.Errorf("%s: attempted to index by incorrect type %v, expected %v", idx.FullName(), at, et))
 	}
@@ -94,14 +110,18 @@ func (tx *Tx) lookupRawKeyByVal(idx *Index, indexKeyVal reflect.Value) []byte {
 	indexKeyBuf := acquireKeyBuffer()
 	defer releaseKeyBuffer(indexKeyBuf)
 
-	idxBuck := nonNil(tx.stx.Bucket(idx.table.name, idx.buck))
-
 	fe := flatEncoder{buf: indexKeyBuf.data}
 	idx.keyEnc.encodeInto(&fe, indexKeyVal)
+	raw := tx.lookupEncodedKey(idx, &fe)
 	indexKeyBuf.data = fe.buf[:0]
+	return raw
+}
+
+func (tx *Tx) lookupEncodedKey(idx *IndexDef, fe *flatEncoder) []byte {
+	idxBuck := nonNil(tx.stx.Bucket(idx.table.name, idx.buck))
 	if idx.isUnique {
 		indexKeyRaw := fe.finalize()
-		indexKeyBuf.data = indexKeyRaw[:0]
+		fe.buf = indexKeyRaw
 		indexVal := idxBuck.Get(indexKeyRaw)
 		if indexVal == nil {
 			return nil

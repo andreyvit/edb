@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/andreyvit/edb/kvo"
+	"github.com/andreyvit/edb/kvo/codec/fast1"
 )
 
 func TestAppendUintHelpers(t *testing.T) {
@@ -183,7 +184,7 @@ func TestKVHelpers(t *testing.T) {
 	rootModel := kvo.NewModel(ks, et, func(b *kvo.ModelBuilder) {})
 	var idx *KVIndex
 	tbl := DefineKVTable(scm, "kvt", rootModel, nil, func(b *KVTableBuilder) {
-		idx = b.DefineIndex("pk", nil, func(ik []byte) []byte { return ik }, func(b *KVIndexContentBuilder, pk []byte, v kvo.ImmutableRecord) {
+		idx = b.DefineIndex("pk", nil, func(ik []byte) []byte { return ik }, func(b *KVIndexContentBuilder, pk []byte, v fast1.ImmutableRecord) {
 			b.Add(pk)
 		})
 	})
@@ -192,7 +193,7 @@ func TestKVHelpers(t *testing.T) {
 	defer db.Close()
 
 	key := []byte("k")
-	rec := kvo.NewRecord(nil)
+	rec := fast1.NewRecord(nil)
 	rec.Set(1, 42)
 
 	db.Write(func(tx *Tx) {

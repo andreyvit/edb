@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/andreyvit/edb/kvo"
+	"github.com/andreyvit/edb/kvo/codec/fast1"
 )
 
 var (
@@ -13,7 +13,7 @@ var (
 	wumpets    = DefineKVTable(basicSchema, "wumpets", nil, nil, func(b *KVTableBuilder) {
 		wumpetsByB = b.DefineIndex("b", nil, func(ik []byte) []byte {
 			return ik[2:4]
-		}, func(b *KVIndexContentBuilder, pk []byte, v kvo.ImmutableRecord) {
+		}, func(b *KVIndexContentBuilder, pk []byte, v fast1.ImmutableRecord) {
 			iv := v.Root().Get(0x42)
 			ik := make([]byte, 4)
 			binary.BigEndian.PutUint16(ik[0:2], uint16(iv))
@@ -79,11 +79,11 @@ func indexScan(t testing.TB, tx *Tx, idx *KVIndex, rang RawRange, exp ...[]byte)
 	deepEqual(t, out, expstr)
 }
 
-func buildKV(kvs ...uint64) kvo.ImmutableRecordData {
+func buildKV(kvs ...uint64) fast1.ImmutableRecordData {
 	if len(kvs)%2 != 0 {
 		panic("buildKV: odd number of arguments")
 	}
-	r := kvo.NewRecord(nil)
+	r := fast1.NewRecord(nil)
 	for i := 0; i < len(kvs); i += 2 {
 		r.Set(kvs[i], kvs[i+1])
 	}

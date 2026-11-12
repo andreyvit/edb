@@ -7,7 +7,7 @@ import (
 
 const (
 	valueFormatVer1      = 1
-	valueFormatVerLatest = valueFormatVer1
+	valueFormatVerLatest = 2
 )
 
 type valueFlags uint64
@@ -21,6 +21,7 @@ const (
 
 	vfVerMask       = (vfVerBit0 | vfVerBit1 | vfVerBit2 | vfVerBit3)
 	vfVer1          = vfVerBit0
+	vfKVO           = vfVerBit1
 	vfGzip          = vfCompressionBit0
 	vfSupportedMask = (vfVer1 | vfGzip)
 	vfDefault       = vfVer1
@@ -34,8 +35,8 @@ func (vf valueFlags) ver() valueFlags {
 	return vf & vfVerMask
 }
 
-func (vf valueFlags) encoding() encodingMethod {
-	return MsgPack
+func (vf valueFlags) supported() bool {
+	return vf == vfKVO || vf&^vfSupportedMask == 0
 }
 
 type value struct {
@@ -64,7 +65,7 @@ func putValueHeader(buf []byte, flags valueFlags, schemaVer uint64, modCount uin
 	if indexOff > len(buf) {
 		panic(fmt.Errorf("invalid indexOff=%d", indexOff)) // sanity check
 	}
-	if (flags &^ vfSupportedMask) != 0 {
+	if !flags.supported() {
 		panic(fmt.Errorf("invalid flags %x", flags))
 	}
 	dataSize := indexOff - maxValueHeaderSize
@@ -115,7 +116,7 @@ func (vle *value) decode(data []byte, isMemento bool) error {
 	if n <= 0 {
 		return dataErrf(orig, len(data)-len(orig), nil, "invalid value: bad flags")
 	}
-	if (v & ^uint64(vfSupportedMask)) != 0 {
+	if !valueFlags(v).supported() {
 		return dataErrf(orig, len(data)-len(orig), nil, "invalid value: unsupported flags %x", v)
 	}
 	vle.Flags, data = valueFlags(v), data[n:]

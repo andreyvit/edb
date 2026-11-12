@@ -6,6 +6,8 @@ import (
 	"strings"
 	"sync/atomic"
 	"testing"
+
+	"github.com/andreyvit/edb/kvo"
 )
 
 func TestDB_BoltSizeDescribeOpenTxnsAndSafeToQuit(t *testing.T) {
@@ -46,10 +48,6 @@ func TestDB_BoltSizeDescribeOpenTxnsAndSafeToQuit(t *testing.T) {
 			t.Fatalf("DescribeOpenTxns() = %q, wanted NO OPEN TRANSACTIONS", got)
 		}
 
-		if Foo() != 42 {
-			t.Fatalf("Foo() = %d, wanted 42", Foo())
-		}
-
 		var safe atomic.Int32
 		db.CloseWithSafeToQuitCallback(func() { safe.Add(1) })
 		if safe.Load() != 1 {
@@ -75,11 +73,14 @@ func legacyUsersDB(t testing.TB) string {
 	t.Helper()
 
 	path := filepath.Join(t.TempDir(), "users.db")
-	emailIdx := AddIndex[string]("Email").Unique()
+	var emailIdx *IndexDef
 	schema := &Schema{}
-	AddTable(schema, "Users", 1, func(row *User, ib *IndexBuilder) {
-		ib.Add(emailIdx, row.Email)
-	}, nil, []*Index{emailIdx})
+	DefineTable(schema, "Users", testIndexAccess[User](indexEmail), func(b *TableBuilder[ID]) {
+		emailIdx = b.AddIndex[string]("Email", nil, IndexOptDeprecatedUnique).IndexDef()
+		b.SetIndexer(func(key ID, row kvo.Record, ib *IndexBuilder) {
+			ib.Add(emailIdx, row.Get(indexEmail))
+		})
+	}).TableDef()
 
 	db := must(Open(path, schema, Options{IsTesting: true}))
 	defer db.Close()
@@ -94,13 +95,17 @@ func legacyUsersDB(t testing.TB) string {
 func reopenUsersByAddedNameIndex(t testing.TB, path string, opts ...any) []ID {
 	t.Helper()
 
-	emailIdx := AddIndex[string]("Email").Unique()
-	nameIdx := AddIndex[string]("Name", opts...)
+	var emailIdx *IndexDef
+	var nameIdx *IndexDef
 	schema := &Schema{}
-	AddTable(schema, "Users", 1, func(row *User, ib *IndexBuilder) {
-		ib.Add(emailIdx, row.Email)
-		ib.Add(nameIdx, row.Name)
-	}, nil, []*Index{emailIdx, nameIdx})
+	DefineTable(schema, "Users", testIndexAccess[User](indexEmail, indexName), func(b *TableBuilder[ID]) {
+		emailIdx = b.AddIndex[string]("Email", nil, IndexOptDeprecatedUnique).IndexDef()
+		nameIdx = b.AddIndex[string]("Name", nil, opts...).IndexDef()
+		b.SetIndexer(func(key ID, row kvo.Record, ib *IndexBuilder) {
+			ib.Add(emailIdx, row.Get(indexEmail))
+			ib.Add(nameIdx, row.Get(indexName))
+		})
+	}).TableDef()
 
 	db := must(Open(path, schema, Options{IsTesting: true}))
 	defer db.Close()
@@ -117,15 +122,20 @@ func reopenUsersByAddedNameIndex(t testing.TB, path string, opts ...any) []ID {
 func reopenUsersByMixedFillModes(t testing.TB, path string) ([]ID, []ID) {
 	t.Helper()
 
-	emailIdx := AddIndex[string]("Email").Unique()
-	nameIdx := AddIndex[string]("Name", IndexInitialFillModeBlocking)
-	nameEmailIdx := AddIndex[string]("NameEmail", IndexInitialFillModeSkip)
+	var emailIdx *IndexDef
+	var nameIdx *IndexDef
+	var nameEmailIdx *IndexDef
 	schema := &Schema{}
-	AddTable(schema, "Users", 1, func(row *User, ib *IndexBuilder) {
-		ib.Add(emailIdx, row.Email)
-		ib.Add(nameIdx, row.Name)
-		ib.Add(nameEmailIdx, row.Name+"|"+row.Email)
-	}, nil, []*Index{emailIdx, nameIdx, nameEmailIdx})
+	DefineTable(schema, "Users", testIndexAccess[User](indexEmail, indexName), func(b *TableBuilder[ID]) {
+		emailIdx = b.AddIndex[string]("Email", nil, IndexOptDeprecatedUnique).IndexDef()
+		nameIdx = b.AddIndex[string]("Name", nil, IndexInitialFillModeBlocking).IndexDef()
+		nameEmailIdx = b.AddIndex[string]("NameEmail", nil, IndexInitialFillModeSkip).IndexDef()
+		b.SetIndexer(func(key ID, row kvo.Record, ib *IndexBuilder) {
+			ib.Add(emailIdx, row.Get(indexEmail))
+			ib.Add(nameIdx, row.Get(indexName))
+			ib.Add(nameEmailIdx, row.Get(indexName)+"|"+row.Get(indexEmail))
+		})
+	}).TableDef()
 
 	db := must(Open(path, schema, Options{IsTesting: true}))
 	defer db.Close()
@@ -141,4 +151,22 @@ func reopenUsersByMixedFillModes(t testing.TB, path string) ([]ID, []ID) {
 		}
 	})
 	return blocking, skipped
+}
+
+func TestMemBucketDeleteAndRecreate(t *testing.T) {
+	s := newMemStorage()
+	defer s.Close()
+	tx := must(s.BeginTx(true))
+	defer tx.Rollback()
+	must(tx.CreateBucket("root", "child"))
+	bucket := tx.Bucket("root", "child")
+	ensure(bucket.Put([]byte("k"), []byte("old")))
+	ensure(tx.DeleteBucket("root", "child"))
+	if tx.Bucket("root", "child") != nil {
+		t.Fatal("deleted bucket still visible to its writer")
+	}
+	must(tx.CreateBucket("root", "child"))
+	if got := tx.Bucket("root", "child").Get([]byte("k")); got != nil {
+		t.Fatalf("recreated bucket contains old data: %q", got)
+	}
 }

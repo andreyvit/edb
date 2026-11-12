@@ -2,108 +2,95 @@ package edb
 
 import (
 	"bytes"
+	"encoding/binary"
 	"fmt"
 	"reflect"
 	"slices"
 	"strings"
+	"sync"
+
+	"github.com/andreyvit/edb/kvo"
+	"github.com/andreyvit/edb/kvo/codec/row2"
 )
 
-type Table struct {
-	schema          *Schema
-	name            string
-	latestSchemaVer uint64
-	pos             int // index in schema.tables, unstable across code changes
-	rowType         reflect.Type
-	rowTypePtr      reflect.Type
-	rowInfo         *structInfo
-	indices         []*Index
-	indicesByName   map[string]*Index
-	indexer         func(row any, ib *IndexBuilder)
-	keyEnc          *flatEncoding
-	keyType         reflect.Type
-	valueEnc        encodingMethod
-	keyStringSep    string
-	zeroKey         []byte
-	migrator        func(tx *Tx, row any, oldVer uint64)
-	suppressContent bool
+type TableDef struct {
+	schema             *Schema
+	name               string
+	latestSchemaVer    uint64
+	pos                int // index in the declaring schema; Include never changes it
+	rowType            reflect.Type
+	rowTypePtr         reflect.Type
+	rowInfo            *structInfo
+	indices            []*IndexDef
+	indicesByName      map[string]*IndexDef
+	recordIndexer      func(kvo.Record, *IndexBuilder)
+	indexers           []*IndexDef
+	indexerPool        sync.Pool
+	keyEnc             *flatEncoding
+	keyType            reflect.Type
+	messagePackInserts bool
+	kvoModel           *kvo.Model
+	projection         *kvo.Projection
+	binding            *kvo.Binding
+	rowLayout          row2.Layout
+	valueEnc           encodingMethod
+	keyStringSep       string
+	zeroKey            []byte
+	migrator           func(tx *Tx, key []byte, edit *kvo.Editor, oldVer uint64)
+	suppressContent    bool
 
 	TaggableImpl
 }
 
-func (tbl *Table) Name() string {
+func (tbl *TableDef) Name() string {
 	return tbl.name
 }
 
-type tableOpt int
-
-const (
-	SuppressContentWhenLogging = tableOpt(1)
-)
-
-func AddTable[Row any](scm *Schema, name string, latestSchemaVer uint64, indexer func(row *Row, ib *IndexBuilder), migrator func(tx *Tx, row *Row, oldVer uint64), indices []*Index, opts ...any) *Table {
-	return DefineTable[Row, any](scm, name, func(b *TableBuilder[Row, any]) {
-		b.SetSchemaVersion(latestSchemaVer)
-		if indexer != nil {
-			b.Indexer(indexer)
-		}
-		if migrator != nil {
-			b.Migrate(migrator)
-		}
-		for _, idx := range indices {
-			b.AddIndex(idx)
-		}
-		for _, opt := range opts {
-			switch opt := opt.(type) {
-			case tableOpt:
-				if opt == SuppressContentWhenLogging {
-					b.SuppressContentWhenLogging()
-				}
-			case *Tag:
-				b.Tag(opt)
-			default:
-				panic(fmt.Errorf("invalid option %T %v", opt, opt))
-			}
-		}
-	})
+// SchemaVersion is the version written by current saves. Stored rows may have
+// older versions until they are loaded, migrated, and saved.
+func (tbl *TableDef) SchemaVersion() uint64 {
+	return tbl.latestSchemaVer
 }
 
-func (tbl *Table) AddIndex(idx *Index) *Table {
-	if tbl.indicesByName[idx.name] != nil {
-		panic(fmt.Errorf("table %s already has index named %q", tbl.name, idx.name))
+func (tbl *TableDef) addIndex(idx *IndexDef) {
+	if idx.table != nil {
+		panic(fmt.Errorf("index %s already belongs to table %s", idx.name, idx.table.name))
 	}
+	registerIndexName(tbl.name, idx.name, tbl.indicesByName, idx)
 	idx.pos = len(tbl.indices)
 	tbl.indices = append(tbl.indices, idx)
-	tbl.indicesByName[idx.name] = idx
 	idx.table = tbl
-	return tbl
+	if idx.makeIndexer != nil {
+		tbl.indexers = append(tbl.indexers, idx)
+	}
 }
 
-func (tbl *Table) Indices() []*Index {
+func (tbl *TableDef) Indices() []*IndexDef {
 	return slices.Clone(tbl.indices)
 }
 
-func (tbl *Table) IndexNamed(name string) *Index {
+func (tbl *TableDef) IndexNamed(name string) *IndexDef {
 	return tbl.indicesByName[name]
 }
 
-func (tbl *Table) KeyType() reflect.Type {
+func (tbl *TableDef) KeyType() reflect.Type {
 	return tbl.keyType
 }
 
-func (tbl *Table) newRow(schemaVer uint64) reflect.Value {
+func (tbl *TableDef) newRow(schemaVer uint64) reflect.Value {
 	_ = schemaVer // TODO: create legacy version if needed
 	return reflect.New(tbl.rowType)
 }
 
-func (tbl *Table) rootBucketIn(tx *Tx) storageBucket {
+func (tbl *TableDef) rootBucketIn(tx *Tx) storageBucket {
 	return nonNil(tx.stx.Bucket(tbl.name, ""))
 }
 
-func (tbl *Table) dataBucketIn(tx *Tx) storageBucket {
+func (tbl *TableDef) dataBucketIn(tx *Tx) storageBucket {
 	return nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 }
 
-func (tbl *Table) ensureCorrectKeyType(keyVal reflect.Value) reflect.Value {
+func (tbl *TableDef) ensureCorrectKeyType(keyVal reflect.Value) reflect.Value {
 	if keyVal.Type() != tbl.keyType {
 		if keyVal.CanConvert(tbl.keyType) {
 			return keyVal.Convert(tbl.keyType)
@@ -113,27 +100,27 @@ func (tbl *Table) ensureCorrectKeyType(keyVal reflect.Value) reflect.Value {
 	return keyVal
 }
 
-func (tbl *Table) RowKeyVal(rowVal reflect.Value) reflect.Value {
+func (tbl *TableDef) RowKeyVal(rowVal reflect.Value) reflect.Value {
 	return tbl.rowInfo.keyValue(rowVal)
 }
-func (tbl *Table) RowKey(row any) any {
+func (tbl *TableDef) RowKey(row any) any {
 	return tbl.RowKeyVal(reflect.ValueOf(row)).Interface()
 }
-func (tbl *Table) SetRowKey(row, key any) {
+func (tbl *TableDef) SetRowKey(row, key any) {
 	tbl.SetRowKeyVal(reflect.ValueOf(row), reflect.ValueOf(key))
 }
-func (tbl *Table) SetRowKeyVal(rowVal, keyVal reflect.Value) {
+func (tbl *TableDef) SetRowKeyVal(rowVal, keyVal reflect.Value) {
 	tbl.RowKeyVal(rowVal).Set(keyVal)
 }
 
-func (tbl *Table) EncodeKey(key any) []byte {
+func (tbl *TableDef) EncodeKey(key any) []byte {
 	return tbl.EncodeKeyVal(reflect.ValueOf(key))
 }
-func (tbl *Table) EncodeKeyVal(keyVal reflect.Value) []byte {
+func (tbl *TableDef) EncodeKeyVal(keyVal reflect.Value) []byte {
 	return tbl.keyEnc.encode(nil, keyVal)
 }
 
-func (tbl *Table) encodeKeyVal(buf []byte, key reflect.Value, zeroOK bool) []byte {
+func (tbl *TableDef) encodeKeyVal(buf []byte, key reflect.Value, zeroOK bool) []byte {
 	buf = tbl.keyEnc.encode(buf, key)
 	if !zeroOK && bytes.Equal(buf, tbl.zeroKey) {
 		v := key.Interface()
@@ -142,33 +129,52 @@ func (tbl *Table) encodeKeyVal(buf []byte, key reflect.Value, zeroOK bool) []byt
 	return buf
 }
 
-func (tbl *Table) RowHasZeroKey(row any) bool {
+func (tbl *TableDef) RowHasZeroKey(row any) bool {
 	return tbl.RowValHasZeroKey(reflect.ValueOf(row))
 }
 
-func (tbl *Table) RowValHasZeroKey(rowVal reflect.Value) bool {
+func (tbl *TableDef) RowValHasZeroKey(rowVal reflect.Value) bool {
 	// TODO: better logic here!
 	return tbl.RowKeyVal(rowVal).IsZero()
 }
 
-func (tbl *Table) encodeRowVal(buf []byte, rowVal reflect.Value) []byte {
+func (tbl *TableDef) encodeRowVal(buf []byte, rowVal reflect.Value) []byte {
 	return tbl.valueEnc.EncodeValue(buf, rowVal)
 }
 
-func (tbl *Table) DecodeKeyVal(rawKey []byte) reflect.Value {
+func (tbl *TableDef) DecodeKeyVal(rawKey []byte) reflect.Value {
 	keyVal := reflect.New(tbl.keyType).Elem()
 	tbl.DecodeKeyValInto(keyVal, rawKey)
 	return keyVal
 }
 
-func (tbl *Table) DecodeKeyValInto(keyVal reflect.Value, rawKey []byte) {
+func (tbl *TableDef) decodeUintKey(rawKey []byte) uint64 {
+	if bits := tbl.keyEnc.uintKeyBits; bits != 0 {
+		// A single unsigned component is eight big-endian bytes and the tuple count.
+		if len(rawKey) != 9 || rawKey[8] != 1 {
+			panic(fmt.Errorf("%s: invalid unsigned primary key %x", tbl.name, rawKey))
+		}
+		v := binary.BigEndian.Uint64(rawKey)
+		if bits < 64 && v>>bits != 0 {
+			panic(fmt.Errorf("%s: primary key overflows %s", tbl.name, tbl.keyType))
+		}
+		return v
+	}
+	if kind := tbl.keyType.Kind(); kind >= reflect.Uint && kind <= reflect.Uintptr {
+		// Named unsigned types can override the built-in encoding.
+		return tbl.DecodeKeyVal(rawKey).Uint()
+	}
+	panic(fmt.Errorf("%s: UintKey requires an unsigned integer primary key, got %s", tbl.name, tbl.keyType))
+}
+
+func (tbl *TableDef) DecodeKeyValInto(keyVal reflect.Value, rawKey []byte) {
 	err := tbl.TryDecodeKeyValInto(keyVal, rawKey)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (tbl *Table) TryDecodeKeyValInto(keyVal reflect.Value, rawKey []byte) error {
+func (tbl *TableDef) TryDecodeKeyValInto(keyVal reflect.Value, rawKey []byte) error {
 	err := tbl.keyEnc.decodeVal(rawKey, keyVal)
 	if err != nil {
 		return fmt.Errorf("failed to decode %s key %q: %w", tbl.name, rawKey, err)
@@ -176,7 +182,7 @@ func (tbl *Table) TryDecodeKeyValInto(keyVal reflect.Value, rawKey []byte) error
 	return nil
 }
 
-func (tbl *Table) RawKeyString(keyRaw []byte) string {
+func (tbl *TableDef) RawKeyString(keyRaw []byte) string {
 	str, err := tbl.TryRawKeyString(keyRaw)
 	if err != nil {
 		panic(err)
@@ -184,7 +190,7 @@ func (tbl *Table) RawKeyString(keyRaw []byte) string {
 	return str
 }
 
-func (tbl *Table) TryRawKeyString(keyRaw []byte) (string, error) {
+func (tbl *TableDef) TryRawKeyString(keyRaw []byte) (string, error) {
 	tup, err := decodeTuple(keyRaw)
 	if err != nil {
 		return "", err
@@ -194,19 +200,17 @@ func (tbl *Table) TryRawKeyString(keyRaw []byte) (string, error) {
 		return "", err
 	}
 	return strings.Join(comps, tbl.keyStringSep), nil
-	// keyVal := tbl.decodeKey(keyRaw)
-	// return fmt.Sprint(keyVal.Interface())
 }
 
-func (tbl *Table) KeyString(key any) string {
+func (tbl *TableDef) KeyString(key any) string {
 	return tbl.RawKeyString(tbl.EncodeKey(key))
 }
 
-func (tbl *Table) parseRawKeyFrom(buf []byte, s string) ([]byte, error) {
+func (tbl *TableDef) parseRawKeyFrom(buf []byte, s string) ([]byte, error) {
 	return tbl.keyEnc.stringsToRawKey(buf, strings.Split(s, tbl.keyStringSep))
 }
 
-func (tbl *Table) ParseKeyVal(s string) (reflect.Value, error) {
+func (tbl *TableDef) ParseKeyVal(s string) (reflect.Value, error) {
 	buf := acquireKeyBuffer()
 	defer releaseKeyBuffer(buf)
 	raw, err := tbl.parseRawKeyFrom(buf.data, s)
@@ -217,7 +221,7 @@ func (tbl *Table) ParseKeyVal(s string) (reflect.Value, error) {
 	return tbl.DecodeKeyVal(raw), nil
 }
 
-func (tbl *Table) ParseKey(s string) (any, error) {
+func (tbl *TableDef) ParseKey(s string) (any, error) {
 	val, err := tbl.ParseKeyVal(s)
 	if err != nil {
 		return nil, err
@@ -225,20 +229,19 @@ func (tbl *Table) ParseKey(s string) (any, error) {
 	return val.Interface(), nil
 }
 
-func (tbl *Table) NewRowVal() reflect.Value {
+func (tbl *TableDef) NewRowVal() reflect.Value {
 	return reflect.New(tbl.rowType)
 }
-func (tbl *Table) NewRow() any {
+func (tbl *TableDef) NewRow() any {
 	return tbl.NewRowVal().Interface()
 }
 
-func (tbl *Table) decodeRow(buf []byte) (reflect.Value, error) {
+func (tbl *TableDef) decodeRow(buf []byte) (reflect.Value, error) {
 	rowVal := reflect.New(tbl.rowType)
 	err := tbl.valueEnc.DecodeValue(buf, rowVal)
-	// log.Printf("decoded row from %q: %#v", buf, rowVal.Elem().Interface())
 	return rowVal, err
 }
 
-func (tbl *Table) RowType() reflect.Type {
+func (tbl *TableDef) RowType() reflect.Type {
 	return tbl.rowType
 }

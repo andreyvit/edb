@@ -3,20 +3,26 @@ package edb
 import (
 	"strings"
 	"testing"
+
+	"github.com/andreyvit/edb/kvo"
 )
 
 func TestTxReuseBuffersScanRetention(t *testing.T) {
 	const limit = 64 * 1024
 	const scans = 2 * limit / keyBufferCapacityInitial
 	schema := &Schema{}
-	unique := AddIndex[string]("unique").Unique()
-	group := AddIndex[string]("group")
-	AddTable(schema, "scan_retention", 1, func(row *txReuseGrowthRow, ib *IndexBuilder) {
-		for _, entry := range row.Entries {
-			ib.Add(unique, entry)
-			ib.Add(group, entry)
-		}
-	}, nil, []*Index{unique, group})
+	var unique *IndexDef
+	var group *IndexDef
+	DefineTable(schema, "scan_retention", testIndexAccess[txReuseGrowthRow](indexEntries), func(b *TableBuilder[string]) {
+		unique = b.AddIndex[string]("unique", nil, IndexOptDeprecatedUnique).IndexDef()
+		group = b.AddIndex[string]("group", nil).IndexDef()
+		b.SetIndexer(func(key string, row kvo.Record, ib *IndexBuilder) {
+			for entry := range row.Get(indexEntries).Iter() {
+				ib.Add(unique, entry)
+				ib.Add(group, entry)
+			}
+		})
+	}).TableDef()
 	padding := strings.Repeat("x", keyBufferCapacityInitial+1)
 	alice := &txReuseGrowthRow{Key: "alice/" + padding, Entries: []string{"alice/" + padding}}
 	bob := &txReuseGrowthRow{Key: "bob/" + padding, Entries: []string{"bob/" + padding}}

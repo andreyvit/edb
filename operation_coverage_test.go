@@ -142,15 +142,15 @@ func TestOperationCoverage_PutNoopIndexCleanupAndChangeFlags(t *testing.T) {
 
 	var got []*Change
 	db.Write(func(tx *Tx) {
-		tx.OnChange(map[*Table]ChangeFlags{
-			usersTable: ChangeFlagNotify | ChangeFlagIncludeMutableRow | ChangeFlagIncludeOldRow,
+		tx.OnChange(map[*TableDef]ChangeFlags{
+			usersTable: ChangeFlagNotify | ChangeFlagIncludeNewGoStruct | ChangeFlagIncludeOldGoStruct,
 		}, func(tx *Tx, chg *Change) {
 			got = append(got, chg)
 		})
 		Put(tx, &User{ID: 2, Name: "alice", Email: "alice@example.com"})
 		Put(tx, &User{ID: 2, Name: "ally", Email: "alice@example.com"})
 	})
-	if len(got) != 2 || !got[0].HasRow() || got[0].HasOldRow() || !got[1].HasRow() || !got[1].HasOldRow() {
+	if len(got) != 2 || !got[0].HasNewGoStruct() || got[0].HasOldGoStruct() || !got[1].HasNewGoStruct() || !got[1].HasOldGoStruct() {
 		t.Fatalf("mutable row changes not populated as expected: %+v", got)
 	}
 
@@ -158,7 +158,7 @@ func TestOperationCoverage_PutNoopIndexCleanupAndChangeFlags(t *testing.T) {
 	db.Write(func(tx *Tx) {
 		Put(tx, &User{ID: 3, Name: "raw", Email: "raw@example.com"})
 		Put(tx, &User{ID: 4, Name: "known", Email: "known@example.com"})
-		tx.OnChange(map[*Table]ChangeFlags{
+		tx.OnChange(map[*TableDef]ChangeFlags{
 			usersTable: ChangeFlagNotify | ChangeFlagIncludeKey,
 		}, func(tx *Tx, chg *Change) {
 			if chg.Op() == OpDelete {
@@ -174,14 +174,14 @@ func TestOperationCoverage_PutNoopIndexCleanupAndChangeFlags(t *testing.T) {
 
 	got = nil
 	db.Write(func(tx *Tx) {
-		tx.OnChange(map[*Table]ChangeFlags{
+		tx.OnChange(map[*TableDef]ChangeFlags{
 			usersTable: ChangeFlagNotify | ChangeFlagIncludeKey,
 		}, func(tx *Tx, chg *Change) {
 			got = append(got, chg)
 		})
 		Put(tx, &User{ID: 5, Name: "keyed", Email: "keyed@example.com"})
 	})
-	if len(got) != 1 || !got[0].HasKey() || got[0].Key().(ID) != 5 || got[0].HasRow() {
+	if len(got) != 1 || !got[0].HasKey() || got[0].Key().(ID) != 5 || got[0].HasNewGoStruct() {
 		t.Fatalf("put key change not populated as expected: %+v", got)
 	}
 
@@ -208,8 +208,8 @@ func TestOperationCoverage_ChangeHandlersWithCorruptOldRows(t *testing.T) {
 
 	var deleteChange *Change
 	db.Write(func(tx *Tx) {
-		tx.OnChange(map[*Table]ChangeFlags{
-			corruptValuesTable: ChangeFlagNotify | ChangeFlagIncludeRow,
+		tx.OnChange(map[*TableDef]ChangeFlags{
+			corruptValuesTable: ChangeFlagNotify | ChangeFlagIncludeOldGoStruct,
 		}, func(tx *Tx, chg *Change) {
 			deleteChange = chg
 		})
@@ -217,7 +217,7 @@ func TestOperationCoverage_ChangeHandlersWithCorruptOldRows(t *testing.T) {
 			t.Fatalf("DeleteByKey(1) = false, wanted true")
 		}
 	})
-	if deleteChange == nil || deleteChange.HasRow() {
+	if deleteChange == nil || deleteChange.HasOldGoStruct() {
 		t.Fatalf("delete corrupt old row change = %+v, wanted no decoded row", deleteChange)
 	}
 
@@ -235,14 +235,14 @@ func TestOperationCoverage_ChangeHandlersWithCorruptOldRows(t *testing.T) {
 
 	var putChange *Change
 	db.Write(func(tx *Tx) {
-		tx.OnChange(map[*Table]ChangeFlags{
-			corruptValuesTable: ChangeFlagNotify | ChangeFlagIncludeRow | ChangeFlagIncludeOldRow,
+		tx.OnChange(map[*TableDef]ChangeFlags{
+			corruptValuesTable: ChangeFlagNotify | ChangeFlagIncludeNewGoStruct | ChangeFlagIncludeOldGoStruct,
 		}, func(tx *Tx, chg *Change) {
 			putChange = chg
 		})
 		Put(tx, &corruptValueRow{ID: 1, Code: "one", Count: 2})
 	})
-	if putChange == nil || !putChange.HasRow() || putChange.HasOldRow() {
+	if putChange == nil || !putChange.HasNewGoStruct() || putChange.HasOldGoStruct() {
 		t.Fatalf("put corrupt old row change = %+v, wanted new row without old row", putChange)
 	}
 

@@ -51,15 +51,21 @@ func Exists[Row any](txh Txish, key any) bool {
 	return tx.Exists(tbl, key)
 }
 
-func (tx *Tx) Get(tbl *Table, key any) (any, ValueMeta) {
+func (tx *Tx) Get(tblArg AnyTable, key any) (any, ValueMeta) {
+	tbl := tblArg.TableDef()
+
 	return tx.GetByKeyVal(tbl, reflect.ValueOf(key))
 }
 
-func (tx *Tx) TryGet(tbl *Table, key any) (any, ValueMeta, error) {
+func (tx *Tx) TryGet(tblArg AnyTable, key any) (any, ValueMeta, error) {
+	tbl := tblArg.TableDef()
+
 	return tx.TryGetByKeyVal(tbl, reflect.ValueOf(key))
 }
 
-func (tx *Tx) GetByKeyVal(tbl *Table, keyVal reflect.Value) (any, ValueMeta) {
+func (tx *Tx) GetByKeyVal(tblArg AnyTable, keyVal reflect.Value) (any, ValueMeta) {
+	tbl := tblArg.TableDef()
+
 	if tbl == nil {
 		panic("tbl == nil")
 	}
@@ -73,7 +79,9 @@ func (tx *Tx) GetByKeyVal(tbl *Table, keyVal reflect.Value) (any, ValueMeta) {
 	return rowVal.Interface(), rowMeta
 }
 
-func (tx *Tx) TryGetByKeyVal(tbl *Table, keyVal reflect.Value) (any, ValueMeta, error) {
+func (tx *Tx) TryGetByKeyVal(tblArg AnyTable, keyVal reflect.Value) (any, ValueMeta, error) {
+	tbl := tblArg.TableDef()
+
 	if tbl == nil {
 		panic("tbl == nil")
 	}
@@ -87,7 +95,9 @@ func (tx *Tx) TryGetByKeyVal(tbl *Table, keyVal reflect.Value) (any, ValueMeta, 
 	return rowVal.Interface(), rowMeta, nil
 }
 
-func (tx *Tx) GetByKeyRaw(tbl *Table, keyRaw []byte) (any, ValueMeta) {
+func (tx *Tx) GetByKeyRaw(tblArg AnyTable, keyRaw []byte) (any, ValueMeta) {
+	tbl := tblArg.TableDef()
+
 	if tbl == nil {
 		panic("tbl == nil")
 	}
@@ -101,11 +111,15 @@ func (tx *Tx) GetByKeyRaw(tbl *Table, keyRaw []byte) (any, ValueMeta) {
 	return rowVal.Interface(), rowMeta
 }
 
-func (tx *Tx) GetMeta(tbl *Table, key any) ValueMeta {
+func (tx *Tx) GetMeta(tblArg AnyTable, key any) ValueMeta {
+	tbl := tblArg.TableDef()
+
 	return tx.GetMetaByKeyVal(tbl, reflect.ValueOf(key))
 }
 
-func (tx *Tx) GetMetaByKeyVal(tbl *Table, keyVal reflect.Value) ValueMeta {
+func (tx *Tx) GetMetaByKeyVal(tblArg AnyTable, keyVal reflect.Value) ValueMeta {
+	tbl := tblArg.TableDef()
+
 	_, rowMeta, err := tx.getRowValByKeyVal(tbl, keyVal, false)
 	if err != nil {
 		panic(err)
@@ -113,11 +127,13 @@ func (tx *Tx) GetMetaByKeyVal(tbl *Table, keyVal reflect.Value) ValueMeta {
 	return rowMeta
 }
 
-func (tx *Tx) Exists(tbl *Table, key any) bool {
+func (tx *Tx) Exists(tblArg AnyTable, key any) bool {
+	tbl := tblArg.TableDef()
+
 	return tx.existsByKeyVal(tbl, reflect.ValueOf(key))
 }
 
-func (tx *Tx) getRowValByKeyVal(tbl *Table, keyVal reflect.Value, includeRow bool) (reflect.Value, ValueMeta, error) {
+func (tx *Tx) getRowValByKeyVal(tbl *TableDef, keyVal reflect.Value, includeRow bool) (reflect.Value, ValueMeta, error) {
 	keyVal = tbl.ensureCorrectKeyType(keyVal)
 	keyBuf := acquireKeyBuffer()
 	keyRaw := tbl.encodeKeyVal(keyBuf.data, keyVal, true)
@@ -126,7 +142,7 @@ func (tx *Tx) getRowValByKeyVal(tbl *Table, keyVal reflect.Value, includeRow boo
 	return tx.getRowValByKeyRaw(tbl, keyRaw, includeRow, keyVal.Interface())
 }
 
-func (tx *Tx) getRowValByKeyRaw(tbl *Table, keyRaw []byte, includeRow bool, keyValueForLogging any) (reflect.Value, ValueMeta, error) {
+func (tx *Tx) getRowValByKeyRaw(tbl *TableDef, keyRaw []byte, includeRow bool, keyValueForLogging any) (reflect.Value, ValueMeta, error) {
 	val, valMeta, err := tx.getRowValByRawKey(tbl, keyRaw, includeRow)
 	if tx.db.verbose {
 		if includeRow {
@@ -146,7 +162,7 @@ func (tx *Tx) getRowValByKeyRaw(tbl *Table, keyRaw []byte, includeRow bool, keyV
 	return val, valMeta, err
 }
 
-func (tx *Tx) existsByKeyVal(tbl *Table, keyVal reflect.Value) bool {
+func (tx *Tx) existsByKeyVal(tbl *TableDef, keyVal reflect.Value) bool {
 	keyVal = tbl.ensureCorrectKeyType(keyVal)
 	keyBuf := acquireKeyBuffer()
 	keyRaw := tbl.encodeKeyVal(keyBuf.data, keyVal, true)
@@ -159,7 +175,9 @@ func (tx *Tx) existsByKeyVal(tbl *Table, keyVal reflect.Value) bool {
 	return found
 }
 
-func (tx *Tx) ExistsByKeyRaw(tbl *Table, keyRaw []byte) bool {
+func (tx *Tx) ExistsByKeyRaw(tblArg AnyTable, keyRaw []byte) bool {
+	tbl := tblArg.TableDef()
+
 	found := (tx.getRawByRawKey(tbl, keyRaw) != nil)
 	if tx.db.verbose {
 		tx.db.logf("db: EXISTS.%s %s/%x", map[bool]string{false: "NO", true: "YES"}[found], tbl.name, keyRaw)
@@ -167,7 +185,7 @@ func (tx *Tx) ExistsByKeyRaw(tbl *Table, keyRaw []byte) bool {
 	return found
 }
 
-func (tx *Tx) getRowValByRawKey(tbl *Table, keyRaw []byte, includeRow bool) (reflect.Value, ValueMeta, error) {
+func (tx *Tx) getRowValByRawKey(tbl *TableDef, keyRaw []byte, includeRow bool) (reflect.Value, ValueMeta, error) {
 	valueRaw := tx.getRawByRawKey(tbl, keyRaw)
 	if valueRaw == nil {
 		return reflect.Value{}, ValueMeta{}, nil
@@ -182,7 +200,7 @@ func (tx *Tx) getRowValByRawKey(tbl *Table, keyRaw []byte, includeRow bool) (ref
 	}
 }
 
-func (tx *Tx) getRawByRawKey(tbl *Table, keyRaw []byte) []byte {
+func (tx *Tx) getRawByRawKey(tbl *TableDef, keyRaw []byte) []byte {
 	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 	return dataBuck.Get(keyRaw)
 }

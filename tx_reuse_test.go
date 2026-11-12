@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/andreyvit/edb/kvo"
 )
 
 func TestTxSkipsBufferTrackingWhenReuseDisabled(t *testing.T) {
@@ -187,12 +189,15 @@ type txReuseGrowthRow struct {
 
 func TestTxReuseBuffersGrowthAndNoopWrites(t *testing.T) {
 	schema := &Schema{}
-	index := AddIndex[string]("entry").Unique()
-	AddTable(schema, "growth", 1, func(row *txReuseGrowthRow, ib *IndexBuilder) {
-		for _, entry := range row.Entries {
-			ib.Add(index, entry)
-		}
-	}, nil, []*Index{index})
+	var index *IndexDef
+	DefineTable(schema, "growth", testIndexAccess[txReuseGrowthRow](indexEntries), func(b *TableBuilder[string]) {
+		index = b.AddIndex[string]("entry", nil, IndexOptDeprecatedUnique).IndexDef()
+		b.SetIndexer(func(key string, row kvo.Record, ib *IndexBuilder) {
+			for entry := range row.Get(indexEntries).Iter() {
+				ib.Add(index, entry)
+			}
+		})
+	}).TableDef()
 	db := openTxReuseDB(t, schema, true)
 	var previous *Tx
 	var previousRows []*txReuseGrowthRow
@@ -289,10 +294,13 @@ type txReuseEncodingRow struct {
 
 func TestTxReuseBuffersEncodingFailure(t *testing.T) {
 	schema := &Schema{}
-	index := AddIndex[int]("key").Unique()
-	AddTable(schema, "encoding", 1, func(row *txReuseEncodingRow, ib *IndexBuilder) {
-		ib.Add(index, row.Key)
-	}, nil, []*Index{index})
+	var index *IndexDef
+	DefineTable(schema, "encoding", testIndexAccess[txReuseEncodingRow](), func(b *TableBuilder[int]) {
+		index = b.AddIndex[int]("key", nil, IndexOptDeprecatedUnique).IndexDef()
+		b.SetIndexer(func(key int, _ kvo.Record, ib *IndexBuilder) {
+			ib.Add(index, key)
+		})
+	}).TableDef()
 	db := openTxReuseDB(t, schema, true)
 	var captured *Tx
 	var values, indexValues int

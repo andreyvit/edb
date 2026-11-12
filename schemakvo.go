@@ -2,9 +2,9 @@ package edb
 
 import (
 	"encoding/hex"
-	"fmt"
 
 	"github.com/andreyvit/edb/kvo"
+	"github.com/andreyvit/edb/kvo/codec/fast1"
 )
 
 type KVTable struct {
@@ -58,7 +58,7 @@ func (tbl *KVTable) RootModel() *kvo.Model {
 
 func (tbl *KVTable) RootType() kvo.AnyType {
 	if tbl.rootModel == nil {
-		return kvo.Map(kvo.TUknownKey, kvo.TUnknownUint64)
+		return kvo.MapOf(kvo.TUknownKey, kvo.TUnknownUint64)
 	}
 	return tbl.rootModel.Type()
 }
@@ -76,8 +76,8 @@ func (tbl *KVTable) KeyBytesToString(k []byte) string {
 	}
 }
 
-func (tbl *KVTable) decodeValue(raw []byte) kvo.ImmutableMap {
-	return kvo.LoadRecord(raw, tbl.rootModel.Type()).Root()
+func (tbl *KVTable) decodeValue(raw []byte) fast1.ImmutableMap {
+	return fast1.LoadRecord(raw, tbl.rootModel.Type()).Root()
 }
 
 type KVTableBuilder struct {
@@ -98,10 +98,7 @@ func (b *KVTableBuilder) DefineIndex(name string, keySample KVIndexKey, resolver
 		indexer:              indexer,
 	}
 
-	if b.table.indicesByName[name] != nil {
-		panic(fmt.Sprintf("index %s already defined", name))
-	}
-
+	registerIndexName(b.table.name, name, b.table.indicesByName, idx)
 	b.table.indices = append(b.table.indices, idx)
 	return idx
 }

@@ -1,9 +1,9 @@
 package edb
 
-import "github.com/andreyvit/edb/kvo"
+import "github.com/andreyvit/edb/kvo/codec/fast1"
 
 type (
-	KVIndexer              = func(b *KVIndexContentBuilder, pk []byte, v kvo.ImmutableRecord)
+	KVIndexer              = func(b *KVIndexContentBuilder, pk []byte, v fast1.ImmutableRecord)
 	KVIndexKeyToPrimaryKey = func(ik []byte) []byte
 )
 
@@ -36,7 +36,7 @@ func (idx *KVIndex) FullName() string {
 
 func (idx *KVIndex) enumEntries(k, v []byte, f func(ik []byte)) {
 	b := KVIndexContentBuilder{f}
-	idx.indexer(&b, k, kvo.LoadRecord(v, idx.table.RootType()))
+	idx.indexer(&b, k, fast1.LoadRecord(v, idx.table.RootType()))
 }
 
 func (idx *KVIndex) entries(k, v []byte) [][]byte {
