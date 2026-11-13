@@ -145,11 +145,11 @@ func main() {
 					}
 					if write {
 						if rollback {
-							tx := db.BeginUpdate()
+							tx := db.BeginUpdate(edb.TxMetadata{})
 							fn(tx)
 							tx.Close()
 						} else {
-							db.Write(fn)
+							db.Write(edb.TxMetadata{}, fn)
 						}
 					} else {
 						db.Read(fn)

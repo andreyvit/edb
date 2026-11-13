@@ -17,7 +17,7 @@ func TestTypedGetAllocations(t *testing.T) {
 func testTypedGetAllocations[Key any](t *testing.T, format StorageFormat, key Key) {
 	db, rows, _, _ := typedTestTable[Key](t, format)
 	records := rows.Records()
-	db.Write(func(tx *Tx) { rows.Put(tx, &typedTestRow[Key]{key, "alice", "vip"}) })
+	db.Write(TxMetadata{}, func(tx *Tx) { rows.Put(tx, &typedTestRow[Key]{key, "alice", "vip"}) })
 	db.Read(func(tx *Tx) {
 		if n := testing.AllocsPerRun(100, func() {
 			if r := records.Get(tx, key); r.GetValue(1).AsString() != "alice" {
@@ -39,7 +39,7 @@ func BenchmarkTypedJoinedScan(b *testing.B) {
 				db, rows, _, byGroup := typedTestTable[ID](b, format)
 				records := rows.Records()
 				index := &Index[string]{byGroup}
-				db.Write(func(tx *Tx) {
+				db.Write(TxMetadata{}, func(tx *Tx) {
 					for i := range count {
 						rows.Put(tx, &typedTestRow[ID]{ID(1000 + i), fmt.Sprint(i), "vip"})
 					}
@@ -102,7 +102,7 @@ func BenchmarkTypedKeys(b *testing.B) {
 func benchmarkTypedKeys[Key any](b *testing.B, makeKey func(int) Key) {
 	db, rows, _, _ := typedTestTable[Key](b, Fast2)
 	records := rows.Records()
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for i := range 1000 {
 			rows.Put(tx, &typedTestRow[Key]{makeKey(i), fmt.Sprint(i), "vip"})
 		}

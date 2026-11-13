@@ -241,7 +241,7 @@ func main() {
 	}
 	if os.Args[1] == "prepare" {
 		for _, tbl := range fdb.Schema.Tables() {
-			failure := catch(func() { db.Write(func(tx *edb.Tx) { tx.Reindex(tbl, nil) }) })
+			failure := catch(func() { db.Write(edb.TxMetadata{}, func(tx *edb.Tx) { tx.Reindex(tbl, nil) }) })
 			emit(map[string]any{"phase": "prepare", "table": tbl.Name(), "error": failure})
 		}
 		indexSummary(db, "prepared-index")
@@ -264,14 +264,14 @@ func main() {
 		return
 	}
 	for _, tbl := range fdb.Schema.Tables() {
-		err := catch(func() { db.Write(func(tx *edb.Tx) { tx.Reindex(tbl, nil) }) })
+		err := catch(func() { db.Write(edb.TxMetadata{}, func(tx *edb.Tx) { tx.Reindex(tbl, nil) }) })
 		emit(map[string]any{"phase": "reindex", "table": tbl.Name(), "error": err})
 	}
 	readRows(db, "reindexed")
 	indexSummary(db, "reindexed-index")
 	for _, tbl := range fdb.Schema.Tables() {
 		err := catch(func() {
-			db.Write(func(tx *edb.Tx) {
+			db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 				var keys [][]byte
 				for c := tx.TableScan(tbl, edb.FullScan()); c.Next(); {
 					keys = append(keys, bytes.Clone(c.RawKey()))
@@ -293,7 +293,7 @@ func main() {
 	indexSummary(db, "written-index")
 	for _, tbl := range fdb.Schema.Tables() {
 		err := catch(func() {
-			db.Write(func(tx *edb.Tx) {
+			db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 				var keys [][]byte
 				for c := tx.TableScan(tbl, edb.FullScan()); c.Next(); {
 					keys = append(keys, bytes.Clone(c.RawKey()))

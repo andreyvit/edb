@@ -12,7 +12,7 @@ func TestReadChunks(t *testing.T) {
 			db, rows, _, group := typedTestTable[ID](t, format)
 			records := rows.Records()
 			index := records.bindIndex[string](group)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				for i := ID(1); i <= 7; i++ {
 					rows.Put(tx, &typedTestRow[ID]{i, fmt.Sprint(i), "vip"})
 				}
@@ -76,7 +76,7 @@ func TestReadChunks(t *testing.T) {
 func TestChunksManualResume(t *testing.T) {
 	db, rows, _, group := typedTestTable[string](t, Compact2)
 	records := rows.Records()
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for _, k := range []string{"a", "aa", "b", "c"} {
 			rows.Put(tx, &typedTestRow[string]{k, k, "vip"})
 		}
@@ -128,7 +128,7 @@ func TestChunksManualResume(t *testing.T) {
 
 func TestReadChunksEarlyStopAndPanic(t *testing.T) {
 	db, rows, _, _ := typedTestTable[ID](t, Fast2)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for i := ID(1); i <= 4; i++ {
 			rows.Put(tx, &typedTestRow[ID]{i, fmt.Sprint(i), "vip"})
 		}
@@ -180,7 +180,7 @@ func TestReadChunksEarlyStopAndPanic(t *testing.T) {
 
 func TestReadChunksSnapshotChangeAndInitialResume(t *testing.T) {
 	db, rows, _, _ := typedTestTable[ID](t, Fast2)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for _, id := range []ID{1, 3, 5} {
 			rows.Put(tx, &typedTestRow[ID]{id, fmt.Sprint(id), "vip"})
 		}
@@ -209,7 +209,7 @@ func TestReadChunksSnapshotChangeAndInitialResume(t *testing.T) {
 	if !slices.Equal(got, []ID{3, 5}) {
 		t.Fatal(got)
 	}
-	db.Write(func(tx *Tx) { rows.Put(tx, &typedTestRow[ID]{2, "2", "vip"}); rows.Delete(tx, 3) })
+	db.Write(TxMetadata{}, func(tx *Tx) { rows.Put(tx, &typedTestRow[ID]{2, "2", "vip"}); rows.Delete(tx, 3) })
 	db.Read(func(tx *Tx) {
 		if got := slices.Collect(rows.Scan(tx).Resume(initial).Keys()); !slices.Equal(got, []ID{2, 5}) {
 			t.Fatal("new snapshot", got)
@@ -219,7 +219,7 @@ func TestReadChunksSnapshotChangeAndInitialResume(t *testing.T) {
 
 func TestChunkKeysNeverFetchRows(t *testing.T) {
 	db, rows, _, group := typedTestTable[AB](t, MessagePack)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for _, key := range []AB{{1, 1}, {1, 2}, {2, 1}} {
 			rows.Put(tx, &typedTestRow[AB]{key, fmt.Sprint(key), "vip"})
 			putRawTableValue(t, tx, rows.Table(), rows.Table().EncodeKey(key), []byte{0xff})

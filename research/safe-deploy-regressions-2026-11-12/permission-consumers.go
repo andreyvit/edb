@@ -68,7 +68,7 @@ func main() {
 		before := digest(user)
 		// Both rollback and commit must preserve unprojected auth fields.
 		func() {
-			tx := db.BeginUpdate()
+			tx := db.BeginUpdate(edb.TxMetadata{})
 			defer tx.Close()
 			copy := edb.Get[bm.User](tx, user.ID)
 			copy.RequirePasswordChange = !copy.RequirePasswordChange
@@ -79,7 +79,7 @@ func main() {
 				panic("rollback changed user")
 			}
 		})
-		db.Write(func(tx *edb.Tx) {
+		db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 			copy := edb.Get[bm.User](tx, user.ID)
 			copy.RequirePasswordChange = !copy.RequirePasswordChange
 			edb.Put(tx, copy)

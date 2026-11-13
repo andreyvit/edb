@@ -36,7 +36,7 @@ func TestPerIndexCallbacks(t *testing.T) {
 				}).IndexDef()
 			})
 			db := setup(t, schema)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				checkLength := func(want uint64) {
 					t.Helper()
 					c := tx.IndexScan(lengths, FullScan())
@@ -229,7 +229,7 @@ func TestPerIndexUpgradeChecks(t *testing.T) {
 			})
 			table.messagePackInserts = true
 			db := setup(t, schema)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				Put(tx, &changeRecordRow{ID: "key", Name: "original"})
 				before := bytes.Clone(table.dataBucketIn(tx).Get(table.EncodeKey("key")))
 				ok, err := tx.TryUpgradeRecord(table, "key")

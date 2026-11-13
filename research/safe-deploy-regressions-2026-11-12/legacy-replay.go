@@ -164,13 +164,13 @@ func main() {
 				})
 				// Delete+put forces every snapshot index to be populated, independent
 				// of which original index leaves were sampled.
-				db.Write(func(tx *edb.Tx) { tx.KVPutRaw(tbl, key, nil); tx.KVPutRaw(tbl, key, packed) })
+				db.Write(edb.TxMetadata{}, func(tx *edb.Tx) { tx.KVPutRaw(tbl, key, nil); tx.KVPutRaw(tbl, key, packed) })
 				db.Read(func(tx *edb.Tx) {
 					if digest(canonical(tx.KVGet(tbl, key), 0)) != out["edited"] {
 						panic("save changed packed snapshot")
 					}
 				})
-				func() { tx := db.BeginUpdate(); defer tx.Close(); tx.KVPutRaw(tbl, key, original) }()
+				func() { tx := db.BeginUpdate(edb.TxMetadata{}); defer tx.Close(); tx.KVPutRaw(tbl, key, original) }()
 				db.Read(func(tx *edb.Tx) {
 					if !bytes.Equal(tx.KVGetRaw(tbl, key), packed) {
 						panic("rollback changed packed snapshot")

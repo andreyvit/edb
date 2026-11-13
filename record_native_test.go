@@ -36,7 +36,7 @@ func TestTableNativeSchema(t *testing.T) {
 				}
 			}).TableDef()
 			db := setup(t, schema)
-			db.Write(func(tx *Tx) { Put(tx, statrow.Sample(13)) })
+			db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, statrow.Sample(13)) })
 			var hot kvo.Record
 			db.Read(func(tx *Tx) {
 				r, _, err := tx.TryGetRecord(table, uint64(13))
@@ -55,7 +55,7 @@ func TestTableNativeSchema(t *testing.T) {
 			if native.Key != 0 || native.Profile.Balance != 900 {
 				t.Fatal("native mapping invented omitted key or lost mutation")
 			}
-			db.Write(func(tx *Tx) { tx.PutByKey(table, uint64(13), native) })
+			db.Write(TxMetadata{}, func(tx *Tx) { tx.PutByKey(table, uint64(13), native) })
 			if native.Key != 0 {
 				t.Fatal("explicit-key write changed caller's struct")
 			}

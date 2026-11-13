@@ -45,10 +45,10 @@ func TestPerIndexMixedRows(t *testing.T) {
 	}
 	first, second := statrow.Sample(1), statrow.Sample(2)
 	db, _, _ := open(true, false)
-	db.Write(func(tx *Tx) { Put(tx, first) })
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, first) })
 	db.Close()
 	db, _, _ = open(false, false)
-	db.Write(func(tx *Tx) { Put(tx, second) })
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, second) })
 	db.Close()
 	if encodes != 1 {
 		t.Fatalf("generated encoder called %d times, want 1", encodes)
@@ -64,7 +64,7 @@ func TestPerIndexMixedRows(t *testing.T) {
 			t.Fatalf("balance %d must index only row %d", balance, id)
 		}
 	}
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		assertKey(tx, first.Profile.Balance, first.ID)
 		assertKey(tx, second.Profile.Balance, second.ID)
 		old := GetMeta[statrow.State](tx, second.ID)
@@ -117,7 +117,7 @@ func TestPerIndexRefusesLayoutDependentUpgrade(t *testing.T) {
 		}).IndexDef()
 	}).TableDef()
 	db := setup(t, schema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &statrow.State{Key: 1})
 		old := GetMeta[statrow.State](tx, uint64(1))
 		if ok, err := tx.TryUpgradeRecord(table, uint64(1)); ok || err == nil {

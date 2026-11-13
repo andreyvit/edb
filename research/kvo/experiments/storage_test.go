@@ -30,11 +30,11 @@ func BenchmarkStorage(b *testing.B) {
 					initial = oldKVO(v).Bytes()
 				}
 				key := []byte("row")
-				db.Write(func(tx *edb.Tx) { tx.KVPutRaw(tbl, key, initial) })
+				db.Write(edb.TxMetadata{}, func(tx *edb.Tx) { tx.KVPutRaw(tbl, key, initial) })
 				b.ReportAllocs()
 				b.ResetTimer()
 				for i := 0; i < b.N; i++ {
-					db.Write(func(tx *edb.Tx) {
+					db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 						raw := tx.KVGetRaw(tbl, key)
 						if name == "words-copy-patch" {
 							out := bytes.Clone(raw)

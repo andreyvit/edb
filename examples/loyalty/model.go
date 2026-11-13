@@ -80,7 +80,7 @@ func balanceFromRecords(tx *edb.Tx, tag string) int64 {
 }
 
 func redeem(db *edb.DB, id uint64, points int64) error {
-	return db.Tx(true, func(tx *edb.Tx) error {
+	return db.Tx(edb.TxMetadata{}, true, func(tx *edb.Tx) error {
 		edit := Customers.Edit(tx, id)
 		if edit == nil {
 			return fmt.Errorf("customer %d not found", id)

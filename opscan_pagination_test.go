@@ -15,7 +15,7 @@ func (c *paginationCursor) Prev() ([]byte, []byte) { c.steps++; return c.storage
 
 func TestFixedWidthIndexPaginationWork(t *testing.T) {
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for day := 1; day <= 2; day++ {
 			for id := 1; id <= 1000; id++ {
 				Put(tx, &Widget{Key: AB{id, day}, Name: "x"})

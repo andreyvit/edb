@@ -34,7 +34,7 @@ func TestReuseAliasCommittedData(t *testing.T) {
 	f := reuseAliasOpen(t)
 	want := reuseAliasValue("committed", 0x37)
 	singleton := bytes.Repeat([]byte{0x00, 0x82, 0xff}, 513)
-	tx := f.db.BeginUpdate()
+	tx := f.db.BeginUpdate(TxMetadata{})
 	defer tx.Close()
 	Put(tx, want)
 	SPut(tx, f.singleton, &singleton)
@@ -67,7 +67,7 @@ func TestReuseAliasChangeLifetime(t *testing.T) {
 	f := reuseAliasOpen(t)
 	old := reuseAliasValue("before", 0x19)
 	want := reuseAliasValue("after", 0x63)
-	tx := f.db.BeginUpdate()
+	tx := f.db.BeginUpdate(TxMetadata{})
 	defer tx.Close()
 	var changes []*Change
 	var keyScratch [][]byte
@@ -123,7 +123,7 @@ func TestReuseAliasChangeLifetime(t *testing.T) {
 func TestReuseAliasDeleteChangeLifetime(t *testing.T) {
 	f := reuseAliasOpen(t)
 	want := reuseAliasValue("deleted", 0x42)
-	tx := f.db.BeginUpdate()
+	tx := f.db.BeginUpdate(TxMetadata{})
 	defer tx.Close()
 	Put(tx, want)
 	escaped := reuseAliasRead(t, tx, f.index, want)

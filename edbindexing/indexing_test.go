@@ -110,7 +110,7 @@ func TestHelperIndexUpdates(t *testing.T) {
 				t.Fatal(err)
 			}
 			defer db.Close()
-			db.Write(func(tx *edb.Tx) {
+			db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 				edb.Put(tx, &item{ID: 1, Ref: 42, Tags: []label{"vip", "", "vip"}})
 				assertKeys := func(idx *edb.IndexDef, want ...any) {
 					t.Helper()

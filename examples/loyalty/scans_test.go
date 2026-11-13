@@ -13,7 +13,7 @@ func Example_keySetsAndIndexUpdates() {
 		panic(err)
 	}
 	defer db.Close()
-	db.Write(func(tx *edb.Tx) {
+	db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 		CustomerRows.Put(tx, &Customer{ID: 101, FirstName: "Alice", Tags: []string{"vip", "newsletter"}})
 		CustomerRows.Put(tx, &Customer{ID: 102, FirstName: "Sam", Tags: []string{"staff", "newsletter"}})
 		CustomerRows.Put(tx, &Customer{ID: 103, FirstName: "Maria", Tags: []string{"vip"}})
@@ -27,7 +27,7 @@ func Example_keySetsAndIndexUpdates() {
 			fmt.Println("Send to:", Customers.Get(tx, id).Get(Customer_FirstName))
 		}
 	})
-	db.Write(func(tx *edb.Tx) {
+	db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 		// Saving changes by_tag. Finish scanning and own the keys before any write.
 		ids := slices.Collect(Customers.ExactIndexScan(tx, customersByTagIndex, "vip").Keys())
 		for _, id := range ids {
@@ -52,7 +52,7 @@ func Example_scanBookmark() {
 		panic(err)
 	}
 	defer db.Close()
-	db.Write(func(tx *edb.Tx) {
+	db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 		CustomerRows.Put(tx, &Customer{ID: 101, FirstName: "Alice", Tags: []string{"vip"}})
 		CustomerRows.Put(tx, &Customer{ID: 102, FirstName: "Sam", Tags: []string{"vip"}})
 	})

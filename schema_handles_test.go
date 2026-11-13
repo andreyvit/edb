@@ -46,7 +46,7 @@ func testTypedHandles[Key comparable](t *testing.T, format StorageFormat, first,
 	if db.schema.TableNamed("items") != table.TableDef() {
 		t.Fatal("schema identity")
 	}
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		rows := table.Rows[typedTestRow[Key]]()
 		rows.Put(tx, &typedTestRow[Key]{second, "bob", "vip"})
 		rows.Put(tx, &typedTestRow[Key]{first, "alice", "vip"})
@@ -115,7 +115,7 @@ func opaqueIndex(i AnyIndex) AnyIndex { return i }
 
 func BenchmarkHandleScanEntry(b *testing.B) {
 	db, table, index := handleTestTable[uint64](b, Fast2)
-	db.Write(func(tx *Tx) { table.Rows[typedTestRow[uint64]]().Put(tx, &typedTestRow[uint64]{1, "alice", "vip"}) })
+	db.Write(TxMetadata{}, func(tx *Tx) { table.Rows[typedTestRow[uint64]]().Put(tx, &typedTestRow[uint64]{1, "alice", "vip"}) })
 	db.Read(func(tx *Tx) {
 		at, ai := opaqueTable(table), opaqueIndex(index)
 		for _, tc := range []struct {

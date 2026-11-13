@@ -100,7 +100,7 @@ func newRecordFixture(t testing.TB, extra string, rows int, path string, opts ed
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { h.db.Close() })
-	h.db.Write(func(tx *edb.Tx) {
+	h.db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for id := uint64(1); id <= uint64(rows); id++ {
 			if legacy {
 				edb.Put(tx, statrow.Sample(id))
@@ -152,7 +152,7 @@ func (h *recordHost) guestPackage(t testing.TB, s *kvo.Schema) evm.Package {
 		if h.tx != nil || h.scope == nil {
 			return fmt.Errorf("expected one transaction per invocation")
 		}
-		h.tx = h.db.BeginUpdate()
+		h.tx = h.db.BeginUpdate(edb.TxMetadata{})
 		return nil
 	})
 	bindMethod(&pkg, ctx, "Commit", nil, nil, func(*evm.Call) error {
@@ -448,7 +448,7 @@ func TestTableBindings(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
-	db.Write(func(tx *edb.Tx) {
+	db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for _, table := range []*edb.TableDef{accounts, orders, archived} {
 			var w row2.Writer
 			w.Begin(0, "", row2.Object, row2.Fast2)

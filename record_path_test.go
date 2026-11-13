@@ -75,7 +75,7 @@ func TestRecordPathStaysEncoded(t *testing.T) {
 					t.Fatal("record became a Go struct")
 				}
 			}
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				notifications := 0
 				tx.OnChange(map[*TableDef]ChangeFlags{table.TableDef(): ChangeFlagNotify | ChangeFlagIncludeOldRecord | ChangeFlagIncludeNewRecord}, func(_ *Tx, c *Change) {
 					notifications++
@@ -134,7 +134,7 @@ func TestRecordPathReadAllocations(t *testing.T) {
 	for _, format := range []StorageFormat{MessagePack, Fast2, Compact2} {
 		t.Run(format.String(), func(t *testing.T) {
 			db, table, _, p := pathTable(t, format)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				Put(tx, &pathRow{ID: 1000, Name: "Ada", Count: 7, Tags: []string{"vip", "local"}, Labels: map[string]int64{"earned": 42}, Payload: strings.Repeat("x", 512)})
 			})
 			db.Read(func(tx *Tx) {
@@ -161,7 +161,7 @@ func BenchmarkRecordPath(b *testing.B) {
 		for _, op := range []string{"Read", "OpenSaveUnchanged", "EditSave", "NewSaveDelete"} {
 			b.Run(format.String()+"/"+op, func(b *testing.B) {
 				db, table, _, p := pathTable(b, format)
-				db.Write(func(tx *Tx) {
+				db.Write(TxMetadata{}, func(tx *Tx) {
 					Put(tx, &pathRow{ID: 1000, Name: "Ada", Count: 7, Tags: []string{"vip", "local"}, Labels: map[string]int64{"earned": 42}, Payload: strings.Repeat("x", 512)})
 				})
 				run := func(tx *Tx) {
@@ -200,7 +200,7 @@ func BenchmarkRecordPath(b *testing.B) {
 				if op == "Read" {
 					db.Read(run)
 				} else {
-					db.Write(run)
+					db.Write(TxMetadata{}, run)
 				}
 			})
 		}
@@ -225,7 +225,7 @@ func TestRecordSaveDetectsDirectCodecEdits(t *testing.T) {
 	for _, format := range []StorageFormat{Fast2, Compact2} {
 		t.Run(format.String(), func(t *testing.T) {
 			db, table, _, p := pathTable(t, format)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				e := table.New(tx, 1000)
 				e.Set(p.count, int64(1))
 				table.Save(tx, e)

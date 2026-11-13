@@ -94,7 +94,7 @@ func TestRecordMixedWriteRegression(t *testing.T) {
 					next[id] = &v
 				}
 				rollback := errors.New("planned rollback")
-				err := db.Tx(true, func(tx *Tx) error {
+				err := db.Tx(TxMetadata{}, true, func(tx *Tx) error {
 					for step := 0; step < 25; step++ {
 						id := uint64(rng.IntN(96) + 1)
 						// Warm the reusable lookup cursor before mutating this bucket.

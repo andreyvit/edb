@@ -5,7 +5,7 @@ import "testing"
 func TestDeleteByKeyRaw_ReturnValueAndIndexCleanup(t *testing.T) {
 	u1 := &User{ID: 1, Name: "foo", Email: "foo@example.com"}
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, u1)
 	})
 
@@ -20,7 +20,7 @@ func TestDeleteByKeyRaw_ReturnValueAndIndexCleanup(t *testing.T) {
 		}
 	})
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		if ok := tx.DeleteByKeyRaw(usersTable, usersTable.EncodeKey(ID(999))); ok {
 			t.Fatalf("DeleteByKeyRaw(missing) = true, wanted false")
 		}
@@ -42,11 +42,11 @@ func TestDeleteByKeyRaw_ReturnValueAndIndexCleanup(t *testing.T) {
 func TestUnsafeDeleteByKeyRawSkippingIndex_SkipsIndexCleanup(t *testing.T) {
 	u1 := &User{ID: 1, Name: "foo", Email: "foo@example.com"}
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, u1)
 	})
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		rawKey := usersTable.EncodeKey(ID(1))
 		if ok := tx.UnsafeDeleteByKeyRawSkippingIndex(usersTable, rawKey); !ok {
 			t.Fatalf("UnsafeDeleteByKeyRawSkippingIndex(existing) = false, wanted true")
@@ -67,10 +67,10 @@ func TestDeleteAll(t *testing.T) {
 	u1 := &User{ID: 1, Name: "foo", Email: "foo@example.com"}
 	u2 := &User{ID: 2, Name: "bar", Email: "bar@example.com"}
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, u1, u2)
 	})
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		n := DeleteAll(tx.TableScan(usersTable, FullScan()))
 		if n != 2 {
 			t.Fatalf("DeleteAll = %d, wanted 2", n)
@@ -80,4 +80,3 @@ func TestDeleteAll(t *testing.T) {
 		isempty(t, AllTableRows[User](tx))
 	})
 }
-

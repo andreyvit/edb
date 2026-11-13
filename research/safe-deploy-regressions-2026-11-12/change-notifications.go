@@ -82,7 +82,7 @@ func main() {
 			originalHash := digest(original)
 			var updatedHash string
 			run := func(deleting, commit bool) {
-				tx := db.BeginUpdate()
+				tx := db.BeginUpdate(edb.TxMetadata{})
 				defer tx.Close()
 				before, _ := tx.GetByKeyRaw(tbl, key)
 				notified := 0

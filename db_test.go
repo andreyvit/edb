@@ -80,7 +80,7 @@ func TestDB(t *testing.T) {
 	u2 := &User{ID: 2, Name: "bar", Email: "bar@example.com"}
 
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, u1)
 		Put(tx, u2)
 	})
@@ -102,7 +102,7 @@ func TestDB(t *testing.T) {
 	db.Read(func(tx *Tx) {
 		deepEqual(t, AllTableRows[User](tx), []*User{u1, u2})
 	})
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		DeleteRow(tx, u1)
 		isnil(t, Lookup[User](tx, usersByEmail, "foo@example.com"))
 	})
@@ -116,7 +116,7 @@ func TestDBScan(t *testing.T) {
 	u5 := &User{ID: 5, Name: "bar", Email: "bar3@example.com"}
 
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, u1)
 		Put(tx, u2)
 		Put(tx, u3)
@@ -223,7 +223,7 @@ func TestDBCompositeKey(t *testing.T) {
 	u5 := &Widget{Key: AB{2, 12}, Name: "bar", Email: "bar3@example.com"}
 
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, u1)
 		Put(tx, u2)
 		Put(tx, u3)
@@ -293,7 +293,7 @@ func TestDBReverseScanBug(t *testing.T) {
 	u5 := &User{ID: 5, Name: "bar", Email: "bar3@example.com"}
 
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, u3)
 		Put(tx, u4)
 		Put(tx, u5)
@@ -309,7 +309,7 @@ func TestUpdateIndexValue(t *testing.T) {
 	u1 := &User{ID: 1, Name: "foo", Email: "foo@example.com"}
 
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, u1)
 		isnonnil(t, Lookup[User](tx, usersByName, "foo"))
 		isnil(t, Lookup[User](tx, usersByName, "bar"))
@@ -332,7 +332,7 @@ func TestRawScan(t *testing.T) {
 		p  = x("10 12 14")
 	)
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		tx.KVPutRaw(kubets, k1, []byte{})
 		tx.KVPutRaw(kubets, k2, []byte{})
 		tx.KVPutRaw(kubets, k3, []byte{})

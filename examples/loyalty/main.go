@@ -67,7 +67,7 @@ func run(ctx context.Context, out io.Writer) error {
 	}
 	defer db.Close()
 
-	if err := db.Tx(true, func(tx *edb.Tx) error {
+	if err := db.Tx(edb.TxMetadata{}, true, func(tx *edb.Tx) error {
 		CustomerRows.Put(tx, &Customer{
 			ID: 101, FirstName: "Alice & Bob", Email: "alice@example.com",
 			Tags: []string{"vip", "newsletter"}, PointsEarned: 1250, PointsRedeemed: 250,
@@ -85,7 +85,7 @@ func run(ctx context.Context, out io.Writer) error {
 		return err
 	}
 
-	if err := db.Tx(false, func(tx *edb.Tx) error {
+	if err := db.Tx(edb.TxMetadata{}, false, func(tx *edb.Tx) error {
 		id, customer := CustomerRows.Lookup(tx, customersByEmailIndex, "alice@example.com")
 		if customer == nil {
 			return fmt.Errorf("customer not found")
@@ -115,7 +115,7 @@ func run(ctx context.Context, out io.Writer) error {
 	if err := redeem(db, 101, 200); err != nil {
 		return err
 	}
-	return db.Tx(false, func(tx *edb.Tx) error {
+	return db.Tx(edb.TxMetadata{}, false, func(tx *edb.Tx) error {
 		fmt.Fprintf(out, "After redeeming 200 points: %d\n", PointBalance(Customers.Get(tx, 101)))
 		return nil
 	})

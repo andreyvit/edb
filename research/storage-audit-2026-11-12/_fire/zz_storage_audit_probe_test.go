@@ -173,7 +173,7 @@ func TestDeepStorageAudit(t *testing.T) {
 				}
 				cases++
 				problem := auditSafe(func() {
-					db.Write(func(tx *edb.Tx) {
+					db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 						tx.Put(table, row.Interface())
 						check := func(stage string) {
 							for _, idx := range table.Indices() {

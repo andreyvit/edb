@@ -15,7 +15,7 @@ func TestScanBookmark(t *testing.T) {
 func testScanBookmark[Key comparable](t *testing.T, keys []Key) {
 	db, rows, name, group := typedTestTable[Key](t, Fast2)
 	keyIndex := rows.Table().IndexNamed("key")
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for i, key := range keys {
 			rows.Put(tx, &typedTestRow[Key]{key, fmt.Sprintf("name%d", i), []string{"a", "b", "a", "b", "aa", "b"}[i]})
 		}
@@ -90,7 +90,7 @@ func testScanBookmark[Key comparable](t *testing.T, keys []Key) {
 
 func TestScanBookmarkDeletedPositionAndValidation(t *testing.T) {
 	db, rows, _, group := typedTestTable[ID](t, Fast2)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for i := ID(1); i <= 4; i++ {
 			rows.Put(tx, &typedTestRow[ID]{i, fmt.Sprint(i), "vip"})
 		}
@@ -110,7 +110,7 @@ func TestScanBookmarkDeletedPositionAndValidation(t *testing.T) {
 		if reverse {
 			key = 4
 		}
-		db.Write(func(tx *Tx) { rows.Delete(tx, key) })
+		db.Write(TxMetadata{}, func(tx *Tx) { rows.Delete(tx, key) })
 		db.Read(func(tx *Tx) {
 			scan := rows.Records().bindIndex[string](group).Exact(tx, "vip")
 			if reverse {
@@ -148,7 +148,7 @@ func TestScanBookmarkOwnsPosition(t *testing.T) {
 
 func TestScanBookmarkNarrowerBounds(t *testing.T) {
 	db, rows, _, group := typedTestTable[ID](t, Fast2)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for i := ID(1); i <= 4; i++ {
 			rows.Put(tx, &typedTestRow[ID]{i, fmt.Sprint(i), fmt.Sprint(i)})
 		}
@@ -180,7 +180,7 @@ func TestScanBookmarkNarrowerBounds(t *testing.T) {
 
 func TestIndexRangeInterleavedStringKeys(t *testing.T) {
 	db, rows, _, group := typedTestTable[string](t, Fast2)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		rows.Put(tx, &typedTestRow[string]{"a", "one", "a"})
 		rows.Put(tx, &typedTestRow[string]{"z", "two", "aa"})
 		rows.Put(tx, &typedTestRow[string]{"b", "three", "a"})

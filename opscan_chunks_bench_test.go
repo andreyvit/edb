@@ -11,7 +11,7 @@ func BenchmarkResumableScan(b *testing.B) {
 			db, rows, _, group := typedTestTable[ID](b, Fast2)
 			records := rows.Records()
 			index := records.bindIndex[string](group)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				for i := range count {
 					rows.Put(tx, &typedTestRow[ID]{ID(i + 1), fmt.Sprint(i), "vip"})
 				}
@@ -67,7 +67,7 @@ func BenchmarkResumableScan(b *testing.B) {
 func TestChunkAndKeyMergeAllocationBudgets(t *testing.T) {
 	db, rows, _, group := typedTestTable[ID](t, Fast2)
 	index := rows.Records().bindIndex[string](group)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for i := ID(1); i <= 1000; i++ {
 			rows.Put(tx, &typedTestRow[ID]{i, fmt.Sprint(i), "vip"})
 		}
@@ -117,7 +117,7 @@ func benchmarkVariableKeyMerge[Key any](b *testing.B, key func(int) Key) {
 		b.Run(fmt.Sprint(count), func(b *testing.B) {
 			db, rows, _, group := typedTestTable[Key](b, Fast2)
 			index := rows.Records().bindIndex[string](group)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				for i := range count {
 					rows.Put(tx, &typedTestRow[Key]{key(i), fmt.Sprint(i), "vip"})
 				}

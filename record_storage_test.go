@@ -51,7 +51,7 @@ func TestNormalKVORollout(t *testing.T) {
 			return db, table, idx
 		}
 		db, legacy, _ := open(RecordStorage{Format: format, MessagePackInserts: true})
-		db.Write(func(tx *Tx) {
+		db.Write(TxMetadata{}, func(tx *Tx) {
 			if _, err := tx.TryPutRecordChecked(legacy, uint64(7), kvo.Encoded(row2.Empty(layout)), ValueMeta{}); err != nil {
 				t.Fatal(err)
 			}
@@ -61,10 +61,10 @@ func TestNormalKVORollout(t *testing.T) {
 			tx.DeleteByKey(legacy, uint64(7))
 		})
 		a := &boundMember{1, "original", map[uint64]uint64{1: 0, 2: 2, 3: 3}, -400}
-		db.Write(func(tx *Tx) { Put(tx, a) })
+		db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, a) })
 		db.Close()
 		db, tbl, idx := open(RecordStorage{Format: format})
-		db.Write(func(tx *Tx) {
+		db.Write(TxMetadata{}, func(tx *Tx) {
 			if r, _, err := tx.TryGetRecord(tbl, a.ID); err != nil || r.MessagePack() == nil {
 				t.Fatal(err)
 			}
@@ -176,7 +176,7 @@ func TestLossyUpgradeLeavesLegacyRowIntact(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		db.Write(func(tx *Tx) {
+		db.Write(TxMetadata{}, func(tx *Tx) {
 			want := row{1, 19, "archived field"}
 			if !upgrade {
 				Put(tx, &want)

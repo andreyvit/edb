@@ -147,7 +147,7 @@ func benchmarkMutation(b *testing.B, operation string) {
 	b.ResetTimer()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		f.db.Write(func(tx *Tx) {
+		f.db.Write(TxMetadata{}, func(tx *Tx) {
 			for _, row := range rows {
 				if mutate(tx, row) {
 					total++
@@ -156,7 +156,7 @@ func benchmarkMutation(b *testing.B, operation string) {
 		})
 		if restore != nil {
 			b.StopTimer()
-			f.db.Write(restore)
+			f.db.Write(TxMetadata{}, restore)
 			b.StartTimer()
 		}
 	}
@@ -192,7 +192,7 @@ func newBenchmarkFixture(b *testing.B) *benchmarkFixture {
 		f.rows[i] = &benchmarkRow{Key: uint64(i + 1), Group: uint64(i%16 + 1), Payload: bytes.Repeat([]byte{0x35}, 128)}
 		f.keys[i] = f.rows[i].Key
 	}
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for _, row := range f.rows {
 			Put(tx, row)
 		}

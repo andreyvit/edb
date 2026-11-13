@@ -13,7 +13,7 @@ func TestEditRecordAcrossFormats(t *testing.T) {
 	for _, format := range []StorageFormat{MessagePack, Fast2, Compact2} {
 		t.Run(format.String(), func(t *testing.T) {
 			db, tbl, idx, _ := keyedRecordTable[keylessRecordRow](t, format, false)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				Put(tx, &keylessRecordRow{ID: 7, Name: "before"})
 				tx.EditRecord(tbl, uint64(7), func(e *kvo.Editor) {
 					e.SetValue(1, values.String("after"))
@@ -54,7 +54,7 @@ func TestRecordConvenienceAndTryAPIs(t *testing.T) {
 	for _, format := range []StorageFormat{MessagePack, Fast2, Compact2} {
 		t.Run(format.String(), func(t *testing.T) {
 			db, tbl, idx, _ := keyedRecordTable[keylessRecordRow](t, format, false)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				edit := tx.NewRecordEdit(tbl, uint64(7))
 				edit.Editor().SetValue(1, values.String("before"))
 				if err := edit.Editor().TryFastSetPathValue(nil, values.String("invalid")); err == nil {
@@ -94,7 +94,7 @@ func TestRecordConvenienceAndTryAPIs(t *testing.T) {
 					t.Fatal("incorrect KVO lookup")
 				}
 			})
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				if err := tbl.dataBucketIn(tx).Put(tbl.EncodeKey(uint64(7)), []byte{0xff}); err != nil {
 					t.Fatal(err)
 				}
@@ -143,7 +143,7 @@ func TestRecordReadAllocations(t *testing.T) {
 	for _, format := range []StorageFormat{MessagePack, Fast2, Compact2} {
 		t.Run(format.String(), func(t *testing.T) {
 			db, tbl, _, _ := keyedRecordTable[keylessRecordRow](t, format, false)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				tx.PutByKey(tbl, uint64(1000), &keylessRecordRow{Name: "sample"})
 				tx.PutByKey(tbl, uint64(1002), &keylessRecordRow{Name: "other"})
 				r, _, err := tx.TryGetRecord(tbl, uint64(1001))
@@ -213,7 +213,7 @@ func BenchmarkRecordRead(b *testing.B) {
 	for _, format := range []StorageFormat{MessagePack, Fast2, Compact2} {
 		b.Run(format.String(), func(b *testing.B) {
 			db, tbl, _, _ := keyedRecordTable[keylessRecordRow](b, format, false)
-			db.Write(func(tx *Tx) { tx.PutByKey(tbl, uint64(1000), &keylessRecordRow{Name: "sample"}) })
+			db.Write(TxMetadata{}, func(tx *Tx) { tx.PutByKey(tbl, uint64(1000), &keylessRecordRow{Name: "sample"}) })
 			db.Read(func(tx *Tx) {
 				read := func() {
 					r, _, err := tx.TryGetRecord(tbl, uint64(1000))
@@ -239,7 +239,7 @@ func TestRecordIndexScanAllocations(t *testing.T) {
 	for _, format := range []StorageFormat{MessagePack, Fast2, Compact2} {
 		t.Run(format.String(), func(t *testing.T) {
 			db, tbl, idx, _ := keyedRecordTable[keylessRecordRow](t, format, false)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				for i := uint64(1); i <= 1000; i++ {
 					tx.PutByKey(tbl, i, &keylessRecordRow{Name: "sample"})
 				}

@@ -186,7 +186,7 @@ func mutateRows(db *edb.DB, seed uint64, limit int) {
 				var beforeMeta edb.ValueMeta
 				var expectHash string
 				func() {
-					tx := db.BeginUpdate()
+					tx := db.BeginUpdate(edb.TxMetadata{})
 					defer tx.Close()
 					row, meta := tx.GetByKeyRaw(tbl, key)
 					beforeMeta = meta

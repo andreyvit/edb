@@ -34,7 +34,7 @@ func TestRecordIndexAndCursorEdits(t *testing.T) {
 			b.SetIndexer(index)
 		}).TableDef()
 		db := setup(t, sc)
-		db.Write(func(tx *Tx) {
+		db.Write(TxMetadata{}, func(tx *Tx) {
 			Put(tx, &row{1, 4}, &row{2, 0})
 			c := tx.TableScan(tbl, FullScan())
 			if _, err := c.TryRecordEdit(); err == nil {

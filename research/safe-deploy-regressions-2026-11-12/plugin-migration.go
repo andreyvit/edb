@@ -134,15 +134,15 @@ func main() {
 		dbmigrations.MigratePluginVersions(c)
 	}
 	initial := state(db)
-	func() { tx := db.BeginUpdate(); defer tx.Close(); migrate(tx) }()
+	func() { tx := db.BeginUpdate(edb.TxMetadata{}); defer tx.Close(); migrate(tx) }()
 	if state(db) != initial {
 		panic("migration rollback changed state")
 	}
 	started := time.Now()
-	db.Write(migrate)
+	db.Write(edb.TxMetadata{}, migrate)
 	seconds := time.Since(started).Seconds()
 	committed := state(db)
-	db.Write(migrate)
+	db.Write(edb.TxMetadata{}, migrate)
 	if state(db) != committed {
 		panic("migration rerun changed state")
 	}

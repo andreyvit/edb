@@ -36,7 +36,7 @@ func TestRecordRetentionAfterPageReuseAndClose(t *testing.T) {
 			db := setup(t, schema)
 			db.reuseTxBuffers = true
 			want := &retentionRow{"original-key", strings.Repeat("original", 1024), []string{strings.Repeat("first", 512), "second"}}
-			db.Write(func(tx *Tx) { Put(tx, want) })
+			db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, want) })
 			var owned, cloned, decoded kvo.Record
 			var native *retentionRow
 			var ownedTags []string
@@ -56,13 +56,13 @@ func TestRecordRetentionAfterPageReuseAndClose(t *testing.T) {
 				native = Get[retentionRow](tx, key)
 			})
 			for round := 0; round < 8; round++ {
-				db.Write(func(tx *Tx) {
+				db.Write(TxMetadata{}, func(tx *Tx) {
 					for i := 0; i < 100; i++ {
 						Put(tx, &retentionRow{fmt.Sprint("churn/", i), strings.Repeat(fmt.Sprint(round), 4096), []string{"changed"}})
 					}
 					Put(tx, &retentionRow{want.Key, "replaced", []string{"changed"}})
 				})
-				db.Write(func(tx *Tx) {
+				db.Write(TxMetadata{}, func(tx *Tx) {
 					for i := 0; i < 100; i++ {
 						DeleteByKey[retentionRow](tx, fmt.Sprint("churn/", i))
 					}

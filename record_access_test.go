@@ -66,7 +66,7 @@ func TestAccessOnlyTable(t *testing.T) {
 	orig := accessMember{key, "old", &accessDetails{-4, "opaque"}, map[string]int64{"y": 0, "x": 1}, []byte{7, 8}}
 	db, tbl, _ := open(false)
 	var frozen []byte
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &orig)
 		Put(tx, &accessMember{ID: 2, Name: "empty"})
 		c := tx.TableScan(tbl, FullScan())
@@ -77,7 +77,7 @@ func TestAccessOnlyTable(t *testing.T) {
 	db, tbl, idx := open(true)
 	child := row2.Step{Key: 2}
 	leaf := []row2.Step{child, {Key: 3}}
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		r, _, err := tx.TryGetRecord(tbl, key)
 		if err != nil || r.Child(child).GetValue(3).AsInt() != -4 {
 			t.Fatal(err)

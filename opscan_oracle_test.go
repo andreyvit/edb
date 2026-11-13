@@ -17,7 +17,7 @@ func TestIndexRangesAgainstValueOracle(t *testing.T) {
 	db, rows, _, group := typedTestTable[string](t, MessagePack)
 	keys := []string{"a", "aa", "a\x00", "a\x00a", "b", "ba", "z", "\xff", "\xff\x00"}
 	groups := []string{"", "a", "a\x00", "a\x00a", "aa", "b", "\xff"}
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for i, g := range groups {
 			for j, key := range keys {
 				rows.Put(tx, &typedTestRow[string]{fmt.Sprintf("%s:%d", key, i), fmt.Sprint(i, ":", j), g})
@@ -107,7 +107,7 @@ func TestIndexComponentBoundaries(t *testing.T) {
 		b.SetIndexer(func(_ uint64, r kvo.Record, ib *IndexBuilder) { p := r.Get(pp); ib.Add(idx, pair{p.Get(a), p.Get(c)}) })
 	}).TableDef()
 	db := setup(t, schema)
-	db.Write(func(tx *Tx) { Put(tx, &row{1, pair{"a", "bc"}}, &row{2, pair{"ab", "c"}}, &row{3, pair{"a", "d"}}) })
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, &row{1, pair{"a", "bc"}}, &row{2, pair{"ab", "c"}}, &row{3, pair{"a", "d"}}) })
 	for _, reverse := range []bool{false, true} {
 		db.Read(func(tx *Tx) {
 			opt := ExactScan(pair{"a", "bc"})
@@ -142,7 +142,7 @@ func TestIndexComponentBoundaries(t *testing.T) {
 
 func TestIndexExactStringBoundaries(t *testing.T) {
 	db, rows, name, group := typedTestTable[string](t, MessagePack)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		rows.Put(tx, &typedTestRow[string]{"a", "a", "a"})
 		rows.Put(tx, &typedTestRow[string]{"b", "a\x01", "aa"})
 		rows.Put(tx, &typedTestRow[string]{"z", "a\x01x", "a"})

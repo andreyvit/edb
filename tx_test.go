@@ -67,7 +67,7 @@ func TestTx_BeginUpdateRollsBackOnClose(t *testing.T) {
 	db := setup(t, basicSchema)
 
 	key := x("aa")
-	tx := db.BeginUpdate()
+	tx := db.BeginUpdate(TxMetadata{})
 	tx.KVPutRaw(kubets, key, []byte{1})
 	tx.Close() // rollback
 
@@ -82,7 +82,7 @@ func TestDBTx_CommitDespiteError(t *testing.T) {
 	db := setup(t, basicSchema)
 
 	key1 := x("01")
-	err := db.Tx(true, func(tx *Tx) error {
+	err := db.Tx(TxMetadata{}, true, func(tx *Tx) error {
 		tx.KVPutRaw(kubets, key1, []byte{1})
 		return errors.New("boom")
 	})
@@ -96,7 +96,7 @@ func TestDBTx_CommitDespiteError(t *testing.T) {
 	})
 
 	key2 := x("02")
-	err = db.Tx(true, func(tx *Tx) error {
+	err = db.Tx(TxMetadata{}, true, func(tx *Tx) error {
 		tx.KVPutRaw(kubets, key2, []byte{2})
 		tx.CommitDespiteError()
 		return errors.New("boom")
@@ -114,7 +114,7 @@ func TestDBTx_CommitDespiteError(t *testing.T) {
 func TestDBTx_PanicBecomesError(t *testing.T) {
 	db := setup(t, basicSchema)
 
-	err := db.Tx(true, func(tx *Tx) error {
+	err := db.Tx(TxMetadata{}, true, func(tx *Tx) error {
 		panic("boom")
 	})
 	if err == nil {
@@ -140,4 +140,3 @@ func TestTx_BoltTx(t *testing.T) {
 		}
 	})
 }
-
