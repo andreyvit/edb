@@ -24,7 +24,7 @@ func TestLookupAndScanHelpers(t *testing.T) {
 	u1 := &User{ID: 1, Name: "foo", Email: "foo@example.com"}
 	u2 := &User{ID: 2, Name: "bar", Email: "bar@example.com"}
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, u1, u2)
 	})
 
@@ -196,7 +196,7 @@ func TestKVHelpers(t *testing.T) {
 	rec := fast1.NewRecord(nil)
 	rec.Set(1, 42)
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		tx.KVPut(tbl, key, rec.Record())
 	})
 	db.Read(func(tx *Tx) {
@@ -236,7 +236,7 @@ func TestSingletonKeyOpsAndCountAll(t *testing.T) {
 	db := must(Open(InMemory, scm, Options{IsTesting: true}))
 	defer db.Close()
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		v := 123
 		SPut(tx, sk, &v)
 	})
@@ -251,7 +251,7 @@ func TestSingletonKeyOpsAndCountAll(t *testing.T) {
 	})
 
 	db2 := setup(t, basicSchema)
-	db2.Write(func(tx *Tx) {
+	db2.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &User{ID: 1, Name: "a", Email: "a@example.com"})
 		Put(tx, &User{ID: 2, Name: "b", Email: "b@example.com"})
 	})
@@ -271,7 +271,7 @@ func TestReindexAndDecodeMementoVal(t *testing.T) {
 	db := setup(t, basicSchema)
 
 	var keyRaw, memento []byte
-	db.Write(func(tx *Tx) { Put(tx, u1) })
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, u1) })
 	db.Read(func(tx *Tx) {
 		c := tx.TableScan(usersTable, FullScan())
 		if !c.Next() {
@@ -288,7 +288,7 @@ func TestReindexAndDecodeMementoVal(t *testing.T) {
 		}
 	})
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		_ = tx.UnsafeDeleteByKeyRawSkippingIndex(usersTable, keyRaw)
 		tx.Reindex(usersTable, usersByEmail)
 	})
@@ -305,7 +305,7 @@ func TestExactIDRangeScan(t *testing.T) {
 	u2 := &User{ID: 2, Name: "bar", Email: "bar2@example.com"}
 	u3 := &User{ID: 3, Name: "bar", Email: "bar3@example.com"}
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) { Put(tx, u1, u2, u3) })
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, u1, u2, u3) })
 
 	db.Read(func(tx *Tx) {
 		rows := All(IndexScan[User](tx, usersByName, ExactIDRangeScan("bar", ID(2), ID(2), true, true)))

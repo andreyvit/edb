@@ -52,7 +52,7 @@ func (c *auditContext) DoneReading() {
 }
 func (c *auditContext) MustWrite(f func()) {
 	c.DoneReading()
-	c.db.Write(func(tx *edb.Tx) { c.tx = tx; defer func() { c.tx = nil }(); f() })
+	c.db.Write(edb.TxMetadata{}, func(tx *edb.Tx) { c.tx = tx; defer func() { c.tx = nil }(); f() })
 	c.writes++
 }
 func (c *auditContext) Err() error {

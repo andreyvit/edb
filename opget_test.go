@@ -5,7 +5,7 @@ import "testing"
 func TestGetHelpers(t *testing.T) {
 	u1 := &User{ID: 1, Name: "foo", Email: "foo@example.com"}
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, u1)
 	})
 

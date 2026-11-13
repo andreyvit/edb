@@ -21,7 +21,7 @@ func testTypedScans[Key comparable](t *testing.T, format StorageFormat, first, s
 	records := rows.Records()
 	unique, group := records.bindIndex[string](byName), records.bindIndex[string](byGroup)
 	want := []Key{first, second, third}
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		rows.Put(tx, &typedTestRow[Key]{third, "chris", "regular"})
 		rows.Put(tx, &typedTestRow[Key]{first, "alice", "vip"})
 		rows.Put(tx, &typedTestRow[Key]{second, "bob", "vip"})
@@ -89,7 +89,7 @@ func TestTypedCompositePrefix(t *testing.T) {
 	records := rows.Records()
 	index := records.bindIndex[AB](rows.Table().IndexNamed("key"))
 	want := []AB{{1, 1}, {1, 2}}
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for i, key := range []AB{{1, 1}, {1, 2}, {2, 1}} {
 			rows.Put(tx, &typedTestRow[AB]{key, string(rune('a' + i)), "vip"})
 		}
@@ -113,7 +113,7 @@ func TestTypedCompositePrefix(t *testing.T) {
 
 func TestTypedKeysDoNotDecodeRows(t *testing.T) {
 	db, rows, _, byGroup := typedTestTable[ID](t, Fast2)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		rows.Put(tx, &typedTestRow[ID]{1, "alice", "vip"})
 		// Preserve the key and index entry while making payload access fail.
 		putRawTableValue(t, tx, rows.Table(), rows.Table().EncodeKey(ID(1)), []byte{0xff})

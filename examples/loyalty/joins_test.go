@@ -34,7 +34,7 @@ func Example_recordsAndCompositeKeys() {
 		panic(err)
 	}
 	defer db.Close()
-	db.Write(func(tx *edb.Tx) {
+	db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 		CustomerRows.Put(tx, &Customer{ID: 101, FirstName: "Alice", Tags: []string{"vip"}})
 		CustomerRows.Put(tx, &Customer{ID: 102, FirstName: "Sam", Tags: []string{"vip"}})
 		statsRows.Put(tx, &DailyStats{StatsKey{101, "2026-11-09"}, 2})

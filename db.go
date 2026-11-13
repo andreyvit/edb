@@ -14,14 +14,16 @@ import (
 const debugTrackTxns = true
 
 type DB struct {
-	storage        storage
-	bdb            *bbolt.DB
-	schema         *Schema
-	logf           func(format string, args ...any)
-	verbose        bool
-	strict         bool
-	captureTxStack bool
-	reuseTxBuffers bool
+	storage             storage
+	bdb                 *bbolt.DB
+	schema              *Schema
+	logf                func(format string, args ...any)
+	verbose             bool
+	strict              bool
+	captureTxStack      bool
+	reuseTxBuffers      bool
+	observeTransaction  func(TxObservation)
+	observerPanicLogged atomic.Bool
 
 	tableStates []*tableState
 
@@ -52,6 +54,7 @@ type Options struct {
 	NoPersistentFreeList bool
 	CaptureTxStack       bool
 	ReuseTxBuffers       bool
+	ObserveTransaction   func(TxObservation)
 }
 
 const InMemory = "memory:"
@@ -102,18 +105,19 @@ func Open(path string, schema *Schema, opt Options) (*DB, error) {
 
 func openWithStorage(storage storage, schema *Schema, opt Options) (*DB, error) {
 	db := &DB{
-		storage:        storage,
-		schema:         schema,
-		logf:           opt.Logf,
-		verbose:        opt.Verbose,
-		captureTxStack: opt.CaptureTxStack,
-		reuseTxBuffers: opt.ReuseTxBuffers,
-		tableStates:    make([]*tableState, len(schema.tables)),
-		strict:         opt.IsTesting,
+		storage:            storage,
+		schema:             schema,
+		logf:               opt.Logf,
+		verbose:            opt.Verbose,
+		captureTxStack:     opt.CaptureTxStack,
+		reuseTxBuffers:     opt.ReuseTxBuffers,
+		observeTransaction: opt.ObserveTransaction,
+		tableStates:        make([]*tableState, len(schema.tables)),
+		strict:             opt.IsTesting,
 	}
 	db.closeWG.Add(1)
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{Kind: "startup:edb_schema", Tenant: "none"}, func(tx *Tx) {
 		now := time.Now()
 		for i, tbl := range schema.tables {
 			db.tableStates[i] = prepareTable(tx, tbl, now)
@@ -200,11 +204,8 @@ func (db *DB) doClose() {
 
 	if db.bdb != nil && db.bdb.NoFreelistSync && db.WriteCount.Load() > 0 {
 		// Write freelist to make startup fast.
-		db.bdb.NoFreelistSync = false
 		start := time.Now()
-		err := db.bdb.Update(func(*bbolt.Tx) error {
-			return nil
-		})
+		err := db.writeFreelist()
 		if db.logf != nil {
 			elapsed := time.Since(start)
 			if err != nil {
@@ -226,6 +227,13 @@ func (db *DB) doClose() {
 			panic(fmt.Errorf("kvdb: closing: %w", err))
 		}
 	}
+}
+
+func (db *DB) writeFreelist() error {
+	observation := db.startObservation(TxMetadata{Kind: "system:edb_shutdown_freelist", Tenant: "none"}, true)
+	defer observation.finish()
+	db.bdb.NoFreelistSync = false
+	return db.bdb.Update(func(*bbolt.Tx) error { return nil })
 }
 
 func (db *DB) addTx(tx *Tx) {

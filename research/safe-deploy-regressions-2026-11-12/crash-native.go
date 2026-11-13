@@ -86,7 +86,7 @@ func main() {
 	switch os.Args[1] {
 	case "write":
 		for n := int64(1); ; n++ {
-			db.Write(func(tx *edb.Tx) {
+			db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 				for i, id := range ids {
 					c := edb.Get[bm.Customer](tx, id)
 					if c.Extras == nil {
@@ -126,7 +126,7 @@ func main() {
 			panic("durable acknowledgment mismatch")
 		}
 		before := indexDigest(db)
-		db.Write(func(tx *edb.Tx) { tx.Reindex(tx.Schema().TableByRow((*bm.Customer)(nil)), nil) })
+		db.Write(edb.TxMetadata{}, func(tx *edb.Tx) { tx.Reindex(tx.Schema().TableByRow((*bm.Customer)(nil)), nil) })
 		after := indexDigest(db)
 		if before != after {
 			panic("indexes differ from recovered rows")

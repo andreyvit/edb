@@ -45,7 +45,7 @@ func TestReleasedStorageFormats(t *testing.T) {
 	for off := 0; off < len(snapshot); off += 8 {
 		binary.NativeEndian.PutUint64(snapshot[off:], binary.LittleEndian.Uint64(snapshot[off:]))
 	}
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, member)
 		c := tx.TableScan(members, FullScan())
 		if !c.Next() || !bytes.Equal(c.RawRow(), row) || !bytes.Equal(c.ValueMemento(), memento) {

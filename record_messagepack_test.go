@@ -41,8 +41,8 @@ func TestMessagePackRecordKeepsUnexposedBytes(t *testing.T) {
 		})
 	}).TableDef()
 	db := setup(t, schema)
-	db.Write(func(tx *Tx) { Put(tx, &messagePackMember{7, "before", "untouched"}) })
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, &messagePackMember{7, "before", "untouched"}) })
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		bucket := table.dataBucketIn(tx)
 		key := table.EncodeKey(uint64(7))
 		var v value

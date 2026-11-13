@@ -32,7 +32,7 @@ func TestSchemaComposition(t *testing.T) {
 
 	for name, db := range map[string]*DB{"source": sourceDB, "combined": setup(t, combined), "outer": setup(t, outer)} {
 		t.Run(name, func(t *testing.T) {
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				Put(tx, &User{ID: 1, Name: name})
 				tx.KVPutRaw(raw, []byte("key"), []byte(name))
 				v := 7
@@ -48,7 +48,7 @@ func TestSchemaComposition(t *testing.T) {
 					t.Fatal("included KV table or singleton did not round-trip")
 				}
 			})
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				tx.Reindex(users, byName)
 				DeleteByKey[User](tx, ID(1))
 			})

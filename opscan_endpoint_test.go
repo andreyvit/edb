@@ -25,7 +25,7 @@ func TestIndexPrimaryKeyEndpointsWithEmbeddedFooter(t *testing.T) {
 	}).TableDef()
 	db := setup(t, schema)
 	keys := []string{"a", "a\x01\x00", "a\x01\x02", "a\x01\x08", "b", "z"}
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for _, key := range keys {
 			Put(tx, &row{key, "b", 1})
 		}
@@ -72,7 +72,7 @@ func TestIndexPrimaryKeyEndpointsWithEmbeddedFooter(t *testing.T) {
 
 func TestEqualVariableIndexRangePaginationWork(t *testing.T) {
 	db, rows, _, idx := typedTestTable[ID](t, MessagePack)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for id := ID(1); id <= 1000; id++ {
 			rows.Put(tx, &typedTestRow[ID]{id, fmt.Sprint(id), "b"})
 		}
@@ -131,7 +131,7 @@ func TestEqualVariableIndexRangePaginationWork(t *testing.T) {
 
 func TestVariablePrimaryKeyEndpointSeekWork(t *testing.T) {
 	db, rows, _, idx := typedTestTable[string](t, MessagePack)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for id := 1; id <= 1000; id++ {
 			key := fmt.Sprintf("%08d", id)
 			rows.Put(tx, &typedTestRow[string]{key, key, "b"})
@@ -187,7 +187,7 @@ func TestVariablePrimaryKeyEndpointSeekWork(t *testing.T) {
 
 func TestVariablePrimaryKeyUpperEnvelopeDoesNotVisitSuccessorPrefix(t *testing.T) {
 	db, rows, _, idx := typedTestTable[string](t, MessagePack)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		rows.Put(tx, &typedTestRow[string]{"a", "wanted", "b"})
 		for i := range 1000 {
 			key := fmt.Sprintf("a\x02%04d", i)
@@ -229,7 +229,7 @@ func TestPrimaryKeyUpperEnvelopeMultibyteCount(t *testing.T) {
 
 func TestFixedWidthReverseExclusiveRangeWork(t *testing.T) {
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for day := 1; day <= 3; day++ {
 			for id := 1; id <= 1000; id++ {
 				Put(tx, &Widget{Key: AB{id, day}, Name: "x"})
@@ -274,14 +274,14 @@ func TestStorageSeekBeforeAndResume(t *testing.T) {
 			t.Fatal(key)
 		}
 	})
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for _, key := range []ID{1, 3, 5} {
 			rows.Put(tx, &typedTestRow[ID]{key, fmt.Sprint(key), "b"})
 		}
 	})
 	for _, deleted := range []bool{false, true} {
 		if deleted {
-			db.Write(func(tx *Tx) { rows.Delete(tx, 3) })
+			db.Write(TxMetadata{}, func(tx *Tx) { rows.Delete(tx, 3) })
 		}
 		db.Read(func(tx *Tx) {
 			for _, tt := range []struct {
@@ -322,14 +322,14 @@ func TestVariablePrimaryKeyBoundsAcrossFixedIndexValues(t *testing.T) {
 		idx = b.AddIndex[uint64]("group", func(_ *Tx, _ values.Value, r kvo.Record, yield func(uint64)) { yield(r.Get(indexGroupNumber)) }).IndexDef()
 	}).TableDef()
 	db := setup(t, schema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for _, r := range []row{{"a", 1}, {"a\x01\x00", 1}, {"z", 1}, {"b", 2}, {"b\x01\x00", 2}, {"y", 2}, {"outside", 3}} {
 			Put(tx, &r)
 		}
 	})
 	for _, deletedUpper := range []bool{false, true} {
 		if deletedUpper {
-			db.Write(func(tx *Tx) { table.Rows[row, string]().Delete(tx, "b") })
+			db.Write(TxMetadata{}, func(tx *Tx) { table.Rows[row, string]().Delete(tx, "b") })
 		}
 		for flags := 0; flags < 8; flags++ {
 			db.Read(func(tx *Tx) {
@@ -361,7 +361,7 @@ func TestVariableIndexRangeBookmarkWork(t *testing.T) {
 		for _, move := range []bool{false, true} {
 			t.Run(fmt.Sprintf("reverse=%v/move=%v", reverse, move), func(t *testing.T) {
 				db, rows, _, idx := typedTestTable[string](t, MessagePack)
-				db.Write(func(tx *Tx) {
+				db.Write(TxMetadata{}, func(tx *Tx) {
 					for id := 1; id <= 1000; id++ {
 						key := fmt.Sprintf("%08d", id)
 						rows.Put(tx, &typedTestRow[string]{key, key, "b"})
@@ -410,7 +410,7 @@ func TestVariableIndexRangeBookmarkWork(t *testing.T) {
 					if n == 0 {
 						break
 					}
-					db.Write(func(tx *Tx) {
+					db.Write(TxMetadata{}, func(tx *Tx) {
 						if move {
 							row := rows.Get(tx, last)
 							row.Group = "z"

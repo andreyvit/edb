@@ -475,7 +475,7 @@ func TestIndexScan_EmptyStrategyProducesEmptyCursor(t *testing.T) {
 func setupScanEdgeDB(t testing.TB) *DB {
 	t.Helper()
 	db := setup(t, scanEdgeSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for _, row := range scanEdgeRows() {
 			Put(tx, row)
 		}

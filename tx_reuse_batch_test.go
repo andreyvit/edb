@@ -46,7 +46,7 @@ func TestReuseBatchLifecycle(t *testing.T) {
 				go func() {
 					defer workers.Done()
 					<-start
-					call.err = db.Tx(true, func(tx *Tx) error {
+					call.err = db.Tx(TxMetadata{}, true, func(tx *Tx) error {
 						if call.role == 0 {
 							call.role = order.Add(1)
 						}
@@ -216,7 +216,7 @@ func reuseBatchChurn(t *testing.T, db *DB) {
 	for i := range ID(16) {
 		row := reuseBatchUser(200 + i)
 		var wrappers []*Tx
-		err := db.Tx(true, func(tx *Tx) error {
+		err := db.Tx(TxMetadata{}, true, func(tx *Tx) error {
 			wrappers = append(wrappers, tx)
 			Put(tx, row)
 			All(IndexScan[User](tx, usersByName, ExactScan(row.Name)))
@@ -246,7 +246,7 @@ func reuseBatchChurn(t *testing.T, db *DB) {
 func reuseBatchVerify(t *testing.T, db *DB, accepted, absent []*User) {
 	t.Helper()
 	var wrapper *Tx
-	err := db.Tx(false, func(tx *Tx) error {
+	err := db.Tx(TxMetadata{}, false, func(tx *Tx) error {
 		wrapper = tx
 		return reuseBatchRows(tx, accepted, absent)
 	})

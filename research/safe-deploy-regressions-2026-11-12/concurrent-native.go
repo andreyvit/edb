@@ -144,7 +144,7 @@ func main() {
 			defer writers.Done()
 			for step := 1; step <= iterations; step++ {
 				localAttempts := 0
-				err := db.Tx(true, func(tx *edb.Tx) error {
+				err := db.Tx(edb.TxMetadata{}, true, func(tx *edb.Tx) error {
 					attempts.Add(1)
 					localAttempts++
 					c := edb.Get[bm.Customer](tx, id)

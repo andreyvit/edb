@@ -85,7 +85,7 @@ func legacyUsersDB(t testing.TB) string {
 	db := must(Open(path, schema, Options{IsTesting: true}))
 	defer db.Close()
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &User{ID: 1, Name: "Alice", Email: "alice@example.com"})
 	})
 

@@ -84,7 +84,7 @@ func main() {
 	})
 	for _, sample := range edits {
 		func() {
-			tx := db.BeginUpdate()
+			tx := db.BeginUpdate(edb.TxMetadata{})
 			defer tx.Close() // deliberately never commit the fixture edit
 			native, before := tx.Get(sample.table, sample.key)
 			want := reflect.ValueOf(native)

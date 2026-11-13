@@ -34,7 +34,7 @@ var (
 
 func TestCorruptValue_DecodeRowPayloadReturnsErrors(t *testing.T) {
 	db := setupCorruptValueDB(t)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		keyRaw := corruptValuesTable.EncodeKey(ID(1))
 		indexRaw := existingValueIndexBytes(t, tx, corruptValuesTable, keyRaw)
 		rawValue := encodedCorruptValue(&corruptValueWrongPayload{
@@ -87,7 +87,7 @@ func TestCorruptValue_DecodeRowPayloadReturnsErrors(t *testing.T) {
 
 func TestCorruptValue_MalformedRecordPanicsAtDecodeBoundary(t *testing.T) {
 	db := setupCorruptValueDB(t)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		keyRaw := corruptValuesTable.EncodeKey(ID(1))
 		rawValue := existingRawTableValue(t, tx, corruptValuesTable, keyRaw)
 		putRawTableValue(t, tx, corruptValuesTable, keyRaw, rawValue[:len(rawValue)-1])
@@ -131,7 +131,7 @@ func TestCorruptValue_MalformedRecordPanicsAtDecodeBoundary(t *testing.T) {
 func setupCorruptValueDB(t testing.TB) *DB {
 	t.Helper()
 	db := setup(t, corruptValueSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &corruptValueRow{
 			ID:    1,
 			Code:  "one",

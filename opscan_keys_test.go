@@ -14,7 +14,7 @@ func TestKeyCursorSets(t *testing.T) {
 func testKeyCursorSets[Key comparable](t *testing.T, keys []Key) {
 	db, rows, _, group := typedTestTable[Key](t, MessagePack)
 	records := rows.Records()
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for i, key := range keys {
 			g := "vip"
 			if i%2 != 0 {
@@ -90,7 +90,7 @@ func TestKeyMergeDetectsNonMonotonicIndexKeys(t *testing.T) {
 	db, rows, _, group := typedTestTable[string](t, Fast2)
 	// A complete encoded key can be a prefix of another when the string embeds
 	// tuple-footer bytes. Appending the index footer can then change their order.
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		rows.Put(tx, &typedTestRow[string]{"a", "one", "vip"})
 		rows.Put(tx, &typedTestRow[string]{"a\x01\x00", "two", "vip"})
 	})

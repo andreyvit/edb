@@ -9,7 +9,7 @@ func TestTableScan_EdgeCases(t *testing.T) {
 	u2 := &User{ID: 2, Name: "b", Email: "b"}
 	u3 := &User{ID: 3, Name: "c", Email: "c"}
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) { Put(tx, u1, u2, u3) })
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, u1, u2, u3) })
 
 	db.Read(func(tx *Tx) {
 		keys := AllKeys[ID](TableScan[User](tx, LowerBoundScan(ID(2), false)).Raw())
@@ -39,7 +39,7 @@ func TestIndexScan_Range_InclusiveExclusive(t *testing.T) {
 	u2 := &User{ID: 2, Name: "n", Email: "b"}
 	u3 := &User{ID: 3, Name: "n", Email: "c"}
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) { Put(tx, u1, u2, u3) })
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, u1, u2, u3) })
 
 	db.Read(func(tx *Tx) {
 		ids := AllKeys[ID](IndexScan[User](tx, usersByEmail, RangeScan("b", nil, false, false)).Raw())
@@ -70,7 +70,7 @@ func TestIndexScan_PrimaryKeyRange(t *testing.T) {
 	u3 := &User{ID: 3, Name: "bar", Email: "c"}
 	u4 := &User{ID: 4, Name: "baz", Email: "d"}
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) { Put(tx, u1, u2, u3, u4) })
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, u1, u2, u3, u4) })
 
 	db.Read(func(tx *Tx) {
 		ids := AllKeys[ID](IndexScan[User](tx, usersByName, ExactScan("bar").PrimaryKeyRange(ID(2), ID(4), true, false)).Raw())

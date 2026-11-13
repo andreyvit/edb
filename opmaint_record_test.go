@@ -36,7 +36,7 @@ func TestReindexMessagePackProjection(t *testing.T) {
 			}).TableDef()
 			tbl.latestSchemaVer = 1
 			db := setup(t, schema)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				Put(tx, &accessMember{ID: 42, Name: "original", Private: []byte{1, 2, 3}, Details: &accessDetails{Count: 7, Private: "opaque"}})
 				c := tx.TableScan(tbl, FullScan())
 				c.Next()

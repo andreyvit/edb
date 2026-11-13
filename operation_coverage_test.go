@@ -12,7 +12,7 @@ func TestOperationCoverage_ReadLookupDeleteVerbosePaths(t *testing.T) {
 	u1 := &User{ID: 1, Name: "foo", Email: "foo@example.com"}
 	u2 := &User{ID: 2, Name: "bar", Email: "bar@example.com"}
 	db := setupVerboseDB(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, u1, u2)
 	})
 
@@ -93,7 +93,7 @@ func TestOperationCoverage_ReadLookupDeleteVerbosePaths(t *testing.T) {
 		})
 	})
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		if !tx.DeleteByKey(usersTable, ID(1)) {
 			t.Fatalf("DeleteByKey(1) = false, wanted true")
 		}
@@ -118,7 +118,7 @@ func TestOperationCoverage_ReadLookupDeleteVerbosePaths(t *testing.T) {
 
 func TestOperationCoverage_PutNoopIndexCleanupAndChangeFlags(t *testing.T) {
 	db := setupVerboseDB(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		u := &User{ID: 1, Name: "foo", Email: "foo@example.com"}
 		if !Put(tx, u) {
 			t.Fatalf("initial Put = false, wanted true")
@@ -141,7 +141,7 @@ func TestOperationCoverage_PutNoopIndexCleanupAndChangeFlags(t *testing.T) {
 	})
 
 	var got []*Change
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		tx.OnChange(map[*TableDef]ChangeFlags{
 			usersTable: ChangeFlagNotify | ChangeFlagIncludeNewGoStruct | ChangeFlagIncludeOldGoStruct,
 		}, func(tx *Tx, chg *Change) {
@@ -155,7 +155,7 @@ func TestOperationCoverage_PutNoopIndexCleanupAndChangeFlags(t *testing.T) {
 	}
 
 	got = nil
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &User{ID: 3, Name: "raw", Email: "raw@example.com"})
 		Put(tx, &User{ID: 4, Name: "known", Email: "known@example.com"})
 		tx.OnChange(map[*TableDef]ChangeFlags{
@@ -173,7 +173,7 @@ func TestOperationCoverage_PutNoopIndexCleanupAndChangeFlags(t *testing.T) {
 	}
 
 	got = nil
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		tx.OnChange(map[*TableDef]ChangeFlags{
 			usersTable: ChangeFlagNotify | ChangeFlagIncludeKey,
 		}, func(tx *Tx, chg *Change) {
@@ -195,7 +195,7 @@ func TestOperationCoverage_ChangeHandlersWithCorruptOldRows(t *testing.T) {
 	db := setupCorruptValueDB(t)
 	db.logf = func(string, ...any) {}
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		keyRaw := corruptValuesTable.EncodeKey(ID(1))
 		indexRaw := existingValueIndexBytes(t, tx, corruptValuesTable, keyRaw)
 		rawValue := encodedCorruptValue(&corruptValueWrongPayload{
@@ -207,7 +207,7 @@ func TestOperationCoverage_ChangeHandlersWithCorruptOldRows(t *testing.T) {
 	})
 
 	var deleteChange *Change
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		tx.OnChange(map[*TableDef]ChangeFlags{
 			corruptValuesTable: ChangeFlagNotify | ChangeFlagIncludeOldGoStruct,
 		}, func(tx *Tx, chg *Change) {
@@ -221,7 +221,7 @@ func TestOperationCoverage_ChangeHandlersWithCorruptOldRows(t *testing.T) {
 		t.Fatalf("delete corrupt old row change = %+v, wanted no decoded row", deleteChange)
 	}
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &corruptValueRow{ID: 1, Code: "one", Count: 1})
 		keyRaw := corruptValuesTable.EncodeKey(ID(1))
 		indexRaw := existingValueIndexBytes(t, tx, corruptValuesTable, keyRaw)
@@ -234,7 +234,7 @@ func TestOperationCoverage_ChangeHandlersWithCorruptOldRows(t *testing.T) {
 	})
 
 	var putChange *Change
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		tx.OnChange(map[*TableDef]ChangeFlags{
 			corruptValuesTable: ChangeFlagNotify | ChangeFlagIncludeNewGoStruct | ChangeFlagIncludeOldGoStruct,
 		}, func(tx *Tx, chg *Change) {
@@ -246,7 +246,7 @@ func TestOperationCoverage_ChangeHandlersWithCorruptOldRows(t *testing.T) {
 		t.Fatalf("put corrupt old row change = %+v, wanted new row without old row", putChange)
 	}
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		keyRaw := corruptValuesTable.EncodeKey(ID(1))
 		putRawTableValue(t, tx, corruptValuesTable, keyRaw, []byte{1, 1, 1, 1})
 		assertPanics(t, func() {
@@ -257,7 +257,7 @@ func TestOperationCoverage_ChangeHandlersWithCorruptOldRows(t *testing.T) {
 
 func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 	db := setupCorruptValueDB(t)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		keyRaw := corruptValuesTable.EncodeKey(ID(1))
 		indexRaw := existingValueIndexBytes(t, tx, corruptValuesTable, keyRaw)
 		rawValue := encodedCorruptValue(&corruptValueWrongPayload{
@@ -297,7 +297,7 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 			t.Fatalf("DecodeMementoVal with bad key = (%v, %+v, %v), wanted error", row, meta, err)
 		}
 	})
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		putRawTableValue(t, tx, corruptValuesTable, corruptValuesTable.EncodeKey(ID(1)), []byte{1, 1, 1, 1})
 	})
 	db.Read(func(tx *Tx) {
@@ -307,7 +307,7 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 	})
 
 	db2 := setup(t, basicSchema)
-	db2.Write(func(tx *Tx) {
+	db2.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &User{ID: 1, Name: "foo", Email: "foo@example.com"})
 	})
 	db2.Read(func(tx *Tx) {
@@ -320,7 +320,7 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 			t.Fatalf("decodeNonUniqueIndexTableKey = (%v, %x), wanted foo/1", tup, keyRaw)
 		}
 	})
-	db2.Write(func(tx *Tx) {
+	db2.Write(TxMetadata{}, func(tx *Tx) {
 		_ = tx.UnsafeDeleteByKeyRawSkippingIndex(usersTable, usersTable.EncodeKey(ID(1)))
 	})
 	db2.Read(func(tx *Tx) {
@@ -330,7 +330,7 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 	})
 
 	db3 := setup(t, basicSchema)
-	db3.Write(func(tx *Tx) {
+	db3.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &User{ID: 1, Name: "foo", Email: "foo@example.com"})
 		ensure(usersByEmail.bucketIn(tx).Put(usersByEmail.EncodeKey("foo@example.com"), []byte{0xff}))
 	})
@@ -339,7 +339,7 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 			_ = tx.LookupKey(usersByEmail, "foo@example.com")
 		})
 	})
-	db3.Write(func(tx *Tx) {
+	db3.Write(TxMetadata{}, func(tx *Tx) {
 		badValue := tuple{usersTable.EncodeKey(ID(1)), usersTable.EncodeKey(ID(2))}.encode(nil)
 		ensure(usersByEmail.bucketIn(tx).Put(usersByEmail.EncodeKey("foo@example.com"), badValue))
 	})
@@ -350,7 +350,7 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 	})
 
 	db4 := setup(t, basicSchema)
-	db4.Write(func(tx *Tx) {
+	db4.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &User{ID: 1, Name: "foo", Email: "foo@example.com"})
 		fe := flatEncoder{}
 		usersByName.keyEnc.encodeInto(&fe, reflect.ValueOf("foo"))
@@ -379,7 +379,7 @@ func TestOperationCoverage_KVOperations(t *testing.T) {
 	v1 := buildKV(0x42, 0x0055)
 	v2 := buildKV(0x42, 0x8877)
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		if got := tx.KVGetRaw(wumpets, k1); got != nil {
 			t.Fatalf("KVGetRaw(missing) = %x, wanted nil", got)
 		}
@@ -394,7 +394,7 @@ func TestOperationCoverage_KVOperations(t *testing.T) {
 		tx.KVPutRaw(kubets, []byte("raw"), nil)
 	})
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		tx.KVPutRaw(wumpets, k1, v2.Bytes())
 	})
 	db.Read(func(tx *Tx) {
@@ -449,7 +449,7 @@ func TestOperationCoverage_TxAndSingletonHelpers(t *testing.T) {
 			t.Fatalf("SGet before write = true, wanted false")
 		}
 	})
-	tx := db.BeginUpdate()
+	tx := db.BeginUpdate(TxMetadata{})
 	if !tx.IsWritable() {
 		t.Fatalf("BeginUpdate transaction should be writable")
 	}
@@ -500,13 +500,13 @@ func TestOperationCoverage_TxAndSingletonHelpers(t *testing.T) {
 	}
 	readTx.Close()
 
-	if err := db.Tx(false, func(tx *Tx) error {
+	if err := db.Tx(TxMetadata{}, false, func(tx *Tx) error {
 		return nil
 	}); err != nil {
 		t.Fatalf("read Tx failed: %v", err)
 	}
 
-	if err := db.Tx(true, func(tx *Tx) error {
+	if err := db.Tx(TxMetadata{}, true, func(tx *Tx) error {
 		tx.CommitDespiteError()
 		next := 9
 		SPut(tx, sk, &next)
@@ -524,17 +524,17 @@ func TestOperationCoverage_TxAndSingletonHelpers(t *testing.T) {
 
 	memDB := must(Open(InMemory, scm, Options{IsTesting: true}))
 	t.Cleanup(memDB.Close)
-	if err := memDB.Tx(false, func(tx *Tx) error {
+	if err := memDB.Tx(TxMetadata{}, false, func(tx *Tx) error {
 		return errBoom
 	}); !errors.Is(err, errBoom) {
 		t.Fatalf("in-memory read Tx = %v, wanted boom", err)
 	}
-	if err := memDB.Tx(true, func(tx *Tx) error {
+	if err := memDB.Tx(TxMetadata{}, true, func(tx *Tx) error {
 		return errBoom
 	}); !errors.Is(err, errBoom) {
 		t.Fatalf("in-memory write Tx before write = %v, wanted boom", err)
 	}
-	if err := memDB.Tx(true, func(tx *Tx) error {
+	if err := memDB.Tx(TxMetadata{}, true, func(tx *Tx) error {
 		dropped := 11
 		SPut(tx, sk, &dropped)
 		return errBoom
@@ -547,7 +547,7 @@ func TestOperationCoverage_TxAndSingletonHelpers(t *testing.T) {
 			t.Fatalf("SGet after failed in-memory write = %d, wanted missing", got)
 		}
 	})
-	if err := memDB.Tx(true, func(tx *Tx) error {
+	if err := memDB.Tx(TxMetadata{}, true, func(tx *Tx) error {
 		kept := 13
 		SPut(tx, sk, &kept)
 		tx.CommitDespiteError()
@@ -562,7 +562,7 @@ func TestOperationCoverage_TxAndSingletonHelpers(t *testing.T) {
 		}
 	})
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		SPutRaw(tx, sk, []byte{0xc1})
 	})
 	db.Read(func(tx *Tx) {
@@ -587,7 +587,7 @@ func TestOperationCoverage_TxAndSingletonHelpers(t *testing.T) {
 
 func TestOperationCoverage_ReindexAllIndexesWithMissingBucket(t *testing.T) {
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx,
 			&User{ID: 1, Name: "foo", Email: "foo@example.com"},
 			&User{ID: 2, Name: "bar", Email: "bar@example.com"},

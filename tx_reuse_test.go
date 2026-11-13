@@ -14,7 +14,7 @@ import (
 func TestTxSkipsBufferTrackingWhenReuseDisabled(t *testing.T) {
 	db := openTxReuseDB(t, basicSchema, false)
 
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &User{ID: 1, Name: "foo", Email: "foo@example.com"})
 		if tx.valueBufs != nil {
 			t.Fatalf("valueBufs tracked with reuse disabled: %d", len(tx.valueBufs))
@@ -38,7 +38,7 @@ func TestTxSkipsBufferTrackingWhenReuseDisabled(t *testing.T) {
 func TestTxTracksAndReleasesBuffersWhenReuseEnabled(t *testing.T) {
 	db := openTxReuseDB(t, basicSchema, true)
 
-	tx := db.BeginUpdate()
+	tx := db.BeginUpdate(TxMetadata{})
 	defer tx.Close()
 	Put(tx, &User{ID: 1, Name: "foo", Email: "foo@example.com"})
 	if len(tx.valueBufs) == 0 {
@@ -85,7 +85,7 @@ func TestTxReuseBuffersTransactionOutcomes(t *testing.T) {
 			committed := mode == "commit" || strings.HasPrefix(mode, "commit-despite-")
 			switch mode {
 			case "commit", "rollback":
-				tx := db.BeginUpdate()
+				tx := db.BeginUpdate(TxMetadata{})
 				defer tx.Close()
 				mutate(tx)
 				if committed {
@@ -99,7 +99,7 @@ func TestTxReuseBuffersTransactionOutcomes(t *testing.T) {
 				var recovered any
 				func() {
 					defer func() { recovered = recover() }()
-					db.Write(func(tx *Tx) {
+					db.Write(TxMetadata{}, func(tx *Tx) {
 						mutate(tx)
 						panic(wantErr)
 					})
@@ -108,7 +108,7 @@ func TestTxReuseBuffersTransactionOutcomes(t *testing.T) {
 					t.Fatalf("panic = %v, wanted %v", recovered, wantErr)
 				}
 			default:
-				err := db.Tx(true, func(tx *Tx) error {
+				err := db.Tx(TxMetadata{}, true, func(tx *Tx) error {
 					mutate(tx)
 					if committed {
 						tx.CommitDespiteError()
@@ -150,14 +150,14 @@ func TestTxReuseBuffersManagedReadCleanup(t *testing.T) {
 	for _, panicRead := range []bool{false, true} {
 		t.Run(fmt.Sprintf("panic=%v", panicRead), func(t *testing.T) {
 			db := openTxReuseDB(t, basicSchema, true)
-			db.Write(func(tx *Tx) { Put(tx, &User{ID: 1, Name: "reader", Email: "reader@example.com"}) })
+			db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, &User{ID: 1, Name: "reader", Email: "reader@example.com"}) })
 			wantErr := errors.New("stop reading")
 			var captured *Tx
 			var err error
 			var recovered any
 			func() {
 				defer func() { recovered = recover() }()
-				err = db.Tx(false, func(tx *Tx) error {
+				err = db.Tx(TxMetadata{}, false, func(tx *Tx) error {
 					captured = tx
 					c := ExactIndexScan[User](tx, usersByName, "reader")
 					if !c.Next() || c.Row().ID != 1 || len(tx.indexKeyBufs) == 0 {
@@ -203,7 +203,7 @@ func TestTxReuseBuffersGrowthAndNoopWrites(t *testing.T) {
 	var previousRows []*txReuseGrowthRow
 	for round := range 3 {
 		rows := make([]*txReuseGrowthRow, byteBufferListCapacityInitial+1)
-		tx := db.BeginUpdate()
+		tx := db.BeginUpdate(TxMetadata{})
 		defer tx.Close()
 		cursors := make([]Cursor[txReuseGrowthRow], len(rows))
 		for i := range rows {
@@ -304,7 +304,7 @@ func TestTxReuseBuffersEncodingFailure(t *testing.T) {
 	db := openTxReuseDB(t, schema, true)
 	var captured *Tx
 	var values, indexValues int
-	err := db.Tx(true, func(tx *Tx) error {
+	err := db.Tx(TxMetadata{}, true, func(tx *Tx) error {
 		captured = tx
 		defer func() {
 			values, indexValues = len(tx.valueBufs), len(tx.indexValueBufs)
@@ -321,7 +321,7 @@ func TestTxReuseBuffersEncodingFailure(t *testing.T) {
 	}
 	assertTxReuseReleased(t, captured)
 	row := &txReuseEncodingRow{Key: 2, Value: "valid"}
-	db.Write(func(tx *Tx) { Put(tx, row) })
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, row) })
 	db.Read(func(tx *Tx) {
 		if Get[txReuseEncodingRow](tx, 1) != nil || LookupExists(tx, index, 1) {
 			t.Fatal("encoding failure persisted a row or index entry")

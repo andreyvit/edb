@@ -41,10 +41,10 @@ func main() {
 	defer func() { db.Close() }()
 	product := &bm.Product{ID: 1, TenantID: 1, ExtID: "audit", Variants: []*bm.ProductVariant{{ID: 2, ExtID: "audit-variant"}}}
 	coupon := &bm.ExtraCoupon{ID: 3, TenantID: 1, CustomerID: 4, Coupons: mcoupon.CouponSet{{Code: "audit"}}}
-	db.Write(func(tx *edb.Tx) { edb.Put(tx, product, coupon) })
+	db.Write(edb.TxMetadata{}, func(tx *edb.Tx) { edb.Put(tx, product, coupon) })
 	for _, kind := range []string{"product", "coupon"} {
 		writeError := caught(func() {
-			db.Write(func(tx *edb.Tx) {
+			db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 				if kind == "product" {
 					row := edb.Get[bm.Product](tx, product.ID)
 					row.Variants = []*bm.ProductVariant{nil}

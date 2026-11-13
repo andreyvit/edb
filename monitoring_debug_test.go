@@ -10,7 +10,7 @@ func TestTableStatsAndDump(t *testing.T) {
 	u1 := &User{ID: 1, Name: "foo", Email: "foo@example.com"}
 	u2 := &User{ID: 2, Name: "bar", Email: "bar@example.com"}
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, u1, u2)
 		tx.KVPutRaw(kubets, x("01"), []byte{1})
 		tx.KVPutRaw(kubets, x("02"), []byte{2})
@@ -38,7 +38,7 @@ func TestTableStatsAndDump(t *testing.T) {
 func TestDumpFlagsAndDump(t *testing.T) {
 	u1 := &User{ID: 1, Name: "foo", Email: "foo@example.com"}
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) { Put(tx, u1) })
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, u1) })
 
 	db.Read(func(tx *Tx) {
 		if !DumpTableHeaders.Contains(DumpTableHeaders) || DumpTableHeaders.Contains(DumpRows) {

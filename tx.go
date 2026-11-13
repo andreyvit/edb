@@ -20,15 +20,17 @@ type Txish interface {
 }
 
 type Tx struct {
-	db        *DB
-	stx       storageTx
-	btx       *bbolt.Tx
-	managed   bool
-	closed    bool
-	startTime time.Time
-	stack     []byte
-	verbosity int
-	logger    *slog.Logger
+	db          *DB
+	stx         storageTx
+	btx         *bbolt.Tx
+	managed     bool
+	closed      bool
+	startTime   time.Time
+	stack       []byte
+	verbosity   int
+	logger      *slog.Logger
+	metadata    TxMetadata
+	observation transactionObservation
 
 	written          bool
 	commitDespiteErr bool
@@ -49,12 +51,20 @@ type Tx struct {
 	changeOptions map[*TableDef]ChangeFlags
 }
 
-func (db *DB) newTx(stx storageTx, managed bool, memo map[string]any, stack []byte) *Tx {
+func (db *DB) newTx(metadata TxMetadata, stx storageTx, managed bool, memo map[string]any, stack []byte) (tx *Tx) {
+	if !managed {
+		defer func() {
+			if tx == nil {
+				_ = stx.Rollback()
+			}
+		}()
+	}
 	if db.IsClosed() {
 		panic("database closed")
 	}
 	db.lastSize.Store(stx.Size())
 	if stx.Writable() {
+		metadata = metadata.forWrite()
 		WriterCount.Add(1)
 	} else {
 		ReaderCount.Add(1)
@@ -66,7 +76,8 @@ func (db *DB) newTx(stx storageTx, managed bool, memo map[string]any, stack []by
 	if p, ok := stx.(interface{ BoltTx() *bbolt.Tx }); ok {
 		btx = p.BoltTx()
 	}
-	tx := &Tx{
+	tx = &Tx{
+		metadata:  metadata,
 		db:        db,
 		stx:       stx,
 		btx:       btx,
@@ -95,6 +106,10 @@ func (tx *Tx) DB() *DB {
 		panic("tx is closed")
 	}
 	return tx.db
+}
+
+func (tx *Tx) Metadata() TxMetadata {
+	return tx.metadata
 }
 
 func (tx *Tx) StartTime() time.Time {
@@ -168,7 +183,9 @@ func (tx *Tx) OnChange(opts map[*TableDef]ChangeFlags, f func(tx *Tx, chg *Chang
 //
 // A read-only transaction would be a natural extension of Check-Mutate-Read
 // with Check and Mutate phases skipped.
-func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
+func (db *DB) Tx(metadata TxMetadata, writable bool, f func(tx *Tx) error) error {
+	observation := db.startObservation(metadata, writable)
+	defer observation.finish()
 	if db.IsClosed() {
 		panic("database closed")
 	}
@@ -184,7 +201,7 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 			if err != nil {
 				return err
 			}
-			tx := db.newTx(stx, false, nil, nil)
+			tx := db.newTx(metadata, stx, false, nil, nil)
 			defer tx.Close()
 
 			funcErr := safelyCall(f, tx)
@@ -222,7 +239,7 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 				return funcErr
 			}
 
-			tx := db.newTx(&boltStorageTx{btx: btx}, true, memo, stack)
+			tx := db.newTx(metadata, &boltStorageTx{btx: btx}, true, memo, stack)
 			if db.reuseTxBuffers {
 				managedTxs = append(managedTxs, tx)
 			}
@@ -245,13 +262,13 @@ func (db *DB) Tx(writable bool, f func(tx *Tx) error) error {
 			if err != nil {
 				return err
 			}
-			tx := db.newTx(stx, false, nil, nil)
+			tx := db.newTx(metadata, stx, false, nil, nil)
 			defer tx.Close()
 			return f(tx)
 		}
 
 		return db.bdb.View(func(btx *bbolt.Tx) error {
-			tx := db.newTx(&boltStorageTx{btx: btx}, true, nil, nil)
+			tx := db.newTx(metadata, &boltStorageTx{btx: btx}, true, nil, nil)
 			if db.reuseTxBuffers {
 				managedTxs = append(managedTxs, tx)
 			}
@@ -287,7 +304,7 @@ func (db *DB) BeginRead() *Tx {
 	if err != nil {
 		panic(fmt.Errorf("failed to start reading: %w", err))
 	}
-	return db.newTx(stx, false, nil, nil)
+	return db.newTx(TxMetadata{}, stx, false, nil, nil)
 }
 
 func (db *DB) Read(f func(tx *Tx)) {
@@ -301,8 +318,10 @@ func (db *DB) ReadErr(f func(tx *Tx) error) error {
 	return f(tx)
 }
 
-func (db *DB) Write(f func(tx *Tx)) {
-	tx := db.BeginUpdate()
+func (db *DB) Write(metadata TxMetadata, f func(tx *Tx)) {
+	observation := db.startObservation(metadata, true)
+	defer observation.finish()
+	tx := db.beginUpdate(metadata)
 	defer tx.Close()
 	f(tx)
 	err := tx.Commit()
@@ -311,7 +330,19 @@ func (db *DB) Write(f func(tx *Tx)) {
 	}
 }
 
-func (db *DB) BeginUpdate() *Tx {
+func (db *DB) BeginUpdate(metadata TxMetadata) (tx *Tx) {
+	observation := db.startObservation(metadata, true)
+	defer func() {
+		if tx == nil {
+			observation.finish()
+		}
+	}()
+	tx = db.beginUpdate(metadata)
+	tx.observation = observation
+	return tx
+}
+
+func (db *DB) beginUpdate(metadata TxMetadata) *Tx {
 	if db.IsClosed() {
 		panic("database closed")
 	}
@@ -319,7 +350,7 @@ func (db *DB) BeginUpdate() *Tx {
 	if err != nil {
 		panic(fmt.Errorf("db.BeginTx(true) failed: %w", err))
 	}
-	return db.newTx(stx, false, nil, nil)
+	return db.newTx(metadata, stx, false, nil, nil)
 }
 
 func (tx *Tx) IsWritable() bool {
@@ -377,6 +408,7 @@ func (tx *Tx) Close() {
 	if tx.closed {
 		return
 	}
+	defer tx.observation.finish()
 	tx.closed = true
 	if debugTrackTxns {
 		tx.db.removeTx(tx)
@@ -430,7 +462,9 @@ func (tx *Tx) release() {
 }
 
 func (tx *Tx) Commit() error {
-	return tx.stx.Commit()
+	err := tx.stx.Commit()
+	tx.observation.finish()
+	return err
 }
 
 // BoltTx returns the underlying Bolt transaction if this DB uses Bolt, otherwise nil.

@@ -32,7 +32,7 @@ func TestRecordMigrationReadSaveAndReindex(t *testing.T) {
 					}
 				})
 				db := setup(t, schema)
-				db.Write(func(tx *Tx) {
+				db.Write(TxMetadata{}, func(tx *Tx) {
 					Put(tx, &changeRecordRow{ID: "first", Name: "old", Tags: []string{"untouched"}}, &changeRecordRow{ID: "second", Name: "old", Tags: []string{"untouched"}})
 				})
 				table.latestSchemaVer = 2
@@ -61,7 +61,7 @@ func TestRecordMigrationReadSaveAndReindex(t *testing.T) {
 				if calls != 2 {
 					t.Fatal("migration ran more than once per read", calls)
 				}
-				db.Write(func(tx *Tx) {
+				db.Write(TxMetadata{}, func(tx *Tx) {
 					first := tx.OpenRecordEdit(table, "first")
 					stale := tx.OpenRecordEdit(table, "first")
 					tx.SaveRecord(first) // Persist migration even without explicit edits.
@@ -115,10 +115,10 @@ func TestRecordMigrationProjectionPreservesUnmodeledFields(t *testing.T) {
 	}).TableDef()
 	table.latestSchemaVer = 1
 	db := setup(t, schema)
-	db.Write(func(tx *Tx) { Put(tx, &changeProjectedRow{9, "old", "opaque"}) })
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, &changeProjectedRow{9, "old", "opaque"}) })
 	table.latestSchemaVer = 2
 	changeOpaqueDecodes = 0
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		edit := tx.OpenRecordEdit(table, uint64(9))
 		tx.SaveRecord(edit)
 		if changeOpaqueDecodes != 0 {
@@ -148,7 +148,7 @@ func TestRecordMigrationFailureRollsBackReindex(t *testing.T) {
 				}
 			})
 			db := setup(t, schema)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				Put(tx, &changeRecordRow{ID: "first", Name: "old"}, &changeRecordRow{ID: "second", Name: "old"})
 			})
 			before := make(map[string][]byte)
@@ -158,7 +158,7 @@ func TestRecordMigrationFailureRollsBackReindex(t *testing.T) {
 				}
 			})
 			table.latestSchemaVer = 2
-			assertRegistrationPanic(t, "migration failed", func() { db.Write(func(tx *Tx) { tx.Reindex(table, nil) }) })
+			assertRegistrationPanic(t, "migration failed", func() { db.Write(TxMetadata{}, func(tx *Tx) { tx.Reindex(table, nil) }) })
 			if calls != 2 {
 				t.Fatalf("expected a failure after the first migrated write, got %d calls", calls)
 			}
@@ -216,8 +216,8 @@ func TestMessagePackAliasMigrationSaveAndReindex(t *testing.T) {
 				}).TableDef()
 				table.latestSchemaVer = 1
 				db := setup(t, schema)
-				db.Write(func(tx *Tx) { Put(tx, &migrationAliasRow{7, MigrationAliasValues{"flat"}, "keep"}) })
-				db.Write(func(tx *Tx) {
+				db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, &migrationAliasRow{7, MigrationAliasValues{"flat"}, "keep"}) })
+				db.Write(TxMetadata{}, func(tx *Tx) {
 					bucket := table.dataBucketIn(tx)
 					key := table.EncodeKey(uint64(7))
 					var v value
@@ -240,7 +240,7 @@ func TestMessagePackAliasMigrationSaveAndReindex(t *testing.T) {
 						t.Fatalf("fallback read: %#v", row)
 					}
 				})
-				db.Write(func(tx *Tx) {
+				db.Write(TxMetadata{}, func(tx *Tx) {
 					if reindex {
 						tx.Reindex(table, nil)
 					} else {
@@ -305,7 +305,7 @@ func TestMigratorsRunInRegistrationOrder(t *testing.T) {
 			db := setup(t, schema)
 			for _, original := range []uint64{1, 2, 3, 4} {
 				table.latestSchemaVer = original
-				db.Write(func(tx *Tx) { Put(tx, &changeRecordRow{ID: "key", Name: "v"}) })
+				db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, &changeRecordRow{ID: "key", Name: "v"}) })
 				table.latestSchemaVer = 4
 				var wantCalls []uint64
 				want := "v"

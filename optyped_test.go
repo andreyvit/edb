@@ -86,7 +86,7 @@ func testTypedTables[Key comparable](t *testing.T, format StorageFormat, first, 
 	records := rows.Records()
 	unique, multiple := records.bindIndex[string](byName), records.bindIndex[string](byGroup)
 	native := rows.bindIndex[string](byGroup)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		rows.Put(tx, &typedTestRow[Key]{second, "bob", "vip"})
 		rows.Put(tx, &typedTestRow[Key]{first, "alice", "vip"})
 	})
@@ -123,7 +123,7 @@ func testTypedTables[Key comparable](t *testing.T, format StorageFormat, first, 
 			t.Fatal("raw key lookup")
 		}
 	})
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		edit := records.Edit(tx, first)
 		edit.Editor().SetValue(1, values.String("ann"))
 		if !records.Save(tx, edit) || records.Save(tx, edit) {
@@ -166,7 +166,7 @@ func TestOrdinaryAndCheckedRecordWrites(t *testing.T) {
 			name := kvo.BindStringProp[string](table.Model().Type().Schema(), 1)
 			key := AB{9, 4}
 			var retained *RecordEdit
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				if table.Edit(tx, key) != nil {
 					t.Fatal("missing edit")
 				}
@@ -202,7 +202,7 @@ func TestOrdinaryAndCheckedRecordWrites(t *testing.T) {
 				}
 				retained = e
 			})
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				if _, err := table.TrySave(tx, retained); err == nil {
 					t.Fatal("cross transaction edit accepted")
 				}

@@ -18,7 +18,7 @@ func AssertIntegrity(t testing.TB, tx *Tx) {
 
 func TestAssertIntegrityAcceptsCurrentState(t *testing.T) {
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx,
 			&User{ID: 1, Name: "foo", Email: "foo@example.com"},
 			&User{ID: 2, Name: "bar", Email: "bar@example.com"},
@@ -34,7 +34,7 @@ func TestAssertIntegrityAcceptsCurrentState(t *testing.T) {
 
 func TestAssertIntegrityDetectsTableIndexDamage(t *testing.T) {
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &User{ID: 1, Name: "foo", Email: "foo@example.com"})
 		_ = tx.UnsafeDeleteByKeyRawSkippingIndex(usersTable, usersTable.EncodeKey(ID(1)))
 	})
@@ -46,7 +46,7 @@ func TestAssertIntegrityDetectsTableIndexDamage(t *testing.T) {
 
 func TestAssertIntegrityDetectsKVIndexDamage(t *testing.T) {
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		tx.KVPutRaw(wumpets, x("10 12"), buildKV(0x42, 0x8877).Bytes())
 		ensure(tx.stx.Bucket(wumpetsByB.idxBuck, "").Delete(x("88 77 10 12")))
 	})

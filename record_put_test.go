@@ -58,7 +58,7 @@ func TestKeylessRecordPutAndDelete(t *testing.T) {
 	for _, format := range []StorageFormat{MessagePack, Fast2, Compact2} {
 		t.Run(format.String(), func(t *testing.T) {
 			db, tbl, idx, _ := keyedRecordTable[keylessRecordRow](t, format, false)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				src := &keylessRecordRow{ID: 99, Name: "before"}
 				tx.PutByKey(tbl, uint64(7), src)
 				if src.ID != 99 || Get[keylessRecordRow](tx, uint64(7)).ID != 7 {
@@ -102,7 +102,7 @@ func TestStoredRecordPrimaryKey(t *testing.T) {
 	for _, format := range []StorageFormat{MessagePack, Fast2, Compact2} {
 		t.Run(format.String(), func(t *testing.T) {
 			db, tbl, _, binding := keyedRecordTable[storedKeyRecordRow](t, format, true)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				src := &storedKeyRecordRow{ID: 7, Name: "stored"}
 				r := binding.Record(reflect.ValueOf(src))
 				tx.Put(tbl, r)
@@ -140,7 +140,7 @@ func TestNewStoredRecordPrimaryKey(t *testing.T) {
 	for _, format := range []StorageFormat{MessagePack, Fast2, Compact2} {
 		t.Run(format.String(), func(t *testing.T) {
 			db, table, _, _ := keyedRecordTable[storedKeyRecordRow](t, format, true)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				for _, key := range []uint64{7, 8} {
 					edit := tx.NewRecordEdit(table, key)
 					if !edit.Record().Has(2) || edit.Record().GetValue(2).AsUint() != key {
@@ -198,7 +198,7 @@ func testNewStoredRecordGeneralKey[Key comparable](t *testing.T, key Key, keyTyp
 				}
 			}).TableDef().Typed[Key]()
 			db := setup(t, schema)
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				edit := table.EditOrCreate(tx, key)
 				if !table.Save(tx, edit) || table.Key(edit) != key {
 					t.Fatal("new record was not saved under the supplied key")
@@ -224,7 +224,7 @@ func TestPutRecordPreservesUnknownMessagePack(t *testing.T) {
 	}
 	extra := []byte{0xd6, 42, 1, 2, 3, 4}
 	raw = msgpack.Trusted(raw).Set("future", extra).Raw()
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		if _, err := tx.TryPutRecordChecked(tbl, uint64(7), binding.MessagePack(raw), ValueMeta{}); err != nil {
 			t.Fatal(err)
 		}

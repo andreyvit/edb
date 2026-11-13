@@ -29,7 +29,7 @@ func TestDeepRefundJoinAudit(t *testing.T) {
 			src.PointsUsed[id] = int64(rng.IntN(100)) - 20
 			src.RedemptionRefunds[id] = bm.OrderRedemptionRefund{AmountApplied: 17, AmountRefunded: 3, PointsRefunded: int64(rng.IntN(100))}
 		}
-		db.Write(func(tx *edb.Tx) {
+		db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 			for i := range 30 {
 				r := &bm.PointBalanceChange{ID: bubbleflake.ID(i + 100), TenantID: 4, CustomerID: 5, OrderID: 42, Type: bpub.ChangeTypePointsRefundRedeemedTowardsOrder, RelatedChangeID: bubbleflake.ID(rng.IntN(8)), Delta: int64(rng.IntN(100)) - 20}
 				switch rng.IntN(8) {

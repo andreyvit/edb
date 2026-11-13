@@ -191,7 +191,7 @@ func main() {
 	}
 	defer db.Close()
 	if mode == "seed" {
-		db.Write(func(tx *edb.Tx) {
+		db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 			for i := uint64(1); i <= 1000; i++ {
 				edb.Put(tx, want(i, 0), &compositeRow{key{i % 5, fmt.Sprint("key\x00", i)}, -int64(i)}, &stringRow{fmt.Sprint("key/", i), "value\x00"})
 			}
@@ -208,7 +208,7 @@ func main() {
 		verify(db, path, 0)
 	} else if mode == "modify" {
 		verify(db, path, 0)
-		db.Write(func(tx *edb.Tx) {
+		db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 			for i := uint64(1); i <= 1000; i++ {
 				check(!edb.Put(tx, want(i, 0)), "no-op changed row")
 			}
@@ -225,7 +225,7 @@ func main() {
 			tx.Reindex(rows, nil)
 		})
 		rollback := errors.New("rollback")
-		err := db.Tx(true, func(tx *edb.Tx) error {
+		err := db.Tx(edb.TxMetadata{}, true, func(tx *edb.Tx) error {
 			edb.Put(tx, want(1001, 0))
 			edb.DeleteByKey[row](tx, uint64(1))
 			return rollback

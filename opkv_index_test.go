@@ -38,7 +38,7 @@ func TestKVIndexScan(t *testing.T) {
 		ik4 = x("88 99 10 18")
 	)
 	db := setup(t, basicSchema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		tx.KVPutRaw(wumpets, k1, v2.Bytes())
 		tx.KVPutRaw(wumpets, k2, v2.Bytes())
 		tx.KVPutRaw(wumpets, k3, v1.Bytes())

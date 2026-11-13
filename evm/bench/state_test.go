@@ -59,7 +59,7 @@ func BenchmarkAccountState(b *testing.B) {
 				}
 				defer db.Close()
 				var wants [2]uint64
-				db.Write(func(tx *edb.Tx) {
+				db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 					for _, r := range rows {
 						id := r.ID
 						edb.Put(tx, r)
@@ -100,7 +100,7 @@ func BenchmarkAccountState(b *testing.B) {
 					} else {
 						run := db.Read
 						if entry == "WriteCustomers" {
-							run = db.Write
+							run = func(f func(*edb.Tx)) { db.Write(edb.TxMetadata{}, f) }
 						}
 						run(func(tx *edb.Tx) {
 							for c := edb.FullTableScan[statrow.State](tx); c.Next(); {
@@ -227,7 +227,7 @@ func BenchmarkAccountStateReindex(b *testing.B) {
 				b.Fatal(err)
 			}
 			defer db.Close()
-			db.Write(func(tx *edb.Tx) {
+			db.Write(edb.TxMetadata{}, func(tx *edb.Tx) {
 				for _, r := range rows {
 					edb.Put(tx, r)
 				}
@@ -235,7 +235,7 @@ func BenchmarkAccountStateReindex(b *testing.B) {
 			b.ReportAllocs()
 			b.ResetTimer()
 			for range b.N {
-				db.Write(func(tx *edb.Tx) { tx.Reindex(table, idx) })
+				db.Write(edb.TxMetadata{}, func(tx *edb.Tx) { tx.Reindex(table, idx) })
 			}
 			b.StopTimer()
 			db.Read(func(tx *edb.Tx) {

@@ -40,7 +40,7 @@ func TestChangeRecordsAndGoStructs(t *testing.T) {
 			db := setup(t, schema)
 			var changes []*Change
 			input := &changeRecordRow{"key", "first", []string{"vip"}}
-			db.Write(func(tx *Tx) {
+			db.Write(TxMetadata{}, func(tx *Tx) {
 				tx.OnChange(map[*TableDef]ChangeFlags{table: ChangeFlagNotify | ChangeFlagIncludeKey | ChangeFlagIncludeNewRecord | ChangeFlagIncludeOldRecord | ChangeFlagIncludeNewGoStruct | ChangeFlagIncludeOldGoStruct}, func(tx *Tx, c *Change) {
 					if c.Key() != "key" {
 						t.Fatalf("key = %v", c.Key())
@@ -108,9 +108,9 @@ func TestChangeRecordsAndGoStructs(t *testing.T) {
 func TestChangeCallbackWritesAndRollback(t *testing.T) {
 	schema, table := changeRecordSchema(MessagePack)
 	db := setup(t, schema)
-	db.Write(func(tx *Tx) { Put(tx, &changeRecordRow{ID: "key", Name: "old"}) })
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, &changeRecordRow{ID: "key", Name: "old"}) })
 	calls := 0
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		tx.OnChange(map[*TableDef]ChangeFlags{table: ChangeFlagNotify | ChangeFlagIncludeOldRecord | ChangeFlagIncludeNewRecord}, func(tx *Tx, c *Change) {
 			calls++
 			if c.Op() == OpDelete {
@@ -131,7 +131,7 @@ func TestChangeCallbackWritesAndRollback(t *testing.T) {
 		t.Fatal(calls)
 	}
 	rollback := errors.New("rollback")
-	err := db.Tx(true, func(tx *Tx) error {
+	err := db.Tx(TxMetadata{}, true, func(tx *Tx) error {
 		tx.OnChange(map[*TableDef]ChangeFlags{table: ChangeFlagNotify | ChangeFlagIncludeNewRecord}, func(_ *Tx, c *Change) {
 			calls++
 			if c.NewRecord().GetValue(1).AsString() != "uncommitted" {
@@ -157,7 +157,7 @@ func TestChangeRecordRegistrationRequiresModel(t *testing.T) {
 	table.kvoModel = nil
 	table.projection = nil
 	db := setup(t, schema)
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		for _, flags := range []ChangeFlags{ChangeFlagIncludeOldRecord, ChangeFlagIncludeNewRecord} {
 			func() {
 				defer func() {
@@ -201,7 +201,7 @@ func BenchmarkChangeNotifications(b *testing.B) {
 				for i := range input.Tags {
 					input.Tags[i] = "customer-tag"
 				}
-				db.Write(func(tx *Tx) { Put(tx, input) })
+				db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, input) })
 				tx := db.BeginRead()
 				defer tx.Close()
 				rawKey := table.EncodeKey("key")
@@ -257,9 +257,9 @@ func TestChangeProjectionDecodesGoStructsOnlyOnRequest(t *testing.T) {
 	table := DefineTable(schema, "projection", m, func(b *TableBuilder[uint64]) {
 	}).TableDef()
 	db := setup(t, schema)
-	db.Write(func(tx *Tx) { Put(tx, &changeProjectedRow{1, "old", "unmodeled"}) })
+	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, &changeProjectedRow{1, "old", "unmodeled"}) })
 	for _, goStructs := range []bool{false, true} {
-		db.Write(func(tx *Tx) {
+		db.Write(TxMetadata{}, func(tx *Tx) {
 			flags := ChangeFlagNotify | ChangeFlagIncludeNewRecord | ChangeFlagIncludeOldRecord
 			if goStructs {
 				flags |= ChangeFlagIncludeNewGoStruct | ChangeFlagIncludeOldGoStruct

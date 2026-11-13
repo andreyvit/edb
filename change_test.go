@@ -24,7 +24,7 @@ func TestTx_OnChange_PutAndDelete(t *testing.T) {
 	db := setup(t, basicSchema)
 
 	var got []*Change
-	db.Write(func(tx *Tx) {
+	db.Write(TxMetadata{}, func(tx *Tx) {
 		tx.OnChange(map[*TableDef]ChangeFlags{
 			usersTable: ChangeFlagNotify | ChangeFlagIncludeKey | ChangeFlagIncludeNewGoStruct | ChangeFlagIncludeOldGoStruct,
 		}, func(tx *Tx, chg *Change) {

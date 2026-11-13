@@ -52,7 +52,7 @@ func testSingletonRoundTrip[T any](t *testing.T, want T) {
 			t.Fatal("undeclared value found")
 		}
 	})
-	db.Write(func(tx *Tx) { SPut(tx, sk, &want) })
+	db.Write(TxMetadata{}, func(tx *Tx) { SPut(tx, sk, &want) })
 	db.Read(func(tx *Tx) {
 		var got T
 		if !SGet(tx, sk, &got) || !reflect.DeepEqual(got, want) {
