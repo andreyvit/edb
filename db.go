@@ -45,13 +45,21 @@ type DB struct {
 	safeToQuitCallbackLock   sync.Mutex
 	safeToQuitCallback       func()
 	safeToQuitCallbackCalled bool
+
+	localWrites   LocalWritePolicy
+	rowMigrations RowMigrationPolicy
+	replication   *replicationState
 }
 
 type Options struct {
-	Logf      func(format string, args ...any)
-	Verbose   bool
-	IsTesting bool
-	MmapSize  int
+	// Policies are independent of replication capabilities; zero values preserve existing behavior.
+	LocalWrites   LocalWritePolicy
+	RowMigrations RowMigrationPolicy
+	Replication   *ReplicationOptions
+	Logf          func(format string, args ...any)
+	Verbose       bool
+	IsTesting     bool
+	MmapSize      int
 
 	NoPersistentFreeList    bool
 	CaptureTxStack          bool
@@ -109,6 +117,8 @@ func Open(path string, schema *Schema, opt Options) (*DB, error) {
 func openWithStorage(storage storage, schema *Schema, opt Options) (*DB, error) {
 	db := &DB{
 		storage:                 storage,
+		localWrites:             opt.LocalWrites,
+		rowMigrations:           opt.RowMigrations,
 		schema:                  schema,
 		logf:                    opt.Logf,
 		verbose:                 opt.Verbose,
@@ -119,9 +129,21 @@ func openWithStorage(storage storage, schema *Schema, opt Options) (*DB, error) 
 		tableStates:             make([]*tableState, len(schema.tables)),
 		strict:                  opt.IsTesting,
 	}
+	if err := validateWritePolicies(opt); err != nil {
+		return nil, err
+	}
+	if err := db.initReplication(opt.Replication); err != nil {
+		return nil, err
+	}
 	db.closeWG.Add(1)
 
-	db.Write(TxMetadata{Kind: "startup:edb_schema", Tenant: "none"}, func(tx *Tx) {
+	tx := db.BeginUpdate(TxMetadata{Kind: "startup:edb_schema", Tenant: "none"})
+	defer tx.Close()
+	tx.internalWrite = true
+	if err := db.prepareReplication(tx); err != nil {
+		return nil, err
+	}
+	prepareSchema := func(tx *Tx) error {
 		now := time.Now()
 		for i, tbl := range schema.tables {
 			db.tableStates[i] = prepareTable(tx, tbl, now)
@@ -138,7 +160,19 @@ func openWithStorage(storage storage, schema *Schema, opt Options) (*DB, error) 
 		for _, ts := range db.tableStates {
 			ts.save(tx)
 		}
-	})
+		return nil
+	}
+	if db.replication == nil {
+		ensure(prepareSchema(tx))
+	} else if err := safelyCall(prepareSchema, tx); err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		if db.replication == nil {
+			panic(fmt.Errorf("commit: %w", err))
+		}
+		return nil, err
+	}
 
 	return db, nil
 }
@@ -205,6 +239,7 @@ func (db *DB) retrieveSafeToQuitCallback() func() {
 
 func (db *DB) doClose() {
 	defer db.closeWG.Done()
+	db.drainReplication()
 
 	start := time.Now()
 	if db.logf != nil {

@@ -109,6 +109,12 @@ func prepareTable(tx *Tx, tbl *TableDef, now time.Time) *tableState {
 
 func (ts *tableState) migrate(tx *Tx) {
 	tbl := ts.table
+	if !tx.allowsRowMigrations() {
+		if ts.hasPendingIndices() {
+			tx.Reindex(tbl, nil)
+		}
+		return
+	}
 	for _, is := range ts.Indices {
 		if !is.Built && is.index.initialFillMode == IndexInitialFillModeSkip {
 			// Skip mode only means this index does not request a startup backfill by
@@ -122,7 +128,12 @@ func (ts *tableState) migrate(tx *Tx) {
 		start := time.Now()
 		var rows, failed int64
 		for c := tx.TableScan(tbl, FullScan()); c.Next(); {
-			ok := upgradeRow(c, tx)
+			ok := true
+			if tx.db.replication != nil {
+				tx.reindexRow(c)
+			} else {
+				ok = upgradeRow(c, tx)
+			}
 			rows++
 			if !ok {
 				failed++

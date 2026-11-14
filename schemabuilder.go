@@ -28,6 +28,7 @@ func DefineTable[Key any](scm *Schema, name string, model *kvo.Model, f func(b *
 	}
 	rowPtrType := reflect.PointerTo(types[0])
 	tbl := &TableDef{
+		nameHash:        schemaNameHash(name),
 		schema:          scm,
 		kvoModel:        model,
 		pos:             len(scm.tables),

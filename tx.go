@@ -49,6 +49,13 @@ type Tx struct {
 
 	changeHandler func(tx *Tx, chg *Change)
 	changeOptions map[*TableDef]ChangeFlags
+
+	replicationAdmissionDone func()
+	replication              *replicationAttempt
+	internalWrite            bool
+	rawWrites                bool
+	mutationFailed           bool
+	localWriteRejected       bool
 }
 
 func (db *DB) newTx(metadata TxMetadata, stx storageTx, managed bool, memo map[string]any, stack []byte) (tx *Tx) {
@@ -59,7 +66,7 @@ func (db *DB) newTx(metadata TxMetadata, stx storageTx, managed bool, memo map[s
 			}
 		}()
 	}
-	if db.IsClosed() {
+	if db.IsClosed() && (db.replication == nil || !stx.Writable()) {
 		panic("database closed")
 	}
 	db.lastSize.Store(stx.Size())
@@ -93,6 +100,7 @@ func (db *DB) newTx(metadata TxMetadata, stx storageTx, managed bool, memo map[s
 	if debugTrackTxns {
 		db.addTx(tx)
 	}
+	tx.attachReplication()
 	return tx
 }
 
@@ -192,10 +200,13 @@ func (db *DB) Tx(metadata TxMetadata, writable bool, f func(tx *Tx) error) error
 	var managedTxs []*Tx
 	defer func() {
 		for _, tx := range managedTxs {
+			tx.releaseReplication()
 			tx.release()
 		}
 	}()
 	if writable {
+		done := db.admitReplicationWrite()
+		defer done()
 		if db.bdb == nil {
 			stx, err := db.storage.BeginTx(true)
 			if err != nil {
@@ -205,6 +216,12 @@ func (db *DB) Tx(metadata TxMetadata, writable bool, f func(tx *Tx) error) error
 			defer tx.Close()
 
 			funcErr := safelyCall(f, tx)
+			if mutationErr := tx.replicationError(); mutationErr != nil {
+				if funcErr != nil {
+					return funcErr
+				}
+				return mutationErr
+			}
 			if funcErr != nil && tx.written && !tx.commitDespiteErr {
 				return funcErr
 			}
@@ -228,7 +245,14 @@ func (db *DB) Tx(metadata TxMetadata, writable bool, f func(tx *Tx) error) error
 		if debugTrackTxns && db.captureTxStack {
 			stack = debug.Stack()
 		}
-		err := db.bdb.Batch(func(btx *bbolt.Tx) error {
+		err := db.bdb.Batch(func(btx *bbolt.Tx) (attemptErr error) {
+			if db.replication != nil {
+				defer func() {
+					if attemptErr != nil {
+						db.discardReplication(btx)
+					}
+				}()
+			}
 			if pending {
 				pending = false
 				db.PendingWriterCount.Add(-1)
@@ -240,12 +264,18 @@ func (db *DB) Tx(metadata TxMetadata, writable bool, f func(tx *Tx) error) error
 			}
 
 			tx := db.newTx(metadata, &boltStorageTx{btx: btx}, true, memo, stack)
-			if db.reuseTxBuffers {
+			if db.reuseTxBuffers || db.replication != nil {
 				managedTxs = append(managedTxs, tx)
 			}
 			defer tx.Close()
 			funcErr = safelyCall(f, tx)
 			memo = tx.memo
+			if mutationErr := tx.replicationError(); mutationErr != nil {
+				if tx.replication != nil || funcErr == nil {
+					funcErr = mutationErr
+				}
+				return funcErr
+			}
 			if funcErr != nil && (!tx.written || tx.commitDespiteErr) {
 				return nil
 			} else {
@@ -354,11 +384,15 @@ func (db *DB) beginUpdate(metadata TxMetadata) *Tx {
 	if db.IsClosed() {
 		panic("database closed")
 	}
+	done := db.admitReplicationWrite()
 	stx, err := db.storage.BeginTx(true)
 	if err != nil {
+		done()
 		panic(fmt.Errorf("db.BeginTx(true) failed: %w", err))
 	}
-	return db.newTx(metadata, stx, false, nil, nil)
+	tx := db.newTx(metadata, stx, false, nil, nil)
+	tx.replicationAdmissionDone = done
+	return tx
 }
 
 func (tx *Tx) IsWritable() bool {
@@ -370,6 +404,9 @@ func (tx *Tx) CommitDespiteError() {
 }
 
 func (tx *Tx) markWritten() {
+	if err := tx.replicationError(); err != nil {
+		panic(err)
+	}
 	tx.written = true
 }
 
@@ -431,7 +468,12 @@ func (tx *Tx) Close() {
 	if !tx.managed {
 		err := tx.stx.Rollback()
 		ensure(err)
+		tx.releaseReplication()
 		tx.release()
+		if tx.replicationAdmissionDone != nil {
+			tx.replicationAdmissionDone()
+			tx.replicationAdmissionDone = nil
+		}
 	}
 }
 
@@ -470,6 +512,9 @@ func (tx *Tx) release() {
 }
 
 func (tx *Tx) Commit() error {
+	if err := tx.replicationError(); err != nil {
+		return err
+	}
 	err := tx.stx.Commit()
 	tx.observation.finish()
 	return err

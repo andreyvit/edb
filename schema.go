@@ -28,10 +28,12 @@ type Schema struct {
 	mapsByLowerName     map[string]*KVMap
 	kvtables            []*KVTable
 	kvtablesByLowerName map[string]*KVTable
+	objectsByNameHash   map[uint64]schemaNamedObject
 }
 
 func (scm *Schema) init() {
 	if scm.tablesByLowerName == nil {
+		scm.objectsByNameHash = make(map[uint64]schemaNamedObject)
 		scm.tablesByLowerName = make(map[string]*TableDef)
 		scm.tablesByRowType = make(map[reflect.Type]*TableDef)
 		scm.tablePositions = make(map[*TableDef]int)
@@ -45,6 +47,7 @@ func (scm *Schema) init() {
 func (scm *Schema) Include(peer *Schema) {
 	scm.init()
 	next := *scm
+	next.objectsByNameHash = maps.Clone(scm.objectsByNameHash)
 	next.tables = slices.Clone(scm.tables)
 	next.kvtables = slices.Clone(scm.kvtables)
 	next.maps = slices.Clone(scm.maps)
@@ -84,6 +87,7 @@ func (scm *Schema) addTable(tbl *TableDef) {
 	if scm.tablesByRowType[tbl.rowType] != nil {
 		panic(fmt.Errorf("row type %v is already used", tbl.rowType))
 	}
+	scm.registerNameHash(tbl)
 	scm.tablePositions[tbl] = len(scm.tables)
 	scm.tables = append(scm.tables, tbl)
 	scm.tablesByLowerName[strings.ToLower(tbl.name)] = tbl
@@ -94,6 +98,7 @@ func (scm *Schema) addTable(tbl *TableDef) {
 func (scm *Schema) addKVTable(tbl *KVTable) {
 	scm.init()
 	scm.checkName(tbl.name)
+	scm.registerNameHash(tbl)
 	scm.kvtables = append(scm.kvtables, tbl)
 	scm.kvtablesByLowerName[strings.ToLower(tbl.name)] = tbl
 }
@@ -101,6 +106,7 @@ func (scm *Schema) addKVTable(tbl *KVTable) {
 func (scm *Schema) addMap(mp *KVMap) {
 	scm.init()
 	scm.checkName(mp.name)
+	scm.registerNameHash(mp)
 	scm.maps = append(scm.maps, mp)
 	scm.mapsByLowerName[strings.ToLower(mp.name)] = mp
 }
@@ -140,11 +146,13 @@ func (scm *Schema) TableByRow(row any) *TableDef {
 type KVMap struct {
 	name           string
 	singletonTypes map[string]reflect.Type
+	nameHash       uint64
 }
 
 func AddKVMap(scm *Schema, name string) *KVMap {
 	mp := &KVMap{
-		name: name,
+		nameHash: schemaNameHash(name),
+		name:     name,
 	}
 	scm.addMap(mp)
 	return mp

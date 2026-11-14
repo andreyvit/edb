@@ -17,6 +17,7 @@ type KVTable struct {
 	indicesByName map[string]*KVIndex
 
 	TaggableImpl
+	nameHash uint64
 }
 
 type KVKey interface {
@@ -33,6 +34,7 @@ func DefineRawTable(scm *Schema, name string, build func(b *KVTableBuilder)) *KV
 
 func DefineKVTable(scm *Schema, name string, rootModel *kvo.Model, keySample KVKey, build func(b *KVTableBuilder)) *KVTable {
 	tbl := &KVTable{
+		nameHash:      schemaNameHash(name),
 		name:          name,
 		rootModel:     rootModel,
 		indicesByName: make(map[string]*KVIndex),

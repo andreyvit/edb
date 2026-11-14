@@ -207,6 +207,13 @@ func (t *TableDef) migrateRecord(tx *Tx, key []byte, r kvo.Record, version uint6
 	if version >= t.latestSchemaVer || t.migrator == nil {
 		return r
 	}
+	return t.migrateOldRecord(tx, key, r, version)
+}
+
+func (t *TableDef) migrateOldRecord(tx *Tx, key []byte, r kvo.Record, version uint64) kvo.Record {
+	if tx != nil && !tx.allowsRowMigrations() {
+		return r
+	}
 	e := r.Edit()
 	t.migrator(tx, key, e, version)
 	result := e.Record()

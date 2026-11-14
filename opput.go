@@ -87,6 +87,7 @@ func (tx *Tx) putVal(tbl *TableDef, keyVal, rowVal reflect.Value, edited []byte)
 	if tx == nil {
 		panic("nil tx")
 	}
+	tx.checkLocalWrite(ReplicationObject{Table: tbl})
 	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 
 	keyBuf := acquireKeyBuffer()
@@ -165,9 +166,20 @@ func (tx *Tx) putVal(tbl *TableDef, keyVal, rowVal reflect.Value, edited []byte)
 	valueRaw = putValueHeader(valueRaw, flags, newSchemaVer, newModCount, indexOff)
 	tx.addValueBuf(valueBuf)
 	valueBuf = nil
+	complete := false
+	defer tx.guardReplicationMutation(&complete)
 	tx.markWritten()
 
+	obj := ReplicationObject{Table: tbl}
+	var opt *ReplicationCaptureOptions
+	if oldValueRaw == nil || !isDataUnchanged || old.SchemaVer != newSchemaVer || old.Flags != flags {
+		opt = tx.captureOptions(obj)
+	}
 	ensure(dataBuck.Put(keyRaw, valueRaw))
+	if opt != nil {
+		next := ReplicationValue{Present: true, Flags: uint64(flags), SchemaVer: newSchemaVer, ModCount: newModCount, Data: dataBytes}
+		tx.stageReplicationChange(opt, obj, ReplicationPut, keyRaw, old.replicationValue(oldValueRaw != nil), next)
+	}
 
 	if tx.isVerboseLoggingEnabled() {
 		tx.db.logf("db: PUT %s/%v => m=%d %s", tbl.name, keyVal, newModCount, loggableRowVal(tbl, rowVal))
@@ -194,6 +206,7 @@ func (tx *Tx) putVal(tbl *TableDef, keyVal, rowVal reflect.Value, edited []byte)
 		ensure(idxBuck.Put(ir.KeyRaw, ir.ValueRaw))
 	}
 
+	complete = true
 	var previous *value
 	if oldValueRaw != nil {
 		previous = &old

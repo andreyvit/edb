@@ -40,6 +40,7 @@ type TableDef struct {
 	suppressContent    bool
 
 	TaggableImpl
+	nameHash uint64
 }
 
 func (tbl *TableDef) Name() string {

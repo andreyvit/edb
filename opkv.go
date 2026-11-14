@@ -38,10 +38,18 @@ func (tx *Tx) KVPutRaw(tbl *KVTable, key, value []byte) {
 	if tx == nil {
 		panic("nil tx")
 	}
+	tx.checkLocalWrite(ReplicationObject{KVTable: tbl})
 	dataBuck := nonNil(tx.stx.Bucket(tbl.name, ""))
+	complete := false
+	defer tx.guardReplicationMutation(&complete)
+	obj := ReplicationObject{KVTable: tbl}
+	opt := tx.captureOptions(obj)
+	var oldValue []byte
+	if opt != nil || len(tbl.indices) > 0 {
+		oldValue = dataBuck.Get(key)
+	}
 	tx.markWritten()
 	if len(tbl.indices) > 0 {
-		oldValue := dataBuck.Get(key)
 		for _, idx := range tbl.indices {
 			var oldEntries, newEntries [][]byte
 			if oldValue != nil {
@@ -81,6 +89,14 @@ func (tx *Tx) KVPutRaw(tbl *KVTable, key, value []byte) {
 			panic(kvtableErrf(tbl, nil, key, err, "KVPut"))
 		}
 	}
+	if opt != nil {
+		op := ReplicationPut
+		if value == nil {
+			op = ReplicationDelete
+		}
+		tx.stageReplicationChange(opt, obj, op, key, rawReplicationValue(oldValue), rawReplicationValue(value))
+	}
+	complete = true
 }
 
 func (tx *Tx) KVTableScan(tbl *KVTable, rang RawRange) *KVCursor {

@@ -120,7 +120,7 @@ func (tx *Tx) UpgradeRecord(tArg AnyTable, key any) bool {
 // revision and schema version remain intact. Repeating it is a no-op.
 func (tx *Tx) TryUpgradeRecord(tArg AnyTable, key any) (bool, error) {
 	t := tArg.TableDef()
-
+	tx.checkLocalWrite(ReplicationObject{Table: t})
 	if !tx.IsWritable() {
 		return false, errors.New("record upgrade requires a write transaction")
 	}
@@ -171,12 +171,22 @@ func (tx *Tx) TryUpgradeRecord(tArg AnyTable, key any) (bool, error) {
 		}
 	}
 	end := len(out)
+	encodedData := out[maxValueHeaderSize:end]
 	out = append(out, old.Index...)
 	out = putValueHeader(out, vfKVO, old.SchemaVer, old.ModCount, end)
+	complete := false
+	defer tx.guardReplicationMutation(&complete)
+	obj := ReplicationObject{Table: t}
+	opt := tx.captureOptions(obj)
 	tx.markWritten()
 	if err := bucket.Put(k, out); err != nil {
 		return false, err
 	}
+	if opt != nil {
+		next := ReplicationValue{Present: true, Flags: uint64(vfKVO), SchemaVer: old.SchemaVer, ModCount: old.ModCount, Data: encodedData}
+		tx.stageReplicationChange(opt, obj, ReplicationPut, k, old.replicationValue(true), next)
+	}
+	complete = true
 	return true, nil
 }
 

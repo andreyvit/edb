@@ -81,6 +81,7 @@ func (tx *Tx) DeleteByKeyRaw(tblArg AnyTable, keyRaw []byte) bool {
 }
 
 func (tx *Tx) deleteByKeyRaw(tbl *TableDef, keyRaw []byte) bool {
+	tx.checkLocalWrite(ReplicationObject{Table: tbl})
 	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 	ts := tx.db.tableState(tbl)
 
@@ -93,14 +94,21 @@ func (tx *Tx) deleteByKeyRaw(tbl *TableDef, keyRaw []byte) bool {
 	var old value
 	decodeTableValue(&old, tbl, keyRaw, v, false)
 
+	complete := false
+	defer tx.guardReplicationMutation(&complete)
+	obj := ReplicationObject{Table: tbl}
+	opt := tx.captureOptions(obj)
 	tx.markWritten()
 
 	del := prepareToDeleteIndexEntries(tx, ts)
 	decodeIndexKeys(old.Index, del)
 
 	ensure(c.Delete())
+	if opt != nil {
+		tx.stageReplicationChange(opt, obj, ReplicationDelete, keyRaw, old.replicationValue(true), ReplicationValue{})
+	}
 	tx.notifyChange(tbl, OpDelete, keyRaw, &old, nil)
-
+	complete = true
 	return true
 }
 
@@ -119,15 +127,28 @@ func (tx *Tx) UnsafeDeleteByKeyRawSkippingIndex(tblArg AnyTable, keyRaw []byte) 
 }
 
 func (tx *Tx) unsafeDeleteByKeyRawSkippingIndex(tbl *TableDef, keyRaw []byte) bool {
+	tx.checkLocalWrite(ReplicationObject{Table: tbl})
 	dataBuck := nonNil(tx.stx.Bucket(tbl.name, dataBucketName))
 
 	c := dataBuck.Cursor()
-	k, _ := c.Seek(keyRaw)
+	k, v := c.Seek(keyRaw)
 	if !bytes.Equal(k, keyRaw) {
 		return false
 	}
 
+	complete := false
+	defer tx.guardReplicationMutation(&complete)
+	obj := ReplicationObject{Table: tbl}
+	opt := tx.captureOptions(obj)
+	var old value
+	if opt != nil {
+		ensure(old.decode(v, false))
+	}
 	tx.markWritten()
 	ensure(c.Delete())
+	if opt != nil {
+		tx.stageReplicationChange(opt, obj, ReplicationDelete, keyRaw, old.replicationValue(true), ReplicationValue{})
+	}
+	complete = true
 	return true
 }
