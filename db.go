@@ -202,6 +202,11 @@ func (db *DB) retrieveSafeToQuitCallback() func() {
 func (db *DB) doClose() {
 	defer db.closeWG.Done()
 
+	start := time.Now()
+	if db.logf != nil {
+		db.logf("db: close started")
+	}
+
 	if db.bdb != nil && db.bdb.NoFreelistSync && db.WriteCount.Load() > 0 {
 		// Write freelist to make startup fast.
 		start := time.Now()
@@ -222,10 +227,20 @@ func (db *DB) doClose() {
 	}
 
 	if db.storage != nil {
+		start := time.Now()
+		if db.logf != nil {
+			db.logf("db: storage close started")
+		}
 		err := db.storage.Close()
 		if err != nil {
 			panic(fmt.Errorf("kvdb: closing: %w", err))
 		}
+		if db.logf != nil {
+			db.logf("db: storage close completed in %d ms", time.Since(start).Milliseconds())
+		}
+	}
+	if db.logf != nil {
+		db.logf("db: close completed in %d ms", time.Since(start).Milliseconds())
 	}
 }
 
@@ -233,7 +248,16 @@ func (db *DB) writeFreelist() error {
 	observation := db.startObservation(TxMetadata{Kind: "system:edb_shutdown_freelist", Tenant: "none"}, true)
 	defer observation.finish()
 	db.bdb.NoFreelistSync = false
-	return db.bdb.Update(func(*bbolt.Tx) error { return nil })
+	start := time.Now()
+	if db.logf != nil {
+		db.logf("db: bbolt freelist Update requested")
+	}
+	return db.bdb.Update(func(*bbolt.Tx) error {
+		if db.logf != nil {
+			db.logf("db: bbolt freelist Update callback reached in %d ms (writer transaction acquired)", time.Since(start).Milliseconds())
+		}
+		return nil
+	})
 }
 
 func (db *DB) addTx(tx *Tx) {
