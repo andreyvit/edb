@@ -34,7 +34,7 @@ func main() {
 	}
 	var candidates []candidate
 	counts := map[int]int{}
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for c := tx.TableScan(fdb.OrdersTable, edb.FullScan()); c.Next(); {
 			v, meta := c.RowVal()
 			r := v.Interface().(*bm.Order)

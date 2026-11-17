@@ -281,7 +281,7 @@ func (h *recordHost) run(vm *evm.VM, entry string, revision uint64) (uint64, err
 	defer s.Close()
 	defer h.closeTransaction()
 	if entry == "ReadCustomers" {
-		h.tx = h.db.BeginRead()
+		h.tx = h.db.BeginRead(edb.TxMetadata{})
 	}
 	args := [2]values.Value{{}, values.Uint(revision)}
 	var result [1]values.Value
@@ -364,7 +364,7 @@ func Fail(ctx m.Context, revision uint64) uint64 {
 			t.Fatalf("%s: %d, %v", entry, got, err)
 		}
 	}
-	h.db.Read(func(tx *edb.Tx) {
+	h.db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for id := uint64(1); id <= customerCount; id++ {
 			row := stored(h.table, tx, id)
 			balance := 100 + id%37
@@ -466,7 +466,7 @@ func TestTableBindings(t *testing.T) {
 			t.Fatal(err)
 		}
 	})
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		if n := stored(archived, tx, 1).GetValue(2).AsUint(); n != 93 {
 			t.Fatalf("archived balance %d", n)
 		}
@@ -516,7 +516,7 @@ func descend(rows m.CustomersCursor, n int) uint64 {
 func Recursive(tx m.Context, _ uint64) uint64 {return descend(m.Customer.Scan(tx),4)}
 `, 16)
 	for entry, want := range map[string]uint64{"Kept": 1102, "Recursive": 10} {
-		h.tx = h.db.BeginRead()
+		h.tx = h.db.BeginRead(edb.TxMetadata{})
 		got, err := h.run(vm, entry, 0)
 		if err != nil || got != want {
 			t.Fatalf("%s: got %d, %v; want %d", entry, got, err, want)

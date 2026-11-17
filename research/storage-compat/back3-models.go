@@ -32,7 +32,7 @@ func main() {
 		raw   []byte
 	}
 	var edits []sample
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for _, table := range []*edb.TableDef{fdb.CustomersTable, fdb.CustomerStatsTable, fdb.ProductsTable, fdb.OrdersTable} {
 			checked, seen := 0, 0
 			for c := tx.TableScan(table, edb.FullScan()); c.Next(); {
@@ -102,7 +102,7 @@ func main() {
 				panic(sample.table.Name() + ": real row edit changed other native fields")
 			}
 		}()
-		db.Read(func(tx *edb.Tx) {
+		db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 			c := tx.TableScan(sample.table, edb.ExactScan(sample.key))
 			if !c.Next() || !bytes.Equal(c.RawRow(), sample.raw) {
 				panic(sample.table.Name() + ": rollback did not restore original bytes")

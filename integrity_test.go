@@ -27,7 +27,7 @@ func TestAssertIntegrityAcceptsCurrentState(t *testing.T) {
 		tx.KVPutRaw(wumpets, x("10 12"), buildKV(0x42, 0x8877).Bytes())
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		AssertIntegrity(t, tx)
 	})
 }
@@ -39,7 +39,7 @@ func TestAssertIntegrityDetectsTableIndexDamage(t *testing.T) {
 		_ = tx.UnsafeDeleteByKeyRawSkippingIndex(usersTable, usersTable.EncodeKey(ID(1)))
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		assertIntegrityProblem(t, tx, "dangling index entry")
 	})
 }
@@ -51,7 +51,7 @@ func TestAssertIntegrityDetectsKVIndexDamage(t *testing.T) {
 		ensure(tx.stx.Bucket(wumpetsByB.idxBuck, "").Delete(x("88 77 10 12")))
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		assertIntegrityProblem(t, tx, "missing KV index entry")
 	})
 }

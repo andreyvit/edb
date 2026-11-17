@@ -207,7 +207,7 @@ func testNewStoredRecordGeneralKey[Key comparable](t *testing.T, key Key, keyTyp
 					t.Fatal("unchanged record was rewritten")
 				}
 			})
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				if row := Get[newStoredKeyRow[Key]](tx, key); row == nil || row.Key != key || !table.Get(tx, key).Has(prop) {
 					t.Fatal("stored primary key was lost", row)
 				}

@@ -23,7 +23,7 @@ type benchmarkFixture struct {
 
 func BenchmarkGet(b *testing.B) {
 	f := newBenchmarkFixture(b)
-	tx := f.db.BeginRead()
+	tx := f.db.BeginRead(TxMetadata{})
 	defer tx.Close()
 	var row *benchmarkRow
 	b.ReportAllocs()
@@ -39,7 +39,7 @@ func BenchmarkGet(b *testing.B) {
 
 func BenchmarkLookup(b *testing.B) {
 	f := newBenchmarkFixture(b)
-	tx := f.db.BeginRead()
+	tx := f.db.BeginRead(TxMetadata{})
 	defer tx.Close()
 	var row *benchmarkRow
 	b.ReportAllocs()
@@ -71,7 +71,7 @@ func BenchmarkScan(b *testing.B) {
 	for _, source := range []string{"table", "index"} {
 		b.Run(source, func(b *testing.B) {
 			f := newBenchmarkFixture(b)
-			tx := f.db.BeginRead()
+			tx := f.db.BeginRead(TxMetadata{})
 			defer tx.Close()
 			count := len(f.rows)
 			if source == "index" {
@@ -164,7 +164,7 @@ func benchmarkMutation(b *testing.B, operation string) {
 	if total != int64(b.N)*int64(len(rows)) {
 		b.Fatal("unexpected mutation count")
 	}
-	f.db.Read(func(tx *Tx) {
+	f.db.Read(TxMetadata{}, func(tx *Tx) {
 		if Count(TableScan[benchmarkRow](tx, FullScan()).Raw()) != len(f.rows) {
 			b.Fatal("unexpected row count")
 		}

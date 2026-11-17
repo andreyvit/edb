@@ -38,7 +38,7 @@ type auditContext struct {
 
 func (c *auditContext) DBTx() *edb.Tx {
 	if c.tx == nil {
-		c.tx = c.db.BeginRead()
+		c.tx = c.db.BeginRead(edb.TxMetadata{})
 		c.reading = true
 	}
 	return c.tx
@@ -98,7 +98,7 @@ func export(db *edb.DB, dir string) {
 	must(os.MkdirAll(dir, 0700))
 	customers := map[bm.TenantID][]mcom.CustomerID{}
 	var tenants []bm.TenantID
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for t := range edb.FullTableScan[bm.Tenant](tx).Rows() {
 			tenants = append(tenants, t.ID)
 		}

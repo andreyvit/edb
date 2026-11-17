@@ -140,7 +140,7 @@ func TestNormalKVORollout(t *testing.T) {
 		})
 		db.Close()
 		db, tbl, idx = open(RecordStorage{Format: format})
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			c := ExactIndexScan[boundMember](tx, idx, "new")
 			if !c.Next() {
 				t.Fatal("index after reopen")

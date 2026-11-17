@@ -171,7 +171,7 @@ func TestAccessOnlyTable(t *testing.T) {
 	// The original table declaration can still read both rows and indexes.
 	db, _, idx = open(false)
 	defer db.Close()
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		want := orig
 		want.Name = "new"
 		want.Details = &accessDetails{-9, "opaque"}

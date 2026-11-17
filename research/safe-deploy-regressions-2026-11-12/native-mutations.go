@@ -160,7 +160,7 @@ func mutateRows(db *edb.DB, seed uint64, limit int) {
 	}
 	for _, tbl := range fdb.Schema.Tables() {
 		var keys [][]byte
-		db.Read(func(tx *edb.Tx) {
+		db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 			for c := tx.TableScan(tbl, edb.FullScan()); c.Next(); {
 				keys = append(keys, bytes.Clone(c.RawKey()))
 			}
@@ -214,7 +214,7 @@ func mutateRows(db *edb.DB, seed uint64, limit int) {
 						must(tx.Commit())
 					}
 				}()
-				db.Read(func(tx *edb.Tx) {
+				db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 					row, meta := tx.GetByKeyRaw(tbl, key)
 					out["after"] = existingHash(reflect.ValueOf(row))
 					out["mod_delta"] = int64(meta.ModCount) - int64(beforeMeta.ModCount)

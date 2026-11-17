@@ -28,7 +28,7 @@ func TestLookupAndScanHelpers(t *testing.T) {
 		Put(tx, u1, u2)
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if !tx.ExistsByKeyRaw(usersTable, usersTable.EncodeKey(ID(1))) {
 			t.Fatalf("ExistsByKeyRaw(1) = false, wanted true")
 		}
@@ -199,7 +199,7 @@ func TestKVHelpers(t *testing.T) {
 	db.Write(TxMetadata{}, func(tx *Tx) {
 		tx.KVPut(tbl, key, rec.Record())
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if got := tx.KVGet(tbl, key).Get(1); got != 42 {
 			t.Fatalf("KVGet.Get(1) = %d, wanted 42", got)
 		}
@@ -240,7 +240,7 @@ func TestSingletonKeyOpsAndCountAll(t *testing.T) {
 		v := 123
 		SPut(tx, sk, &v)
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		var v int
 		if !SGet(tx, sk, &v) || v != 123 {
 			t.Fatalf("SGet = (%v, %v), wanted (true, 123)", v != 123, v)
@@ -255,7 +255,7 @@ func TestSingletonKeyOpsAndCountAll(t *testing.T) {
 		Put(tx, &User{ID: 1, Name: "a", Email: "a@example.com"})
 		Put(tx, &User{ID: 2, Name: "b", Email: "b@example.com"})
 	})
-	db2.Read(func(tx *Tx) {
+	db2.Read(TxMetadata{}, func(tx *Tx) {
 		if got := CountAll(tx, usersTable); got != 2 {
 			t.Fatalf("CountAll = %d, wanted 2", got)
 		}
@@ -272,7 +272,7 @@ func TestReindexAndDecodeMementoVal(t *testing.T) {
 
 	var keyRaw, memento []byte
 	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, u1) })
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		c := tx.TableScan(usersTable, FullScan())
 		if !c.Next() {
 			t.Fatalf("TableScan.Next() = false, wanted true")
@@ -281,7 +281,7 @@ func TestReindexAndDecodeMementoVal(t *testing.T) {
 		memento = append([]byte(nil), c.ValueMemento()...)
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		rowVal, meta, err := tx.DecodeMementoVal(usersTable, keyRaw, memento)
 		if err != nil || meta.IsMissing() || !rowVal.IsValid() {
 			t.Fatalf("DecodeMementoVal = (%v, %+v, %v), wanted valid row and meta", rowVal, meta, err)
@@ -293,7 +293,7 @@ func TestReindexAndDecodeMementoVal(t *testing.T) {
 		tx.Reindex(usersTable, usersByEmail)
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if usersByEmail.bucketIn(tx).KeyCount() != 0 {
 			t.Fatalf("after Reindex, index keycount = %d, wanted 0", usersByEmail.bucketIn(tx).KeyCount())
 		}
@@ -307,7 +307,7 @@ func TestExactIDRangeScan(t *testing.T) {
 	db := setup(t, basicSchema)
 	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, u1, u2, u3) })
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		rows := All(IndexScan[User](tx, usersByName, ExactIDRangeScan("bar", ID(2), ID(2), true, true)))
 		if len(rows) != 1 || rows[0].ID != 2 {
 			t.Fatalf("ExactIDRangeScan returned %+v, wanted only ID=2", rows)

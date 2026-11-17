@@ -54,7 +54,7 @@ func TestDeepRefundJoinAudit(t *testing.T) {
 		raw := msgpack.Encode(nil, reflect.ValueOf(src))
 		for _, format := range []string{"native", "MessagePack"} {
 			cases++
-			db.Read(func(tx *edb.Tx) {
+			db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 				want, got := new(bm.Order), new(bm.Order)
 				msgpack.Decode(raw, reflect.ValueOf(want))
 				want.ID = src.ID

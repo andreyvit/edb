@@ -122,7 +122,7 @@ func TestChangeCallbackWritesAndRollback(t *testing.T) {
 		})
 		tx.DeleteByKey(table, "key")
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if v := Get[changeRecordRow](tx, "key"); v == nil || v.Name != "replacement" {
 			t.Fatal("callback replacement was deleted", v)
 		}
@@ -144,7 +144,7 @@ func TestChangeCallbackWritesAndRollback(t *testing.T) {
 	if !errors.Is(err, rollback) || calls != 3 {
 		t.Fatal(err, calls)
 	}
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if Get[changeRecordRow](tx, "key").Name != "replacement" {
 			t.Fatal("rollback persisted")
 		}
@@ -202,7 +202,7 @@ func BenchmarkChangeNotifications(b *testing.B) {
 					input.Tags[i] = "customer-tag"
 				}
 				db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, input) })
-				tx := db.BeginRead()
+				tx := db.BeginRead(TxMetadata{})
 				defer tx.Close()
 				rawKey := table.EncodeKey("key")
 				raw := tx.stx.Bucket(table.name, dataBucketName).Get(rawKey)

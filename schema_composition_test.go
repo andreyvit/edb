@@ -38,7 +38,7 @@ func TestSchemaComposition(t *testing.T) {
 				v := 7
 				SPut(tx, version, &v)
 			})
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				rows := All(IndexScan[User](tx, byName, ExactScan(name)))
 				if len(rows) != 1 || rows[0].ID != 1 || rows[0].Name != name {
 					t.Fatalf("composed index lookup = %v", rows)
@@ -52,7 +52,7 @@ func TestSchemaComposition(t *testing.T) {
 				tx.Reindex(users, byName)
 				DeleteByKey[User](tx, ID(1))
 			})
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				if rows := All(IndexScan[User](tx, byName, ExactScan(name))); len(rows) != 0 {
 					t.Fatal("index retained deleted row")
 				}

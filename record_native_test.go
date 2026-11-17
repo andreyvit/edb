@@ -38,7 +38,7 @@ func TestTableNativeSchema(t *testing.T) {
 			db := setup(t, schema)
 			db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, statrow.Sample(13)) })
 			var hot kvo.Record
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				r, _, err := tx.TryGetRecord(table, uint64(13))
 				if err != nil {
 					t.Fatal(err)
@@ -59,7 +59,7 @@ func TestTableNativeSchema(t *testing.T) {
 			if native.Key != 0 {
 				t.Fatal("explicit-key write changed caller's struct")
 			}
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				if Get[statrow.State](tx, uint64(13)).Profile.Balance != 900 {
 					t.Fatal("native save did not persist")
 				}

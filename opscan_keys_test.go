@@ -24,7 +24,7 @@ func testKeyCursorSets[Key comparable](t *testing.T, keys []Key) {
 			putRawTableValue(t, tx, rows.Table(), rows.Table().EncodeKey(key), []byte{0xff})
 		}
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		for _, reverse := range []bool{false, true} {
 			a := func() *KeyCursor[Key] {
 				scan := records.bindIndex[string](group).Exact(tx, "vip")
@@ -74,7 +74,7 @@ func testKeyCursorSets[Key comparable](t *testing.T, keys []Key) {
 }
 func TestKeyCursorMergeValidation(t *testing.T) {
 	db, rows, _, group := typedTestTable[ID](t, Fast2)
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		valid := func() *KeyCursor[ID] { return rows.Scan(tx).KeyCursor() }
 		assertPanics(t, func() { valid().Union(rows.Scan(tx).Reversed().KeyCursor()) })
 		assertPanics(t, func() { valid().Intersect(rows.bindIndex[string](group).Scan(tx).KeyCursor()) })
@@ -82,7 +82,7 @@ func TestKeyCursorMergeValidation(t *testing.T) {
 		c := valid()
 		assertPanics(t, func() { c.Union(c) })
 		assertPanics(t, func() { valid().Union(c, c) })
-		db.Read(func(other *Tx) { assertPanics(t, func() { valid().Union(rows.Scan(other).KeyCursor()) }) })
+		db.Read(TxMetadata{}, func(other *Tx) { assertPanics(t, func() { valid().Union(rows.Scan(other).KeyCursor()) }) })
 	})
 }
 
@@ -94,7 +94,7 @@ func TestKeyMergeDetectsNonMonotonicIndexKeys(t *testing.T) {
 		rows.Put(tx, &typedTestRow[string]{"a", "one", "vip"})
 		rows.Put(tx, &typedTestRow[string]{"a\x01\x00", "two", "vip"})
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		for _, reverse := range []bool{false, true} {
 			scan := rows.bindIndex[string](group).Exact(tx, "vip")
 			if reverse {

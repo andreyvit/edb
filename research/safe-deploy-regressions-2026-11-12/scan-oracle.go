@@ -108,7 +108,7 @@ func main() {
 	for _, tbl := range fdb.Schema.Tables() {
 		for _, idx := range tbl.Indices() {
 			var entries []entry
-			db.Read(func(tx *edb.Tx) {
+			db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 				b := tx.BoltTx().Bucket([]byte(tbl.Name())).Bucket([]byte("i_" + idx.ShortName()))
 				must(b.ForEach(func(k, v []byte) error {
 					comp := parts(bytes.Clone(k))
@@ -149,7 +149,7 @@ func main() {
 							fmt.Fprintf(os.Stderr, "%s/%s %s: %v\n", tbl.Name(), idx.ShortName(), label, e)
 						}
 					}()
-					db.Read(func(tx *edb.Tx) {
+					db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 						c := tx.IndexScan(idx, opt)
 						for c.Next() {
 							if got >= len(wanted) {

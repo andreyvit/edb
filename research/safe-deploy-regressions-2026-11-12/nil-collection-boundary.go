@@ -61,7 +61,7 @@ func main() {
 		must(err)
 		var storedNil bool
 		consumerError := caught(func() {
-			db.Read(func(tx *edb.Tx) {
+			db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 				if kind == "product" {
 					row := edb.Get[bm.Product](tx, product.ID)
 					storedNil = len(row.Variants) == 1 && row.Variants[0] == nil

@@ -44,7 +44,7 @@ func TestIndexPrimaryKeyEndpointsWithEmbeddedFooter(t *testing.T) {
 			for _, upper := range keys {
 				for flags := 0; flags < 8; flags++ {
 					t.Run(fmt.Sprintf("%s/%q-%q/%d", tt.name, lower, upper, flags), func(t *testing.T) {
-						db.Read(func(tx *Tx) {
+						db.Read(TxMetadata{}, func(tx *Tx) {
 							loInc, hiInc, reverse := flags&1 != 0, flags&2 != 0, flags&4 != 0
 							opt := tt.opt.PrimaryKeyRange(lower, upper, loInc, hiInc)
 							opt.Reverse = reverse
@@ -78,7 +78,7 @@ func TestEqualVariableIndexRangePaginationWork(t *testing.T) {
 		}
 		rows.Put(tx, &typedTestRow[ID]{1001, "collision", "b\x00"})
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		opt := RangeScan("b", "b", true, true).PrimaryKeyRange(ID(1), nil, true, true)
 		opt.PrefixValue, opt.PrefixEls = reflect.ValueOf("different"), 1
 		if got := AllKeys[ID](tx.IndexScan(idx, opt)); len(got) != 0 {
@@ -93,7 +93,7 @@ func TestEqualVariableIndexRangePaginationWork(t *testing.T) {
 		total, steps := 0, 0
 		for {
 			n := 0
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				opt := RangeScan("b", "b", true, true)
 				if after != 0 {
 					opt = opt.PrimaryKeyRange(after, nil, false, true)
@@ -143,7 +143,7 @@ func TestVariablePrimaryKeyEndpointSeekWork(t *testing.T) {
 			total, steps := 0, 0
 			for {
 				n := 0
-				db.Read(func(tx *Tx) {
+				db.Read(TxMetadata{}, func(tx *Tx) {
 					opt := RangeScan("b", "b", true, true)
 					if method == ScanMethodExact {
 						opt = ExactScan("b")
@@ -195,7 +195,7 @@ func TestVariablePrimaryKeyUpperEnvelopeDoesNotVisitSuccessorPrefix(t *testing.T
 		}
 	})
 	for _, reverse := range []bool{false, true} {
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			opt := ExactScan("b").PrimaryKeyRange(nil, "a", true, true)
 			opt.Reverse = reverse
 			c := tx.IndexScan(idx, opt)
@@ -240,7 +240,7 @@ func TestFixedWidthReverseExclusiveRangeWork(t *testing.T) {
 	total, steps := 0, 0
 	for {
 		n := 0
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			opt := RangeScan(CD{1, 1}, CD{1, 3}, true, false).Prefix(1).Reversed().Resume(mark)
 			c := tx.IndexScan(widgetsByCD, opt)
 			counted := &paginationCursor{storageCursor: c.icur}
@@ -268,7 +268,7 @@ func TestFixedWidthReverseExclusiveRangeWork(t *testing.T) {
 
 func TestStorageSeekBeforeAndResume(t *testing.T) {
 	db, rows, _, _ := typedTestTable[ID](t, MessagePack)
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		c := tx.TableScan(rows.Table(), FullScan()).dcur
 		if key, _ := c.SeekBefore(rows.Table().EncodeKey(ID(3))); key != nil {
 			t.Fatal(key)
@@ -283,7 +283,7 @@ func TestStorageSeekBeforeAndResume(t *testing.T) {
 		if deleted {
 			db.Write(TxMetadata{}, func(tx *Tx) { rows.Delete(tx, 3) })
 		}
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			for _, tt := range []struct {
 				bound, after, want ID
 			}{
@@ -332,7 +332,7 @@ func TestVariablePrimaryKeyBoundsAcrossFixedIndexValues(t *testing.T) {
 			db.Write(TxMetadata{}, func(tx *Tx) { table.Rows[row, string]().Delete(tx, "b") })
 		}
 		for flags := 0; flags < 8; flags++ {
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				loInc, hiInc, reverse := flags&1 != 0, flags&2 != 0, flags&4 != 0
 				opt := RangeScan(uint64(1), uint64(2), true, true).PrimaryKeyRange("a", "b", loInc, hiInc)
 				opt.Reverse = reverse
@@ -374,7 +374,7 @@ func TestVariableIndexRangeBookmarkWork(t *testing.T) {
 					}
 				})
 				var want []string
-				db.Read(func(tx *Tx) {
+				db.Read(TxMetadata{}, func(tx *Tx) {
 					opt := FullScan()
 					opt.Reverse = reverse
 					for c := tx.IndexScan(idx, opt); c.Next(); {
@@ -391,7 +391,7 @@ func TestVariableIndexRangeBookmarkWork(t *testing.T) {
 				for {
 					n := 0
 					last := ""
-					db.Read(func(tx *Tx) {
+					db.Read(TxMetadata{}, func(tx *Tx) {
 						opt := RangeScan("b", "c", true, true).Resume(mark)
 						opt.Reverse = reverse
 						c := tx.IndexScan(idx, opt)

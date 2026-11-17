@@ -45,7 +45,7 @@ func TestCorruptValue_DecodeRowPayloadReturnsErrors(t *testing.T) {
 		putRawTableValue(t, tx, corruptValuesTable, keyRaw, rawValue)
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		gotMeta := tx.GetMeta(corruptValuesTable, ID(1))
 		if !gotMeta.Exists() {
 			t.Fatalf("GetMeta should still decode metadata for a value with bad row payload")
@@ -93,7 +93,7 @@ func TestCorruptValue_MalformedRecordPanicsAtDecodeBoundary(t *testing.T) {
 		putRawTableValue(t, tx, corruptValuesTable, keyRaw, rawValue[:len(rawValue)-1])
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		assertTableDataPanic(t, func() {
 			_, _, _ = tx.TryGet(corruptValuesTable, ID(1))
 		}, "invalid value")

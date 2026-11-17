@@ -9,7 +9,7 @@ import (
 func TestTx_MemoCachesValueAndError(t *testing.T) {
 	db := setup(t, basicSchema)
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		calls := 0
 		v, err := tx.Memo("k", func() (any, error) {
 			calls++
@@ -44,7 +44,7 @@ func TestTx_MemoCachesValueAndError(t *testing.T) {
 		}
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		calls := 0
 		v, err := Memo[int](tx, "typed", func() (int, error) {
 			calls++
@@ -71,7 +71,7 @@ func TestTx_BeginUpdateRollsBackOnClose(t *testing.T) {
 	tx.KVPutRaw(kubets, key, []byte{1})
 	tx.Close() // rollback
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if got := tx.KVGetRaw(kubets, key); got != nil {
 			t.Fatalf("KVGetRaw after rollback = %x, wanted nil", got)
 		}
@@ -89,7 +89,7 @@ func TestDBTx_CommitDespiteError(t *testing.T) {
 	if err == nil {
 		t.Fatalf("db.Tx err = nil, wanted error")
 	}
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if got := tx.KVGetRaw(kubets, key1); got != nil {
 			t.Fatalf("KVGetRaw after failed Tx = %x, wanted nil", got)
 		}
@@ -104,7 +104,7 @@ func TestDBTx_CommitDespiteError(t *testing.T) {
 	if err == nil {
 		t.Fatalf("db.Tx err = nil, wanted error")
 	}
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if got := tx.KVGetRaw(kubets, key2); got == nil || len(got) != 1 || got[0] != 2 {
 			t.Fatalf("KVGetRaw after CommitDespiteError = %x, wanted 02", got)
 		}
@@ -127,7 +127,7 @@ func TestDBTx_PanicBecomesError(t *testing.T) {
 
 func TestTx_BoltTx(t *testing.T) {
 	db := setup(t, basicSchema)
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		btx := tx.BoltTx()
 		if testing.Short() {
 			if btx != nil {

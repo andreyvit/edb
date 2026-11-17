@@ -108,7 +108,7 @@ func main() {
 	before := map[bm.TenantID]string{}
 	resources := map[bm.TenantID]string{}
 	var queries []map[string]any
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for s := range edb.FullTableScan[bm.TenantSettings](tx).Rows() {
 			if s.PluginSource != "" || len(s.PluginResources) > 0 {
 				resources[s.TenantID] = digest(s.PluginResources)
@@ -147,7 +147,7 @@ func main() {
 		panic("migration rerun changed state")
 	}
 	counts := map[string]int{}
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for s := range edb.FullTableScan[bm.TenantSettings](tx).Rows() {
 			counts["settings"]++
 			if s.PluginSource != "" || len(s.PluginResources) > 0 || s.PluginDraft != nil {

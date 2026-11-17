@@ -43,7 +43,7 @@ func TestTxReuseBuffersScanRetention(t *testing.T) {
 		t.Run(source.name, func(t *testing.T) {
 			db := openTxReuseDB(t, schema, true)
 			db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, alice, bob) })
-			tx := db.BeginRead()
+			tx := db.BeginRead(TxMetadata{})
 			defer tx.Close()
 			var overflow Cursor[txReuseGrowthRow]
 			for range scans {

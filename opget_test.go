@@ -9,7 +9,7 @@ func TestGetHelpers(t *testing.T) {
 		Put(tx, u1)
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if !Exists[User](tx, ID(1)) {
 			t.Fatalf("Exists[User](1) = false, wanted true")
 		}

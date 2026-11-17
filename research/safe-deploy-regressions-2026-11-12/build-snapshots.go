@@ -39,7 +39,7 @@ func main() {
 	db, e := edb.Open(os.Args[1], fdb.Schema, edb.Options{IsTesting: true})
 	must(e)
 	defer db.Close()
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		rc := probeContext{tx: tx}
 		tenants := map[bm.TenantID]*bm.RuntimeTenant{}
 		for _, tbl := range fdb.Schema.Tables() {

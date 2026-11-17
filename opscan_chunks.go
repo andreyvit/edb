@@ -178,7 +178,7 @@ func (s RowScan[Row, Key]) resumedChunk(limit int, after ScanBookmark) *RowChunk
 // export: writes between chunks can add, remove, or move entries. Retain records
 // with Own before leaving a chunk. Never mutate the scanned index while walking
 // its cursor; collect keys first, close the reader, then write.
-func ReadChunks[S chunkScan[C], C scanChunk](db *DB, limit int, query func(*Tx) S) iter.Seq[C] {
+func ReadChunks[S chunkScan[C], C scanChunk](db *DB, metadata TxMetadata, limit int, query func(*Tx) S) iter.Seq[C] {
 	if limit <= 0 {
 		panic("edb: chunk size must be positive")
 	}
@@ -186,7 +186,7 @@ func ReadChunks[S chunkScan[C], C scanChunk](db *DB, limit int, query func(*Tx) 
 		var after ScanBookmark
 		for {
 			more := false
-			db.Read(func(tx *Tx) {
+			db.Read(metadata, func(tx *Tx) {
 				chunk := query(tx).resumedChunk(limit, after)
 				state := chunk.state()
 				if state.Tx() != tx {

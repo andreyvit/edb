@@ -10,7 +10,7 @@ func TestDeleteByKeyRaw_ReturnValueAndIndexCleanup(t *testing.T) {
 	})
 
 	var rawKey []byte
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		rawKey = usersTable.EncodeKey(ID(1))
 		if usersTable.dataBucketIn(tx).KeyCount() != 1 {
 			t.Fatalf("data keycount = %d, wanted 1", usersTable.dataBucketIn(tx).KeyCount())
@@ -29,7 +29,7 @@ func TestDeleteByKeyRaw_ReturnValueAndIndexCleanup(t *testing.T) {
 		}
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if usersTable.dataBucketIn(tx).KeyCount() != 0 {
 			t.Fatalf("data keycount = %d, wanted 0", usersTable.dataBucketIn(tx).KeyCount())
 		}
@@ -53,7 +53,7 @@ func TestUnsafeDeleteByKeyRawSkippingIndex_SkipsIndexCleanup(t *testing.T) {
 		}
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if usersTable.dataBucketIn(tx).KeyCount() != 0 {
 			t.Fatalf("data keycount = %d, wanted 0", usersTable.dataBucketIn(tx).KeyCount())
 		}
@@ -76,7 +76,7 @@ func TestDeleteAll(t *testing.T) {
 			t.Fatalf("DeleteAll = %d, wanted 2", n)
 		}
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		isempty(t, AllTableRows[User](tx))
 	})
 }

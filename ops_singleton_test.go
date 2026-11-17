@@ -46,14 +46,14 @@ func testSingletonRoundTrip[T any](t *testing.T, want T) {
 		t.Fatalf("incorrect singleton declaration: %v, type %v, key %q", sk, sk.ValueType(), sk.Raw())
 	}
 	db := setup(t, schema)
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		var got T
 		if SGet(tx, sk, &got) {
 			t.Fatal("undeclared value found")
 		}
 	})
 	db.Write(TxMetadata{}, func(tx *Tx) { SPut(tx, sk, &want) })
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		var got T
 		if !SGet(tx, sk, &got) || !reflect.DeepEqual(got, want) {
 			t.Fatalf("singleton round trip = %#v, want %#v", got, want)

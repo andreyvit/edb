@@ -90,7 +90,7 @@ func testTypedTables[Key comparable](t *testing.T, format StorageFormat, first, 
 		rows.Put(tx, &typedTestRow[Key]{second, "bob", "vip"})
 		rows.Put(tx, &typedTestRow[Key]{first, "alice", "vip"})
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if r := records.Get(tx, first); r.GetValue(1).AsString() != "alice" {
 			t.Fatal("record lookup")
 		}

@@ -85,13 +85,13 @@ func TestDB(t *testing.T) {
 		Put(tx, u2)
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		deepEqual(t, Get[User](tx, 1), u1)
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		deepEqual(t, Lookup[User](tx, usersByEmail, "foo@example.com"), u1)
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		deepEqual(t, Lookup[User](tx, usersByName, "foo"), u1)
 
 		isnil(t, Lookup[User](tx, usersByName, "fo"))
@@ -99,7 +99,7 @@ func TestDB(t *testing.T) {
 		isnil(t, Lookup[User](tx, usersByName, ""))
 		isnil(t, Lookup[User](tx, usersByName, "fox"))
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		deepEqual(t, AllTableRows[User](tx), []*User{u1, u2})
 	})
 	db.Write(TxMetadata{}, func(tx *Tx) {
@@ -124,7 +124,7 @@ func TestDBScan(t *testing.T) {
 		Put(tx, u5)
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		rows := All(IndexScan[User](tx, usersByName, FullScan()))
 		deepEqual(t, rows, []*User{u3, u4, u5, u2, u1})
 
@@ -231,7 +231,7 @@ func TestDBCompositeKey(t *testing.T) {
 		Put(tx, u5)
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		deepEqual(t, Get[Widget](tx, AB{1, 42}), u2)
 		isnil(t, Get[Widget](tx, AB{1, 44}))
 		isnil(t, Get[Widget](tx, AB{}))
@@ -299,7 +299,7 @@ func TestDBReverseScanBug(t *testing.T) {
 		Put(tx, u5)
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		rows := All(IndexScan[User](tx, usersByName, ExactScan("bar").Reversed()))
 		deepEqual(t, rows, []*User{u5, u4, u3})
 	})
@@ -342,7 +342,7 @@ func TestRawScan(t *testing.T) {
 	o := func(name string, rang RawRange, exp ...[]byte) {
 		t.Helper()
 		t.Run(name, func(t *testing.T) {
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				slog.Debug(t.Name())
 				tableScan(t, tx, kubets, rang, exp...)
 			})

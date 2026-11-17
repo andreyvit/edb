@@ -137,7 +137,7 @@ func TestRecordPathReadAllocations(t *testing.T) {
 			db.Write(TxMetadata{}, func(tx *Tx) {
 				Put(tx, &pathRow{ID: 1000, Name: "Ada", Count: 7, Tags: []string{"vip", "local"}, Labels: map[string]int64{"earned": 42}, Payload: strings.Repeat("x", 512)})
 			})
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				if n := testing.AllocsPerRun(100, func() {
 					r := table.Get(tx, 1000)
 					if r.Get(p.name) != "Ada" || r.Get(p.count) != 7 || !pathHasTag(r.Get(p.tags), "vip") {
@@ -198,7 +198,7 @@ func BenchmarkRecordPath(b *testing.B) {
 					b.StopTimer()
 				}
 				if op == "Read" {
-					db.Read(run)
+					db.Read(TxMetadata{}, run)
 				} else {
 					db.Write(TxMetadata{}, run)
 				}

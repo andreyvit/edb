@@ -27,7 +27,7 @@ func main() {
 	}
 	defer db.Close()
 	counts := map[string]int{}
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for settings := range edb.FullTableScan[bm.TenantSettings](tx).Rows() {
 			counts["settings"]++
 			if settings.PluginSource != "" {
@@ -53,7 +53,7 @@ func main() {
 		runtime.ReadMemStats(&before)
 		started := time.Now()
 		var plan *dbmigrations.PluginSourcePlan
-		db.Read(func(tx *edb.Tx) { plan, err = dbmigrations.PlanPluginSources(tx) })
+		db.Read(edb.TxMetadata{}, func(tx *edb.Tx) { plan, err = dbmigrations.PlanPluginSources(tx) })
 		if err != nil {
 			panic(err)
 		}

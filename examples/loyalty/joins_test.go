@@ -41,7 +41,7 @@ func Example_recordsAndCompositeKeys() {
 		statsRows.Put(tx, &DailyStats{StatsKey{101, "2026-11-10"}, 3})
 		statsRows.Put(tx, &DailyStats{StatsKey{102, "2026-11-10"}, 4})
 	})
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		var total int64
 		for id, customer := range Customers.ExactIndexScan(tx, customersByTagIndex, "vip").Entries() {
 			day := stats.Get(tx, StatsKey{id, "2026-11-10"})
@@ -58,7 +58,7 @@ func Example_recordsAndCompositeKeys() {
 	})
 	// Each chunk owns a read transaction; joins use that exact transaction.
 	var chunkedTotal int64
-	for chunk := range edb.ReadChunks(db, 1, func(tx *edb.Tx) edb.RecordScan[uint64] {
+	for chunk := range edb.ReadChunks(db, edb.TxMetadata{}, 1, func(tx *edb.Tx) edb.RecordScan[uint64] {
 		return Customers.ExactIndexScan(tx, customersByTagIndex, "vip")
 	}) {
 		for id := range chunk.Keys() {

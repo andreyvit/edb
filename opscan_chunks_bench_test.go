@@ -22,7 +22,7 @@ func BenchmarkResumableScan(b *testing.B) {
 					for b.Loop() {
 						visited := 0
 						if mode == "ChunkKeys" || mode == "ChunkJoin" {
-							for chunk := range ReadChunks(db, 1000, func(tx *Tx) RecordScan[ID] { return index.Exact(tx, "vip") }) {
+							for chunk := range ReadChunks(db, TxMetadata{}, 1000, func(tx *Tx) RecordScan[ID] { return index.Exact(tx, "vip") }) {
 								if mode == "ChunkKeys" {
 									for range chunk.Keys() {
 										visited++
@@ -36,7 +36,7 @@ func BenchmarkResumableScan(b *testing.B) {
 								}
 							}
 						} else {
-							db.Read(func(tx *Tx) {
+							db.Read(TxMetadata{}, func(tx *Tx) {
 								scan := index.Exact(tx, "vip")
 								switch mode {
 								case "Keys":
@@ -72,7 +72,7 @@ func TestChunkAndKeyMergeAllocationBudgets(t *testing.T) {
 			rows.Put(tx, &typedTestRow[ID]{i, fmt.Sprint(i), "vip"})
 		}
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		for _, merge := range []bool{false, true} {
 			run := func(limit int) {
 				if merge {
@@ -125,7 +125,7 @@ func benchmarkVariableKeyMerge[Key any](b *testing.B, key func(int) Key) {
 			b.ReportAllocs()
 			for b.Loop() {
 				visited := 0
-				db.Read(func(tx *Tx) {
+				db.Read(TxMetadata{}, func(tx *Tx) {
 					scan := index.Exact(tx, "vip")
 					c := scan.KeyCursor().Intersect(scan.KeyCursor())
 					for c.Next() {

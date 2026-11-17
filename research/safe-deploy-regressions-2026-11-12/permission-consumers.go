@@ -46,7 +46,7 @@ func main() {
 	defer db.Close()
 	var tenants []*bm.RuntimeTenant
 	var users []*bm.User
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for t := range edb.FullTableScan[bm.Tenant](tx).Rows() {
 			s := edb.Get[bm.TenantSettings](tx, t.ID)
 			if s != nil {
@@ -74,7 +74,7 @@ func main() {
 			copy.RequirePasswordChange = !copy.RequirePasswordChange
 			edb.Put(tx, copy)
 		}()
-		db.Read(func(tx *edb.Tx) {
+		db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 			if digest(edb.Get[bm.User](tx, user.ID)) != before {
 				panic("rollback changed user")
 			}
@@ -84,7 +84,7 @@ func main() {
 			copy.RequirePasswordChange = !copy.RequirePasswordChange
 			edb.Put(tx, copy)
 		})
-		db.Read(func(tx *edb.Tx) {
+		db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 			copy := edb.Get[bm.User](tx, user.ID)
 			copy.RequirePasswordChange = !copy.RequirePasswordChange
 			if digest(copy) != before {

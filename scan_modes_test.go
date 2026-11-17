@@ -11,7 +11,7 @@ func TestTableScan_EdgeCases(t *testing.T) {
 	db := setup(t, basicSchema)
 	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, u1, u2, u3) })
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		keys := AllKeys[ID](TableScan[User](tx, LowerBoundScan(ID(2), false)).Raw())
 		if len(keys) != 1 || keys[0] != 3 {
 			t.Fatalf("LowerBoundScan(2, excl) keys = %v, wanted [3]", keys)
@@ -41,7 +41,7 @@ func TestIndexScan_Range_InclusiveExclusive(t *testing.T) {
 	db := setup(t, basicSchema)
 	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, u1, u2, u3) })
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		ids := AllKeys[ID](IndexScan[User](tx, usersByEmail, RangeScan("b", nil, false, false)).Raw())
 		if len(ids) != 1 || ids[0] != 3 {
 			t.Fatalf("email in (b, +inf) ids = %v, wanted [3]", ids)
@@ -72,7 +72,7 @@ func TestIndexScan_PrimaryKeyRange(t *testing.T) {
 	db := setup(t, basicSchema)
 	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, u1, u2, u3, u4) })
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		ids := AllKeys[ID](IndexScan[User](tx, usersByName, ExactScan("bar").PrimaryKeyRange(ID(2), ID(4), true, false)).Raw())
 		if len(ids) != 2 || ids[0] != 2 || ids[1] != 3 {
 			t.Fatalf("name=bar primary keys in [2, 4) = %v, wanted [2 3]", ids)
@@ -105,7 +105,7 @@ func TestIndex_KeyRawRoundTrip(t *testing.T) {
 
 func TestIndexScan_ExactIDRangeScan_UniquePanics(t *testing.T) {
 	db := setup(t, basicSchema)
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		assertPanics(t, func() {
 			_ = IndexScan[User](tx, usersByEmail, ExactIDRangeScan("a", ID(1), ID(2), true, true))
 		})

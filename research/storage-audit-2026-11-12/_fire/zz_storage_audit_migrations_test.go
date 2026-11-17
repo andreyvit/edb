@@ -46,7 +46,7 @@ func TestDeepMigrationAudit(t *testing.T) {
 					auditFill(want.Elem().Field(0), 0, 1)
 					var expected []byte
 					var oldErr any
-					db.Read(func(tx *edb.Tx) {
+					db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 						oldErr = auditSafe(func() { old(tx, want.Interface(), version); expected = msgpack.Encode(nil, want) })
 					})
 					if oldErr != nil {
@@ -55,7 +55,7 @@ func TestDeepMigrationAudit(t *testing.T) {
 					}
 					cases++
 					var problem any
-					db.Read(func(tx *edb.Tx) {
+					db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 						problem = auditSafe(func() {
 							input := reflect.New(typ)
 							msgpack.Decode(raw, input.Elem())

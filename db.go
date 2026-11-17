@@ -1,6 +1,7 @@
 package edb
 
 import (
+	"cmp"
 	"fmt"
 	"slices"
 	"strings"
@@ -310,10 +311,17 @@ func (db *DB) DescribeOpenTxns() string {
 	fmt.Fprintf(&buf, "%d OPEN TRANSACTIONS:\n", len(txns))
 	for _, tx := range txns {
 		ms := now.Sub(tx.startTime).Milliseconds()
+		mode := "read"
+		if tx.IsWritable() {
+			mode = "write"
+		}
+		kind := cmp.Or(tx.metadata.Kind, "system:unknown")
+		tenant := cmp.Or(tx.metadata.Tenant, "unknown")
+		fmt.Fprintf(&buf, "\n---\nopen for %d ms (%s) Kind=%s Tenant=%s", ms, mode, kind, tenant)
 		if ms < 100 || len(tx.stack) == 0 {
-			fmt.Fprintf(&buf, "\n---\nopen for %d ms\n", ms)
+			buf.WriteByte('\n')
 		} else {
-			fmt.Fprintf(&buf, "\n---\nopen for %d ms:\n%s", ms, tx.stack)
+			fmt.Fprintf(&buf, ":\n%s", tx.stack)
 		}
 	}
 

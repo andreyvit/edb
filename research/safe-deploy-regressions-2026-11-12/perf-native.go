@@ -107,7 +107,7 @@ func main() {
 					continue
 				}
 				canWrite := false
-				db.Read(func(tx *edb.Tx) {
+				db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 					row, _ := tx.GetByKeyRaw(tbl, keys[0])
 					f := reflect.ValueOf(row).Elem().FieldByName(fieldName)
 					canWrite = f.IsValid() && f.CanSet() && (f.CanUint() || f.Kind() == reflect.String || f.Type() == reflect.TypeFor[time.Time]())
@@ -152,7 +152,7 @@ func main() {
 							db.Write(edb.TxMetadata{}, fn)
 						}
 					} else {
-						db.Read(fn)
+						db.Read(edb.TxMetadata{}, fn)
 					}
 				}
 				batch()

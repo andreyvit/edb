@@ -38,7 +38,7 @@ func TestDB_BoltSizeDescribeOpenTxnsAndSafeToQuit(t *testing.T) {
 		}
 		_ = db.Size()
 
-		rtx := db.BeginRead()
+		rtx := db.BeginRead(TxMetadata{})
 		desc := db.DescribeOpenTxns()
 		if !strings.Contains(desc, "OPEN TRANSACTIONS") {
 			t.Fatalf("DescribeOpenTxns() missing expected text, got: %q", desc)
@@ -111,7 +111,7 @@ func reopenUsersByAddedNameIndex(t testing.TB, path string, opts ...any) []ID {
 	defer db.Close()
 
 	var ids []ID
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		for _, row := range All(IndexScan[User](tx, nameIdx, ExactScan("Alice"))) {
 			ids = append(ids, row.ID)
 		}
@@ -142,7 +142,7 @@ func reopenUsersByMixedFillModes(t testing.TB, path string) ([]ID, []ID) {
 
 	var blocking []ID
 	var skipped []ID
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		for _, row := range All(IndexScan[User](tx, nameIdx, ExactScan("Alice"))) {
 			blocking = append(blocking, row.ID)
 		}

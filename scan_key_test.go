@@ -13,7 +13,7 @@ func TestCursorUintKey(t *testing.T) {
 	db.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &User{ID: 1, Name: "same", Email: "a"}, &User{ID: math.MaxUint64, Name: "same", Email: "b"})
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		for _, c := range []Cursor[User]{
 			TableScan[User](tx, FullScan()),
 			IndexScan[User](tx, usersByEmail, FullScan()),
@@ -83,7 +83,7 @@ func TestCursorUintKeyEncoding(t *testing.T) {
 func BenchmarkCursorKey(b *testing.B) {
 	db := setup(b, basicSchema)
 	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, &User{ID: 0x123456789, Name: "alice", Email: "a"}) })
-	tx := db.BeginRead()
+	tx := db.BeginRead(TxMetadata{})
 	defer tx.Close()
 	for _, source := range []struct {
 		name string

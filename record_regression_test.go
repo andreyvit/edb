@@ -161,7 +161,7 @@ func TestRecordMixedWriteRegression(t *testing.T) {
 				} else if !errors.Is(err, rollback) {
 					t.Fatal(err)
 				}
-				db.Read(func(tx *Tx) { verify(tx, want) })
+				db.Read(TxMetadata{}, func(tx *Tx) { verify(tx, want) })
 			}
 		})
 	}

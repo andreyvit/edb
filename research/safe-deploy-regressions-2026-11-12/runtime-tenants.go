@@ -89,7 +89,7 @@ func main() {
 	must(e)
 	defer db.Close()
 	ordinal := 0
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		customers := map[bm.TenantID][]*bm.Customer{}
 		orders := map[bm.CustomerID][]*bm.Order{}
 		if os.Getenv("AUDIT_RULES") == "true" {

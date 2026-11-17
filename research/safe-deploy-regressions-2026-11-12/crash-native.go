@@ -73,7 +73,7 @@ func main() {
 		panic("fsync disabled")
 	}
 	var ids []bm.CustomerID
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		c := tx.TableScan(tx.Schema().TableByRow((*bm.Customer)(nil)), edb.FullScan())
 		for c.Next() && len(ids) < 32 {
 			row, _ := c.Row()
@@ -104,7 +104,7 @@ func main() {
 		ack, e := strconv.ParseInt(os.Args[3], 10, 64)
 		must(e)
 		current := int64(-1)
-		db.Read(func(tx *edb.Tx) {
+		db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 			for i, id := range ids {
 				c := edb.Get[bm.Customer](tx, id)
 				n := generation(c)

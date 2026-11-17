@@ -178,12 +178,12 @@ func TestTransactionObservationLifecycle(t *testing.T) {
 					if observed != 1 || db.PendingWriterCount.Load() != 0 {
 						t.Fatalf("observed=%d pending=%d", observed, db.PendingWriterCount.Load())
 					}
-					db.Read(func(tx *Tx) {
+					db.Read(TxMetadata{}, func(tx *Tx) {
 						if (Get[User](tx, ID(1)) != nil) != (committed && mutated) {
 							t.Error("unexpected persisted row")
 						}
 					})
-					_ = db.ReadErr(func(*Tx) error { return wantErr })
+					_ = db.ReadErr(TxMetadata{}, func(*Tx) error { return wantErr })
 					_ = db.Tx(TxMetadata{}, false, func(tx *Tx) error {
 						if tx.Metadata() != (TxMetadata{}) {
 							t.Error("read metadata normalized")
@@ -266,7 +266,7 @@ func TestTransactionObservationBatchRetry(t *testing.T) {
 				}
 				assertObservation(t, matching, call.metadata)
 			}
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				if Get[User](tx, ID(1)) == nil || Get[User](tx, ID(2)) != nil {
 					t.Error("retry persisted wrong rows")
 				}
@@ -373,7 +373,7 @@ func TestTransactionObservationObserverPanic(t *testing.T) {
 	if events := recorder.take(); len(events) != 14 || logs.Load() != 1 {
 		t.Fatalf("observations=%d logs=%d", len(events), logs.Load())
 	}
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if Get[User](tx, ID(1)) == nil {
 			t.Error("observer panic rolled back successful write")
 		}

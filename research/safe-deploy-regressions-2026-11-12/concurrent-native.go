@@ -74,7 +74,7 @@ func main() {
 	}
 	var ids []bm.CustomerID
 	var originals []*bm.Customer
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		c := tx.TableScan(tx.Schema().TableByRow((*bm.Customer)(nil)), edb.FullScan())
 		for c.Next() && len(ids) < 32 {
 			row, _ := c.Row()
@@ -117,7 +117,7 @@ func main() {
 					panic("retained native row changed after transaction")
 				}
 				i := (loops*7 + r) % 32
-				db.Read(func(tx *edb.Tx) {
+				db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 					c := edb.Get[bm.Customer](tx, ids[i])
 					n := count(c)
 					if n < last[i] {
@@ -180,7 +180,7 @@ func main() {
 	close(done)
 	readers.Wait()
 	var final []string
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for i, id := range ids {
 			want := int64(iterations - (iterations+i)/17 + i/17)
 			c := edb.Get[bm.Customer](tx, id)
@@ -197,7 +197,7 @@ func main() {
 	db.Close()
 	db, e = edb.Open(os.Args[1], fdb.Schema, edb.Options{ReuseTxBuffers: reuse, NoPersistentFreeList: true})
 	must(e)
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for i, id := range ids {
 			if digest(edb.Get[bm.Customer](tx, id)) != final[i] {
 				panic("reopen changed committed state")

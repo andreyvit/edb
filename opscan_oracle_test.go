@@ -32,7 +32,7 @@ func TestIndexRangesAgainstValueOracle(t *testing.T) {
 					opt := RangeScan(lower, upper, loInc, hiInc)
 					opt.Reverse = reverse
 					var want []string
-					db.Read(func(tx *Tx) {
+					db.Read(TxMetadata{}, func(tx *Tx) {
 						all := FullScan()
 						all.Reverse = reverse
 						for c := tx.IndexScan(group, all); c.Next(); {
@@ -50,7 +50,7 @@ func TestIndexRangesAgainstValueOracle(t *testing.T) {
 					// Reopen after every three entries. Check ordering, membership,
 					// and the complete index-key/primary-key continuation together.
 					var got []string
-					for chunk := range ReadChunks(db, 3, func(tx *Tx) RecordScan[string] {
+					for chunk := range ReadChunks(db, TxMetadata{}, 3, func(tx *Tx) RecordScan[string] {
 						return RecordScan[string]{rows.Records().bindIndex[string](group).scan(tx, opt)}
 					}) {
 						for key := range chunk.Keys() {
@@ -60,7 +60,7 @@ func TestIndexRangesAgainstValueOracle(t *testing.T) {
 					if !slices.Equal(got, want) {
 						t.Fatalf("chunks got %q, want %q", got, want)
 					}
-					db.Read(func(tx *Tx) {
+					db.Read(TxMetadata{}, func(tx *Tx) {
 						var want []string
 						lowPK, highPK := rows.Table().EncodeKey("b:1"), rows.Table().EncodeKey("z:2")
 						all := FullScan()
@@ -109,7 +109,7 @@ func TestIndexComponentBoundaries(t *testing.T) {
 	db := setup(t, schema)
 	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, &row{1, pair{"a", "bc"}}, &row{2, pair{"ab", "c"}}, &row{3, pair{"a", "d"}}) })
 	for _, reverse := range []bool{false, true} {
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			opt := ExactScan(pair{"a", "bc"})
 			opt.Reverse = reverse
 			if got := AllKeys[uint64](tx.IndexScan(idx, opt)); !slices.Equal(got, []uint64{1}) {
@@ -148,7 +148,7 @@ func TestIndexExactStringBoundaries(t *testing.T) {
 		rows.Put(tx, &typedTestRow[string]{"z", "a\x01x", "a"})
 	})
 	for _, reverse := range []bool{false, true} {
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			opt := ExactScan("a")
 			opt.Reverse = reverse
 			if got := AllKeys[string](tx.IndexScan(name, opt)); !slices.Equal(got, []string{"a"}) {

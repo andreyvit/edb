@@ -296,7 +296,7 @@ func safelyCall(fn func(*Tx) error, tx *Tx) (err error) {
 	return fn(tx)
 }
 
-func (db *DB) BeginRead() *Tx {
+func (db *DB) BeginRead(metadata TxMetadata) *Tx {
 	if db.IsClosed() {
 		panic("database closed")
 	}
@@ -304,16 +304,16 @@ func (db *DB) BeginRead() *Tx {
 	if err != nil {
 		panic(fmt.Errorf("failed to start reading: %w", err))
 	}
-	return db.newTx(TxMetadata{}, stx, false, nil, nil)
+	return db.newTx(metadata, stx, false, nil, nil)
 }
 
-func (db *DB) Read(f func(tx *Tx)) {
-	tx := db.BeginRead()
+func (db *DB) Read(metadata TxMetadata, f func(tx *Tx)) {
+	tx := db.BeginRead(metadata)
 	defer tx.Close()
 	f(tx)
 }
-func (db *DB) ReadErr(f func(tx *Tx) error) error {
-	tx := db.BeginRead()
+func (db *DB) ReadErr(metadata TxMetadata, f func(tx *Tx) error) error {
+	tx := db.BeginRead(metadata)
 	defer tx.Close()
 	return f(tx)
 }

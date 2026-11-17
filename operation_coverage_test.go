@@ -16,7 +16,7 @@ func TestOperationCoverage_ReadLookupDeleteVerbosePaths(t *testing.T) {
 		Put(tx, u1, u2)
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if meta := GetMeta[User](tx, ID(1)); !meta.Exists() {
 			t.Fatalf("GetMeta[User](1) = %+v, wanted existing", meta)
 		}
@@ -131,7 +131,7 @@ func TestOperationCoverage_PutNoopIndexCleanupAndChangeFlags(t *testing.T) {
 		}
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if LookupExists(tx, usersByName, "foo") {
 			t.Fatalf("old name index entry still exists")
 		}
@@ -267,7 +267,7 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 		}, indexRaw)
 		putRawTableValue(t, tx, corruptValuesTable, keyRaw, rawValue)
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		assertPanics(t, func() {
 			_ = Reload[corruptValueRow](tx, &corruptValueRow{ID: 1})
 		})
@@ -284,14 +284,14 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 
 	db = setupCorruptValueDB(t)
 	var memento []byte
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		c := TableScan[corruptValueRow](tx, ExactScan(ID(1))).Raw()
 		if !c.Next() {
 			t.Fatalf("scan did not find row")
 		}
 		memento = append([]byte(nil), c.ValueMemento()...)
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		row, meta, err := tx.DecodeMementoVal(corruptValuesTable, nil, memento)
 		if !row.IsValid() || meta.Exists() || err == nil {
 			t.Fatalf("DecodeMementoVal with bad key = (%v, %+v, %v), wanted error", row, meta, err)
@@ -300,7 +300,7 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 	db.Write(TxMetadata{}, func(tx *Tx) {
 		putRawTableValue(t, tx, corruptValuesTable, corruptValuesTable.EncodeKey(ID(1)), []byte{1, 1, 1, 1})
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		assertPanics(t, func() {
 			_ = tx.GetMetaByKeyVal(corruptValuesTable, reflect.ValueOf(ID(1)))
 		})
@@ -310,7 +310,7 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 	db2.Write(TxMetadata{}, func(tx *Tx) {
 		Put(tx, &User{ID: 1, Name: "foo", Email: "foo@example.com"})
 	})
-	db2.Read(func(tx *Tx) {
+	db2.Read(TxMetadata{}, func(tx *Tx) {
 		c := tx.IndexScan(usersByName, ExactScan("foo"))
 		if !c.Next() {
 			t.Fatalf("index scan did not find row")
@@ -323,7 +323,7 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 	db2.Write(TxMetadata{}, func(tx *Tx) {
 		_ = tx.UnsafeDeleteByKeyRawSkippingIndex(usersTable, usersTable.EncodeKey(ID(1)))
 	})
-	db2.Read(func(tx *Tx) {
+	db2.Read(TxMetadata{}, func(tx *Tx) {
 		assertPanics(t, func() {
 			_, _ = tx.LookupVal(usersByEmail, reflect.ValueOf("foo@example.com"))
 		})
@@ -334,7 +334,7 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 		Put(tx, &User{ID: 1, Name: "foo", Email: "foo@example.com"})
 		ensure(usersByEmail.bucketIn(tx).Put(usersByEmail.EncodeKey("foo@example.com"), []byte{0xff}))
 	})
-	db3.Read(func(tx *Tx) {
+	db3.Read(TxMetadata{}, func(tx *Tx) {
 		assertPanics(t, func() {
 			_ = tx.LookupKey(usersByEmail, "foo@example.com")
 		})
@@ -343,7 +343,7 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 		badValue := tuple{usersTable.EncodeKey(ID(1)), usersTable.EncodeKey(ID(2))}.encode(nil)
 		ensure(usersByEmail.bucketIn(tx).Put(usersByEmail.EncodeKey("foo@example.com"), badValue))
 	})
-	db3.Read(func(tx *Tx) {
+	db3.Read(TxMetadata{}, func(tx *Tx) {
 		assertPanics(t, func() {
 			_ = tx.LookupKey(usersByEmail, "foo@example.com")
 		})
@@ -356,7 +356,7 @@ func TestOperationCoverage_CorruptReadLookupAndIndexDecodePaths(t *testing.T) {
 		usersByName.keyEnc.encodeInto(&fe, reflect.ValueOf("foo"))
 		ensure(usersByName.bucketIn(tx).Put(fe.buf, emptyIndexValue))
 	})
-	db4.Read(func(tx *Tx) {
+	db4.Read(TxMetadata{}, func(tx *Tx) {
 		assertPanics(t, func() {
 			_ = tx.LookupKey(usersByName, "foo")
 		})
@@ -397,7 +397,7 @@ func TestOperationCoverage_KVOperations(t *testing.T) {
 	db.Write(TxMetadata{}, func(tx *Tx) {
 		tx.KVPutRaw(wumpets, k1, v2.Bytes())
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		tx.logger = nil
 		if got := tx.KVGetRaw(wumpets, k1); got == nil {
 			t.Fatalf("KVGetRaw(existing) returned nil")
@@ -443,7 +443,7 @@ func TestOperationCoverage_TxAndSingletonHelpers(t *testing.T) {
 	mp := AddKVMap(scm, "meta")
 	sk := AddSingletonKey[int](mp, "k")
 	db := setup(t, scm)
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		var missing int
 		if SGet(tx, sk, &missing) {
 			t.Fatalf("SGet before write = true, wanted false")
@@ -471,7 +471,7 @@ func TestOperationCoverage_TxAndSingletonHelpers(t *testing.T) {
 	tx.Close()
 
 	errBoom := errors.New("boom")
-	if err := db.ReadErr(func(tx *Tx) error {
+	if err := db.ReadErr(TxMetadata{}, func(tx *Tx) error {
 		var missing int
 		if SGet(tx, sk, &missing) && missing != value {
 			t.Fatalf("SGet returned unexpected value %d", missing)
@@ -494,7 +494,7 @@ func TestOperationCoverage_TxAndSingletonHelpers(t *testing.T) {
 		t.Fatalf("ReadErr = %v, wanted boom", err)
 	}
 
-	readTx := db.BeginRead()
+	readTx := db.BeginRead(TxMetadata{})
 	if readTx.IsWritable() {
 		t.Fatalf("BeginRead transaction should not be writable")
 	}
@@ -515,7 +515,7 @@ func TestOperationCoverage_TxAndSingletonHelpers(t *testing.T) {
 		t.Fatalf("write Tx = %v, wanted boom", err)
 	}
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		var got int
 		if !SGet(tx, sk, &got) || got != 9 {
 			t.Fatalf("SGet after CommitDespiteError = %d, wanted 9", got)
@@ -541,7 +541,7 @@ func TestOperationCoverage_TxAndSingletonHelpers(t *testing.T) {
 	}); !errors.Is(err, errBoom) {
 		t.Fatalf("in-memory write Tx after write = %v, wanted boom", err)
 	}
-	memDB.Read(func(tx *Tx) {
+	memDB.Read(TxMetadata{}, func(tx *Tx) {
 		var got int
 		if SGet(tx, sk, &got) {
 			t.Fatalf("SGet after failed in-memory write = %d, wanted missing", got)
@@ -555,7 +555,7 @@ func TestOperationCoverage_TxAndSingletonHelpers(t *testing.T) {
 	}); !errors.Is(err, errBoom) {
 		t.Fatalf("in-memory CommitDespiteError Tx = %v, wanted boom", err)
 	}
-	memDB.Read(func(tx *Tx) {
+	memDB.Read(TxMetadata{}, func(tx *Tx) {
 		var got int
 		if !SGet(tx, sk, &got) || got != 13 {
 			t.Fatalf("SGet after in-memory CommitDespiteError = %d, wanted 13", got)
@@ -565,7 +565,7 @@ func TestOperationCoverage_TxAndSingletonHelpers(t *testing.T) {
 	db.Write(TxMetadata{}, func(tx *Tx) {
 		SPutRaw(tx, sk, []byte{0xc1})
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		assertPanics(t, func() {
 			var bad int
 			_ = SGet(tx, sk, &bad)
@@ -596,7 +596,7 @@ func TestOperationCoverage_ReindexAllIndexesWithMissingBucket(t *testing.T) {
 		tx.Reindex(usersTable, nil)
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if Lookup[User](tx, usersByEmail, "foo@example.com") == nil {
 			t.Fatalf("email index missing after Reindex")
 		}

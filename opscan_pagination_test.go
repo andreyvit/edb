@@ -25,7 +25,7 @@ func TestFixedWidthIndexPaginationWork(t *testing.T) {
 
 	for _, upperDay := range []int{1, 2} {
 		for flags := 0; flags < 8; flags++ {
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				lowerInc, upperInc, reverse := flags&1 != 0, flags&2 != 0, flags&4 != 0
 				opt := RangeScan(CD{1, 1}, CD{1, upperDay}, true, true).Prefix(1).PrimaryKeyRange(AB{200, 1}, AB{800, upperDay}, lowerInc, upperInc)
 				opt.Reverse = reverse
@@ -52,7 +52,7 @@ func TestFixedWidthIndexPaginationWork(t *testing.T) {
 		}
 	}
 	for _, reverse := range []bool{false, true} {
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			day, id := 1, 0
 			if reverse {
 				day, id = 2, 1001

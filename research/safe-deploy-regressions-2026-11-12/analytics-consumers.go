@@ -85,7 +85,7 @@ func main() {
 	must(e)
 	defer native.Close()
 	tenants := map[bm.TenantID]*bm.RuntimeTenant{}
-	native.Read(func(tx *edb.Tx) {
+	native.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for s := range edb.FullTableScan[bm.TenantSettings](tx).Rows() {
 			t := edb.Get[bm.Tenant](tx, s.TenantID)
 			if t == nil {
@@ -107,7 +107,7 @@ func main() {
 		if tbl.Name() != "tld" && tbl.Name() != "cld" {
 			continue
 		}
-		db.Read(func(tx *edb.Tx) {
+		db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 			var previous legacy.ImmutableMap
 			var previousPrefix string
 			count := 0

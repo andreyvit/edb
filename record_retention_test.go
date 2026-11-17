@@ -42,7 +42,7 @@ func TestRecordRetentionAfterPageReuseAndClose(t *testing.T) {
 			var ownedTags []string
 			var key, ownedName string
 			var bookmark ScanBookmark
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				c := tx.TableScan(tbl, FullScan())
 				if !c.Next() {
 					t.Fatal("missing row")

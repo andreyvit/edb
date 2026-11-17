@@ -100,9 +100,9 @@ func BenchmarkAccountState(b *testing.B) {
 					} else {
 						run := db.Read
 						if entry == "WriteCustomers" {
-							run = func(f func(*edb.Tx)) { db.Write(edb.TxMetadata{}, f) }
+							run = db.Write
 						}
-						run(func(tx *edb.Tx) {
+						run(edb.TxMetadata{}, func(tx *edb.Tx) {
 							for c := edb.FullTableScan[statrow.State](tx); c.Next(); {
 								if mode == "MessagePackRecord" || mode == "KVORecord" {
 									v, _, err := c.TryRecord()
@@ -161,7 +161,7 @@ func BenchmarkAccountState(b *testing.B) {
 					}
 				}
 				b.StopTimer()
-				db.Read(func(tx *edb.Tx) {
+				db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 					n := 0
 					for c := edb.FullTableScan[statrow.State](tx); c.Next(); {
 						r := c.Row()
@@ -238,7 +238,7 @@ func BenchmarkAccountStateReindex(b *testing.B) {
 				db.Write(edb.TxMetadata{}, func(tx *edb.Tx) { tx.Reindex(table, idx) })
 			}
 			b.StopTimer()
-			db.Read(func(tx *edb.Tx) {
+			db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 				checkBalanceIndex(b, tx, idx, rows, 0)
 			})
 		})

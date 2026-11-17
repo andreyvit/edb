@@ -52,7 +52,7 @@ func BenchmarkStorage(b *testing.B) {
 					})
 				}
 				b.StopTimer()
-				db.Read(func(tx *edb.Tx) {
+				db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 					raw := tx.KVGetRaw(tbl, key)
 					var got uint64
 					if name == "words-copy-patch" {

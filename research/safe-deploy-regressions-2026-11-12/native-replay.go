@@ -187,7 +187,7 @@ func indexSummary(db *edb.DB, phase string) {
 
 func readRows(db *edb.DB, phase string) {
 	for _, tbl := range fdb.Schema.Tables() {
-		db.Read(func(tx *edb.Tx) {
+		db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 			for c := tx.TableScan(tbl, edb.FullScan()); c.Next(); {
 				out := map[string]any{"phase": phase, "table": tbl.Name(), "key": hash(c.RawKey()), "raw": hash(c.RawRow())}
 				failure := catch(func() {
@@ -248,7 +248,7 @@ func main() {
 		return
 	}
 	if os.Args[1] == "inspect" {
-		db.Read(func(tx *edb.Tx) {
+		db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 			for _, name := range strings.Split(os.Args[3], ",") {
 				tbl := fdb.Schema.TableNamed(name)
 				for c := tx.TableScan(tbl, edb.FullScan()); c.Next(); {

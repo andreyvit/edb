@@ -24,7 +24,7 @@ func TestTxSkipsBufferTrackingWhenReuseDisabled(t *testing.T) {
 		}
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		c := ExactIndexScan[User](tx, usersByName, "foo")
 		if !c.Next() {
 			t.Fatal("ExactIndexScan returned no rows")
@@ -55,7 +55,7 @@ func TestTxTracksAndReleasesBuffersWhenReuseEnabled(t *testing.T) {
 		t.Fatalf("write buffers not released")
 	}
 
-	tx = db.BeginRead()
+	tx = db.BeginRead(TxMetadata{})
 	defer tx.Close()
 	c := ExactIndexScan[User](tx, usersByName, "foo")
 	if !c.Next() {
@@ -133,7 +133,7 @@ func TestTxReuseBuffersTransactionOutcomes(t *testing.T) {
 			assertTxReuseReleased(t, captured)
 			captured.Close()
 			assertTxReuseReleased(t, captured)
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				var expected *User
 				if committed {
 					expected = row
@@ -261,7 +261,7 @@ func TestTxReuseBuffersGrowthAndNoopWrites(t *testing.T) {
 		assertTxReuseTracked(t, tx)
 		tx.Close()
 		assertTxReuseReleased(t, tx)
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			if got := Count(FullTableScan[txReuseGrowthRow](tx).Raw()); got != len(rows) {
 				t.Fatalf("row count = %d, wanted %d", got, len(rows))
 			}
@@ -322,7 +322,7 @@ func TestTxReuseBuffersEncodingFailure(t *testing.T) {
 	assertTxReuseReleased(t, captured)
 	row := &txReuseEncodingRow{Key: 2, Value: "valid"}
 	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, row) })
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if Get[txReuseEncodingRow](tx, 1) != nil || LookupExists(tx, index, 1) {
 			t.Fatal("encoding failure persisted a row or index entry")
 		}

@@ -76,7 +76,7 @@ func TestRecordIndexAndCursorEdits(t *testing.T) {
 				}
 			}
 		})
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			c := FullTableScan[row](tx)
 			var dst row
 			if !c.Next() {

@@ -97,7 +97,7 @@ func testTypedHandles[Key comparable](t *testing.T, format StorageFormat, first,
 		}
 	})
 	other := &Index[string]{&IndexDef{table: &TableDef{name: "other"}, name: "group"}}
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		defer func() {
 			if recover() == nil {
 				t.Error("foreign index accepted")
@@ -116,7 +116,7 @@ func opaqueIndex(i AnyIndex) AnyIndex { return i }
 func BenchmarkHandleScanEntry(b *testing.B) {
 	db, table, index := handleTestTable[uint64](b, Fast2)
 	db.Write(TxMetadata{}, func(tx *Tx) { table.Rows[typedTestRow[uint64]]().Put(tx, &typedTestRow[uint64]{1, "alice", "vip"}) })
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		at, ai := opaqueTable(table), opaqueIndex(index)
 		for _, tc := range []struct {
 			name string

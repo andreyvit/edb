@@ -41,7 +41,7 @@ func TestEditRecordAcrossFormats(t *testing.T) {
 				}
 				tx.EditRecord(tbl, uint64(8), func(*kvo.Editor) { t.Fatal("edited missing key") })
 			})
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				if _, err := tx.TryEditRecord(tbl, uint64(7), func(*kvo.Editor) error { return nil }); err == nil {
 					t.Fatal("edited from a read transaction")
 				}
@@ -70,7 +70,7 @@ func TestRecordConvenienceAndTryAPIs(t *testing.T) {
 				}
 				assertRecordErrorPanic(t, func() { tx.SaveRecord(stale) })
 			})
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				r, meta, err := tx.TryGetRecord(tbl, uint64(7))
 				if err != nil || meta.ModCount != 2 || meta != GetMeta[keylessRecordRow](tx, uint64(7)) || r.GetValue(1).AsString() != "after" {
 					t.Fatal(meta, err)
@@ -99,7 +99,7 @@ func TestRecordConvenienceAndTryAPIs(t *testing.T) {
 					t.Fatal(err)
 				}
 			})
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				if _, _, err := tx.TryGetRecord(tbl, uint64(7)); err == nil {
 					t.Fatal("invalid row accepted")
 				}
@@ -162,7 +162,7 @@ func TestRecordReadAllocations(t *testing.T) {
 				}
 				tx.PutByKey(tbl, uint64(1000), &keylessRecordRow{Name: "sample"})
 			})
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				var retained kvo.Record
 				read := func() {
 					retained = tx.GetRecord(tbl, uint64(1000))
@@ -214,7 +214,7 @@ func BenchmarkRecordRead(b *testing.B) {
 		b.Run(format.String(), func(b *testing.B) {
 			db, tbl, _, _ := keyedRecordTable[keylessRecordRow](b, format, false)
 			db.Write(TxMetadata{}, func(tx *Tx) { tx.PutByKey(tbl, uint64(1000), &keylessRecordRow{Name: "sample"}) })
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				read := func() {
 					r, _, err := tx.TryGetRecord(tbl, uint64(1000))
 					if err != nil || r.GetValue(1).AsString() != "sample" {
@@ -244,7 +244,7 @@ func TestRecordIndexScanAllocations(t *testing.T) {
 					tx.PutByKey(tbl, i, &keylessRecordRow{Name: "sample"})
 				}
 			})
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				for _, opt := range []ScanOptions{FullScan(), ExactScan("sample"), RangeScan("sample", "sample", true, true)} {
 					c := tx.IndexScan(idx, opt)
 					if !c.Next() {

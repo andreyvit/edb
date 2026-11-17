@@ -18,7 +18,7 @@ func Example_keySetsAndIndexUpdates() {
 		CustomerRows.Put(tx, &Customer{ID: 102, FirstName: "Sam", Tags: []string{"staff", "newsletter"}})
 		CustomerRows.Put(tx, &Customer{ID: 103, FirstName: "Maria", Tags: []string{"vip"}})
 	})
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		vip := Customers.ExactIndexScan(tx, customersByTagIndex, "vip").KeyCursor()
 		staff := Customers.ExactIndexScan(tx, customersByTagIndex, "staff").KeyCursor()
 		subscribed := Customers.ExactIndexScan(tx, customersByTagIndex, "newsletter").KeyCursor()
@@ -61,7 +61,7 @@ func Example_scanBookmark() {
 	var after edb.ScanBookmark
 	for {
 		more := false
-		db.Read(func(tx *edb.Tx) {
+		db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 			page := Customers.ExactIndexScan(tx, customersByTagIndex, "vip").Resume(after).Chunk(1)
 			for id, customer := range page.Entries() {
 				fmt.Println(id, customer.Get(Customer_FirstName))

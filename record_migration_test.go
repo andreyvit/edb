@@ -40,7 +40,7 @@ func TestRecordMigrationReadSaveAndReindex(t *testing.T) {
 				if changesData {
 					want += "!"
 				}
-				db.Read(func(tx *Tx) {
+				db.Read(TxMetadata{}, func(tx *Tx) {
 					rawBefore := bytes.Clone(table.dataBucketIn(tx).Get(table.EncodeKey("first")))
 					native := Get[changeRecordRow](tx, "first")
 					if native.Name != want || native.ID != "first" || native.Tags[0] != "untouched" {
@@ -85,7 +85,7 @@ func TestRecordMigrationReadSaveAndReindex(t *testing.T) {
 						t.Fatal("reindex did not migrate")
 					}
 				})
-				db.Read(func(tx *Tx) {
+				db.Read(TxMetadata{}, func(tx *Tx) {
 					for _, key := range []string{"first", "second"} {
 						r, meta, err := tx.TryGetRecord(table, key)
 						if err != nil || meta.SchemaVer != 2 || r.GetValue(1).AsString() != want {
@@ -152,7 +152,7 @@ func TestRecordMigrationFailureRollsBackReindex(t *testing.T) {
 				Put(tx, &changeRecordRow{ID: "first", Name: "old"}, &changeRecordRow{ID: "second", Name: "old"})
 			})
 			before := make(map[string][]byte)
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				for _, key := range []string{"first", "second"} {
 					before[key] = bytes.Clone(table.dataBucketIn(tx).Get(table.EncodeKey(key)))
 				}
@@ -162,7 +162,7 @@ func TestRecordMigrationFailureRollsBackReindex(t *testing.T) {
 			if calls != 2 {
 				t.Fatalf("expected a failure after the first migrated write, got %d calls", calls)
 			}
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				for key, raw := range before {
 					if !bytes.Equal(raw, table.dataBucketIn(tx).Get(table.EncodeKey(key))) {
 						t.Fatalf("failed migration persisted %s", key)
@@ -234,7 +234,7 @@ func TestMessagePackAliasMigrationSaveAndReindex(t *testing.T) {
 					table.latestSchemaVer = 2
 					want += "!"
 				}
-				db.Read(func(tx *Tx) {
+				db.Read(TxMetadata{}, func(tx *Tx) {
 					row := tx.GetRecord(table, uint64(7)).Native().(*migrationAliasRow)
 					if row.ID != 7 || row.Name != want || row.Hidden != "keep" {
 						t.Fatalf("fallback read: %#v", row)
@@ -252,7 +252,7 @@ func TestMessagePackAliasMigrationSaveAndReindex(t *testing.T) {
 						tx.SaveRecord(edit)
 					}
 				})
-				db.Read(func(tx *Tx) {
+				db.Read(TxMetadata{}, func(tx *Tx) {
 					row := Get[migrationAliasRow](tx, uint64(7))
 					if row.ID != 7 || row.Name != want || row.Hidden != "keep" || tx.GetMeta(table, uint64(7)).SchemaVer != table.latestSchemaVer {
 						t.Fatalf("fallback save: %#v", row)
@@ -315,7 +315,7 @@ func TestMigratorsRunInRegistrationOrder(t *testing.T) {
 						want += fmt.Sprint(v)
 					}
 				}
-				db.Read(func(tx *Tx) {
+				db.Read(TxMetadata{}, func(tx *Tx) {
 					calls = nil
 					if got := tx.GetRecord(table, "key").GetValue(1).AsString(); got != want {
 						t.Fatal(got, want)

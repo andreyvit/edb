@@ -26,7 +26,7 @@ func testTypedScans[Key comparable](t *testing.T, format StorageFormat, first, s
 		rows.Put(tx, &typedTestRow[Key]{first, "alice", "vip"})
 		rows.Put(tx, &typedTestRow[Key]{second, "bob", "vip"})
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		check := func(name string, got iter.Seq[Key], want []Key) {
 			t.Helper()
 			if got := slices.Collect(got); !slices.Equal(got, want) {
@@ -94,7 +94,7 @@ func TestTypedCompositePrefix(t *testing.T) {
 			rows.Put(tx, &typedTestRow[AB]{key, string(rune('a' + i)), "vip"})
 		}
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		for _, seq := range []iter.Seq[AB]{
 			records.Prefix(tx, AB{1, 0}, 1).Keys(),
 			rows.Prefix(tx, AB{1, 0}, 1).Keys(),
@@ -118,7 +118,7 @@ func TestTypedKeysDoNotDecodeRows(t *testing.T) {
 		// Preserve the key and index entry while making payload access fail.
 		putRawTableValue(t, tx, rows.Table(), rows.Table().EncodeKey(ID(1)), []byte{0xff})
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		for _, keys := range []iter.Seq[ID]{rows.Scan(tx).Keys(), rows.Records().bindIndex[string](byGroup).Exact(tx, "vip").Keys()} {
 			if got := slices.Collect(keys); !slices.Equal(got, []ID{1}) {
 				t.Fatal("key scan required a valid payload", got)

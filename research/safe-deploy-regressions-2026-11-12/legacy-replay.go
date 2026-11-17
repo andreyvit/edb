@@ -121,7 +121,7 @@ func main() {
 			continue
 		}
 		var keys [][]byte
-		db.Read(func(tx *edb.Tx) {
+		db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 			for c := tx.KVTableScan(tbl, edb.RawRange{}); c.Next(); {
 				keys = append(keys, bytes.Clone(c.RawKey()))
 			}
@@ -130,7 +130,7 @@ func main() {
 			out := map[string]any{"table": tbl.Name(), "key": hash(key)}
 			out["error"] = safe(func() {
 				var original, packed []byte
-				db.Read(func(tx *edb.Tx) {
+				db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 					m := tx.KVGet(tbl, key)
 					original = bytes.Clone(tx.KVGetRaw(tbl, key))
 					out["initial"] = digest(canonical(m, 0))
@@ -165,13 +165,13 @@ func main() {
 				// Delete+put forces every snapshot index to be populated, independent
 				// of which original index leaves were sampled.
 				db.Write(edb.TxMetadata{}, func(tx *edb.Tx) { tx.KVPutRaw(tbl, key, nil); tx.KVPutRaw(tbl, key, packed) })
-				db.Read(func(tx *edb.Tx) {
+				db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 					if digest(canonical(tx.KVGet(tbl, key), 0)) != out["edited"] {
 						panic("save changed packed snapshot")
 					}
 				})
 				func() { tx := db.BeginUpdate(edb.TxMetadata{}); defer tx.Close(); tx.KVPutRaw(tbl, key, original) }()
-				db.Read(func(tx *edb.Tx) {
+				db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 					if !bytes.Equal(tx.KVGetRaw(tbl, key), packed) {
 						panic("rollback changed packed snapshot")
 					}

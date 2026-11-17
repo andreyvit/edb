@@ -18,7 +18,7 @@ func testTypedGetAllocations[Key any](t *testing.T, format StorageFormat, key Ke
 	db, rows, _, _ := typedTestTable[Key](t, format)
 	records := rows.Records()
 	db.Write(TxMetadata{}, func(tx *Tx) { rows.Put(tx, &typedTestRow[Key]{key, "alice", "vip"}) })
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if n := testing.AllocsPerRun(100, func() {
 			if r := records.Get(tx, key); r.GetValue(1).AsString() != "alice" {
 				t.Fatal("incorrect record")
@@ -49,7 +49,7 @@ func BenchmarkTypedJoinedScan(b *testing.B) {
 						b.ReportAllocs()
 						for b.Loop() {
 							var visited int
-							db.Read(func(tx *Tx) {
+							db.Read(TxMetadata{}, func(tx *Tx) {
 								switch mode {
 								case "Rows":
 									for c := ExactIndexScan[typedTestRow[ID]](tx, byGroup, "vip"); c.Next(); {
@@ -108,7 +108,7 @@ func benchmarkTypedKeys[Key any](b *testing.B, makeKey func(int) Key) {
 		}
 	})
 	b.Run("Get", func(b *testing.B) {
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			key := makeKey(500)
 			records.Get(tx, key) // Warm transaction-local lookup metadata.
 			b.ReportAllocs()
@@ -123,7 +123,7 @@ func benchmarkTypedKeys[Key any](b *testing.B, makeKey func(int) Key) {
 		b.ReportAllocs()
 		for b.Loop() {
 			var count int
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				for range records.Scan(tx).Keys() {
 					count++
 				}

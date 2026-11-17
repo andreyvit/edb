@@ -16,7 +16,7 @@ func TestTableStatsAndDump(t *testing.T) {
 		tx.KVPutRaw(kubets, x("02"), []byte{2})
 	})
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		ts := tx.TableStats(usersTable)
 		if ts.Rows != 2 || ts.IndexRows == 0 {
 			t.Fatalf("TableStats = %+v, wanted Rows=2 and IndexRows>0", ts)
@@ -40,7 +40,7 @@ func TestDumpFlagsAndDump(t *testing.T) {
 	db := setup(t, basicSchema)
 	db.Write(TxMetadata{}, func(tx *Tx) { Put(tx, u1) })
 
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if !DumpTableHeaders.Contains(DumpTableHeaders) || DumpTableHeaders.Contains(DumpRows) {
 			t.Fatalf("DumpFlags.Contains returned unexpected results")
 		}

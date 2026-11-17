@@ -59,7 +59,7 @@ func TestReleasedStorageFormats(t *testing.T) {
 		}
 		tx.KVPutRaw(snapshots, key, snapshot)
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if got := Get[legacyMember](tx, member.ID); got == nil || *got != *member {
 			t.Fatal("reading legacy row", got)
 		}

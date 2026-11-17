@@ -56,7 +56,7 @@ func main() {
 			continue
 		}
 		var keys [][]byte
-		db.Read(func(tx *edb.Tx) {
+		db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 			c := tx.TableScan(tbl, edb.FullScan())
 			for c.Next() && len(keys) < 256 {
 				keys = append(keys, bytes.Clone(c.RawKey()))
@@ -65,7 +65,7 @@ func main() {
 		count, skipped, snapshots := 0, 0, 0
 		for _, key := range keys {
 			var original any
-			db.Read(func(tx *edb.Tx) { original, _ = tx.GetByKeyRaw(tbl, key) })
+			db.Read(edb.TxMetadata{}, func(tx *edb.Tx) { original, _ = tx.GetByKeyRaw(tbl, key) })
 			v := reflect.ValueOf(original)
 			field := -1
 			for i := 0; i < v.Elem().NumField(); i++ {
@@ -172,7 +172,7 @@ func main() {
 				count++
 			}
 			run(false, false)
-			db.Read(func(tx *edb.Tx) {
+			db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 				row, _ := tx.GetByKeyRaw(tbl, key)
 				if digest(row) != originalHash {
 					panic("rollback persisted notification write")
@@ -180,7 +180,7 @@ func main() {
 			})
 			run(false, true)
 			run(true, false)
-			db.Read(func(tx *edb.Tx) {
+			db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 				row, _ := tx.GetByKeyRaw(tbl, key)
 				if digest(row) != updatedHash {
 					panic("rolled-back delete changed row")

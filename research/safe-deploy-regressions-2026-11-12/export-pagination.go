@@ -74,7 +74,7 @@ func main() {
 		groups := map[bm.TenantID]map[string]bool{}
 		skipped := 0
 		var unreadableKeys [][]byte
-		db.Read(func(tx *edb.Tx) {
+		db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 			c := tx.TableScan(tbl, edb.FullScan())
 			for c.Next() {
 				row, _, err := c.TryRow()
@@ -117,7 +117,7 @@ func main() {
 		checks, rows, pages := 0, 0, 0
 		for _, id := range ids {
 			var want []string
-			db.Read(func(tx *edb.Tx) {
+			db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 				c := cursors.ByTenant[any](tx, tbl, id)
 				for c.Next() {
 					key := string(bytes.Clone(c.RawKey()))
@@ -140,7 +140,7 @@ func main() {
 				var got []string
 				for {
 					n := 0
-					db.Read(func(tx *edb.Tx) {
+					db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 						c := cursors.ByTenant[any](tx, tbl, id, cursors.ScanAfter(after, indexAfter))
 						for n < size && c.Next() {
 							got = append(got, string(bytes.Clone(c.RawKey())))

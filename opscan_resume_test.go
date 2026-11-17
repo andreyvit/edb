@@ -54,10 +54,10 @@ func testScanBookmark[Key comparable](t *testing.T, keys []Key) {
 					return tx.TableScan(rows.Table(), opt.Resume(b))
 				}
 				var want []Key
-				db.Read(func(tx *Tx) { want = AllKeys[Key](open(tx, ScanBookmark{})) })
+				db.Read(TxMetadata{}, func(tx *Tx) { want = AllKeys[Key](open(tx, ScanBookmark{})) })
 				for split := 0; split <= len(want); split++ {
 					var mark ScanBookmark
-					db.Read(func(tx *Tx) {
+					db.Read(TxMetadata{}, func(tx *Tx) {
 						c := open(tx, mark)
 						for range split {
 							if !c.Next() {
@@ -66,7 +66,7 @@ func testScanBookmark[Key comparable](t *testing.T, keys []Key) {
 						}
 						mark = c.Bookmark()
 					})
-					db.Read(func(tx *Tx) {
+					db.Read(TxMetadata{}, func(tx *Tx) {
 						c := open(tx, mark)
 						var got []Key
 						for c.Next() {
@@ -97,7 +97,7 @@ func TestScanBookmarkDeletedPositionAndValidation(t *testing.T) {
 	})
 	for _, reverse := range []bool{false, true} {
 		var mark ScanBookmark
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			opt := ExactScan("vip")
 			opt.Reverse = reverse
 			c := tx.IndexScan(group, opt)
@@ -111,7 +111,7 @@ func TestScanBookmarkDeletedPositionAndValidation(t *testing.T) {
 			key = 4
 		}
 		db.Write(TxMetadata{}, func(tx *Tx) { rows.Delete(tx, key) })
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			scan := rows.Records().bindIndex[string](group).Exact(tx, "vip")
 			if reverse {
 				scan = scan.Reversed()
@@ -155,14 +155,14 @@ func TestScanBookmarkNarrowerBounds(t *testing.T) {
 	})
 	for _, reverse := range []bool{false, true} {
 		var mark ScanBookmark
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			opt := FullScan()
 			opt.Reverse = reverse
 			c := tx.IndexScan(group, opt)
 			c.Next()
 			mark = c.Bookmark()
 		})
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			scan := rows.Records().bindIndex[string](group).Range(tx, "2", "3")
 			if reverse {
 				scan = scan.Reversed()
@@ -185,7 +185,7 @@ func TestIndexRangeInterleavedStringKeys(t *testing.T) {
 		rows.Put(tx, &typedTestRow[string]{"z", "two", "aa"})
 		rows.Put(tx, &typedTestRow[string]{"b", "three", "a"})
 	})
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		for _, reverse := range []bool{false, true} {
 			for _, tt := range []struct {
 				lo, hi string

@@ -35,7 +35,7 @@ func main() {
 		requests = append(requests, map[string]any{"table": table, "key": base64.StdEncoding.EncodeToString(key)})
 	}
 	n := 0
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		for row := range edb.FullTableScan[mreferrals.Referral](tx).Rows() {
 			if counts[uint64(row.TenantID)] >= 3 || row.ContactID == 0 {
 				continue

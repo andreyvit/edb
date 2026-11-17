@@ -45,7 +45,7 @@ func TestReuseAliasCommittedData(t *testing.T) {
 	reuseAliasClosePoison(t, tx)
 	reuseAliasCheck(t, written, want)
 
-	reader := f.db.BeginRead()
+	reader := f.db.BeginRead(TxMetadata{})
 	defer reader.Close()
 	stored := reuseAliasRead(t, reader, f.index, want)
 	var gotSingleton []byte
@@ -112,7 +112,7 @@ func TestReuseAliasChangeLifetime(t *testing.T) {
 	}
 	reuseAliasCheck(t, escaped, want)
 	reuseAliasCheckMemento(t, f, escaped, want)
-	reader := f.db.BeginRead()
+	reader := f.db.BeginRead(TxMetadata{})
 	defer reader.Close()
 	if Lookup[reuseAliasRow](reader, f.index, old.Name) != nil {
 		t.Fatal("old unique index entry remains")
@@ -159,7 +159,7 @@ func TestReuseAliasDeleteChangeLifetime(t *testing.T) {
 		t.Fatalf("delete row = %#v, want %#v", change.OldGoStruct(), want)
 	}
 	reuseAliasCheck(t, escaped, want)
-	f.db.Read(func(tx *Tx) {
+	f.db.Read(TxMetadata{}, func(tx *Tx) {
 		if Get[reuseAliasRow](tx, want.Key) != nil || Lookup[reuseAliasRow](tx, f.index, want.Name) != nil {
 			t.Fatal("deleted row or unique index entry remains")
 		}
@@ -270,7 +270,7 @@ func reuseAliasCheckMemento(t *testing.T, f reuseAliasFixture, snapshot reuseAli
 	if key := f.table.DecodeKeyVal(snapshot.rawKey).Interface(); !reflect.DeepEqual(key, want.Key) {
 		t.Fatalf("copied raw key decodes to %v, want %x", key, want.Key)
 	}
-	tx := f.db.BeginRead()
+	tx := f.db.BeginRead(TxMetadata{})
 	defer tx.Close()
 	row, meta, err := tx.DecodeMementoVal(f.table, snapshot.rawKey, snapshot.memento)
 	if err != nil || !row.IsValid() || meta != snapshot.meta || meta.SchemaVer != 1 || meta.IsMissing() {

@@ -21,7 +21,7 @@ func TestReadChunks(t *testing.T) {
 				for _, size := range []int{1, 2, 7, 20} {
 					var got []ID
 					var transactions []*Tx
-					for chunk := range ReadChunks(db, size, func(tx *Tx) RecordScan[ID] {
+					for chunk := range ReadChunks(db, TxMetadata{}, size, func(tx *Tx) RecordScan[ID] {
 						scan := index.Exact(tx, "vip")
 						if reverse {
 							scan = scan.Reversed()
@@ -58,7 +58,7 @@ func TestReadChunks(t *testing.T) {
 			}
 			// The same helper infers native chunks, including owned rows and entries.
 			var got []ID
-			for chunk := range ReadChunks(db, 3, func(tx *Tx) RowScan[typedTestRow[ID], ID] { return rows.Scan(tx) }) {
+			for chunk := range ReadChunks(db, TxMetadata{}, 3, func(tx *Tx) RowScan[typedTestRow[ID], ID] { return rows.Scan(tx) }) {
 				for id, row := range chunk.Entries() {
 					if row.Key != id {
 						t.Fatal("key")
@@ -70,6 +70,52 @@ func TestReadChunks(t *testing.T) {
 				t.Fatal(got)
 			}
 		})
+	}
+}
+
+func TestReadChunksMetadata(t *testing.T) {
+	db, rows, _, _ := typedTestTable[ID](t, Fast2)
+	db.Write(TxMetadata{}, func(tx *Tx) {
+		for id := ID(1); id <= 5; id++ {
+			rows.Put(tx, &typedTestRow[ID]{id, fmt.Sprint(id), "vip"})
+		}
+	})
+	want := TxMetadata{Kind: "system:chunk_scan", Tenant: "shop"}
+	metadata := want
+	var transactions []*Tx
+	chunks := ReadChunks(db, metadata, 2, func(tx *Tx) RowScan[typedTestRow[ID], ID] {
+		if len(transactions) > 0 && !transactions[len(transactions)-1].closed {
+			t.Fatal("previous chunk transaction still open")
+		}
+		transactions = append(transactions, tx)
+		if tx.Metadata() != want || tx.IsWritable() {
+			t.Fatalf("query metadata = %+v, writable = %v", tx.Metadata(), tx.IsWritable())
+		}
+		return rows.Scan(tx)
+	})
+	metadata.Kind = "system:changed"
+	metadata.Tenant = "changed"
+	var got []ID
+	var counts []int
+	for chunk := range chunks {
+		if chunk.Tx().Metadata() != want {
+			t.Fatalf("chunk metadata = %+v, wanted %+v", chunk.Tx().Metadata(), want)
+		}
+		for id := range chunk.Keys() {
+			got = append(got, id)
+		}
+		counts = append(counts, chunk.Count())
+	}
+	if !slices.Equal(got, []ID{1, 2, 3, 4, 5}) || !slices.Equal(counts, []int{2, 2, 1}) || len(transactions) != 3 {
+		t.Fatalf("keys = %v, chunk counts = %v, transactions = %d", got, counts, len(transactions))
+	}
+	for _, tx := range transactions {
+		if !tx.closed {
+			t.Fatal("chunk transaction leaked")
+		}
+	}
+	if got := db.DescribeOpenTxns(); got != "NO OPEN TRANSACTIONS" {
+		t.Fatalf("report after chunks = %q", got)
 	}
 }
 
@@ -85,7 +131,7 @@ func TestChunksManualResume(t *testing.T) {
 	var got []string
 	for {
 		more := false
-		db.Read(func(tx *Tx) {
+		db.Read(TxMetadata{}, func(tx *Tx) {
 			chunk := records.bindIndex[string](group).Exact(tx, "vip").Resume(mark).Chunk(2)
 			// Partial consumption can continue using another iterator on the chunk.
 			for k := range chunk.Keys() {
@@ -113,7 +159,7 @@ func TestChunksManualResume(t *testing.T) {
 	if !slices.Equal(got, []string{"a", "aa", "b", "c"}) {
 		t.Fatal(got)
 	}
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		assertPanics(t, func() { records.Scan(tx).Chunk(0) })
 		empty := records.bindIndex[string](group).Exact(tx, "missing").Resume(mark).Chunk(2)
 		// Changing query bounds is allowed, and an empty page retains its bookmark.
@@ -135,7 +181,7 @@ func TestReadChunksEarlyStopAndPanic(t *testing.T) {
 	})
 	query := func(tx *Tx) RecordScan[ID] { return rows.Records().Scan(tx) }
 	var got []ID
-	for chunk := range ReadChunks(db, 3, query) {
+	for chunk := range ReadChunks(db, TxMetadata{}, 3, query) {
 		for id := range chunk.Keys() {
 			got = append(got, id)
 			break
@@ -145,7 +191,7 @@ func TestReadChunksEarlyStopAndPanic(t *testing.T) {
 		t.Fatal("partial chunks", got)
 	}
 	var tx *Tx
-	for chunk := range ReadChunks(db, 2, query) {
+	for chunk := range ReadChunks(db, TxMetadata{}, 2, query) {
 		tx = chunk.Tx()
 		break
 	}
@@ -153,7 +199,7 @@ func TestReadChunksEarlyStopAndPanic(t *testing.T) {
 		t.Fatal("break leaked reader")
 	}
 	calls := 0
-	for chunk := range ReadChunks(db, 2, query) {
+	for chunk := range ReadChunks(db, TxMetadata{}, 2, query) {
 		tx = chunk.Tx()
 		calls++
 	}
@@ -161,7 +207,7 @@ func TestReadChunksEarlyStopAndPanic(t *testing.T) {
 		t.Fatal("unconsumed chunk did not stop")
 	}
 	assertPanics(t, func() {
-		for chunk := range ReadChunks(db, 2, query) {
+		for chunk := range ReadChunks(db, TxMetadata{}, 2, query) {
 			tx = chunk.Tx()
 			panic("test")
 		}
@@ -169,10 +215,10 @@ func TestReadChunksEarlyStopAndPanic(t *testing.T) {
 	if !tx.closed {
 		t.Fatal("panic leaked reader")
 	}
-	assertPanics(t, func() { ReadChunks(db, 0, query) })
-	db.Read(func(other *Tx) {
+	assertPanics(t, func() { ReadChunks(db, TxMetadata{}, 0, query) })
+	db.Read(TxMetadata{}, func(other *Tx) {
 		assertPanics(t, func() {
-			for range ReadChunks(db, 2, func(*Tx) RecordScan[ID] { return query(other) }) {
+			for range ReadChunks(db, TxMetadata{}, 2, func(*Tx) RecordScan[ID] { return query(other) }) {
 			}
 		})
 	})
@@ -186,11 +232,11 @@ func TestReadChunksSnapshotChangeAndInitialResume(t *testing.T) {
 		}
 	})
 	var initial ScanBookmark
-	db.Read(func(tx *Tx) { c := rows.Scan(tx).Raw(); c.Next(); initial = c.Bookmark() })
+	db.Read(TxMetadata{}, func(tx *Tx) { c := rows.Scan(tx).Raw(); c.Next(); initial = c.Bookmark() })
 	calls := 0
 	var got []ID
 	var prior *Tx
-	for chunk := range ReadChunks(db, 1, func(tx *Tx) RecordScan[ID] {
+	for chunk := range ReadChunks(db, TxMetadata{}, 1, func(tx *Tx) RecordScan[ID] {
 		calls++
 		if calls == 2 {
 			if !prior.closed {
@@ -210,7 +256,7 @@ func TestReadChunksSnapshotChangeAndInitialResume(t *testing.T) {
 		t.Fatal(got)
 	}
 	db.Write(TxMetadata{}, func(tx *Tx) { rows.Put(tx, &typedTestRow[ID]{2, "2", "vip"}); rows.Delete(tx, 3) })
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		if got := slices.Collect(rows.Scan(tx).Resume(initial).Keys()); !slices.Equal(got, []ID{2, 5}) {
 			t.Fatal("new snapshot", got)
 		}
@@ -226,7 +272,7 @@ func TestChunkKeysNeverFetchRows(t *testing.T) {
 		}
 	})
 	var got []AB
-	for chunk := range ReadChunks(db, 2, func(tx *Tx) RecordScan[AB] { return rows.Records().bindIndex[string](group).Exact(tx, "vip") }) {
+	for chunk := range ReadChunks(db, TxMetadata{}, 2, func(tx *Tx) RecordScan[AB] { return rows.Records().bindIndex[string](group).Exact(tx, "vip") }) {
 		for key := range chunk.Keys() {
 			got = append(got, key)
 		}

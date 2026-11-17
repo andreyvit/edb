@@ -142,7 +142,7 @@ func TestTableScan_CompositePrefixAndRangeMatrix(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				got := AllKeys[scanEdgeCompoundKey](TableScan[scanEdgeCompoundRow](tx, tc.opt).Raw())
 				assertScanEdgeKeys(t, got, tc.want)
 			})
@@ -355,7 +355,7 @@ func TestIndexScan_MalformedOptionsPanic(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				assertPanics(t, func() {
 					tc.run(tx)
 				})
@@ -369,7 +369,7 @@ func TestIndexScan_MalformedOptionsPanic(t *testing.T) {
 
 func TestScanConvenienceHelpersAndEmptyResults(t *testing.T) {
 	db := setupScanEdgeDB(t)
-	db.Read(func(tx *Tx) {
+	db.Read(TxMetadata{}, func(tx *Tx) {
 		assertScanEdgeIDs(t, AllKeys[ID](FullTableScan[scanEdgeRow](tx).Raw()), scanEdgeIDs(10, 20, 30, 40, 45, 50, 60, 70))
 		assertScanEdgeIDs(t, AllKeys[ID](FullReverseTableScan[scanEdgeRow](tx).Raw()), scanEdgeIDs(70, 60, 50, 45, 40, 30, 20, 10))
 		assertScanEdgeIDs(t, AllKeys[ID](RangeTableScan[scanEdgeRow](tx, ID(30), ID(45), true, true).Raw()), scanEdgeIDs(30, 40, 45))
@@ -522,7 +522,7 @@ func runScanEdgeIDCases(t *testing.T, db *DB, cases []scanEdgeIDCase, scan func(
 	t.Helper()
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			db.Read(func(tx *Tx) {
+			db.Read(TxMetadata{}, func(tx *Tx) {
 				got := scan(tx, tc.opt)
 				assertScanEdgeIDs(t, got, tc.want)
 			})

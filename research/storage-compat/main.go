@@ -122,7 +122,7 @@ func check(ok bool, msg string) {
 	}
 }
 func verify(db *edb.DB, path string, stage int) {
-	db.Read(func(tx *edb.Tx) {
+	db.Read(edb.TxMetadata{}, func(tx *edb.Tx) {
 		n := 0
 		for c := edb.FullTableScan[row](tx); c.Next(); {
 			r := c.Row()
