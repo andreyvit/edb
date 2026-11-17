@@ -19,7 +19,7 @@ func TestReadMetadata(t *testing.T) {
 							path = filepath.Join(t.TempDir(), "metadata.db")
 						}
 						var recorder observationRecorder
-						db, err := Open(path, basicSchema, Options{IsTesting: true, CaptureTxStack: capture, ObserveTransaction: recorder.observe})
+						db, err := Open(path, basicSchema, Options{IsTesting: true, CaptureTxStack: capture, ObserveWriteTransaction: recorder.observe})
 						if err != nil {
 							t.Fatal(err)
 						}

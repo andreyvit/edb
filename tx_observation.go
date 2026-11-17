@@ -18,11 +18,13 @@ type TxObservation struct {
 
 type transactionObservation struct {
 	db       *DB
+	observer func(TxObservation)
 	metadata TxMetadata
 	start    time.Time
+	writable bool
 }
 
-func (metadata TxMetadata) forWrite() TxMetadata {
+func (metadata TxMetadata) withDefaults() TxMetadata {
 	if metadata.Kind == "" {
 		metadata.Kind = "system:unknown"
 	}
@@ -33,10 +35,20 @@ func (metadata TxMetadata) forWrite() TxMetadata {
 }
 
 func (db *DB) startObservation(metadata TxMetadata, writable bool) transactionObservation {
-	if !writable || db.observeTransaction == nil {
+	observer := db.observeReadTransaction
+	if writable {
+		observer = db.observeWriteTransaction
+	}
+	if observer == nil {
 		return transactionObservation{}
 	}
-	return transactionObservation{db: db, metadata: metadata.forWrite(), start: time.Now()}
+	return transactionObservation{
+		db:       db,
+		observer: observer,
+		metadata: metadata.withDefaults(),
+		start:    time.Now(),
+		writable: writable,
+	}
 }
 
 func (observation *transactionObservation) finish() {
@@ -44,10 +56,12 @@ func (observation *transactionObservation) finish() {
 	if db == nil {
 		return
 	}
+	observer := observation.observer
 	observation.db = nil
+	observation.observer = nil
 	event := TxObservation{
 		Metadata: observation.metadata,
-		Writable: true,
+		Writable: observation.writable,
 		Duration: time.Since(observation.start),
 	}
 	defer func() {
@@ -55,7 +69,7 @@ func (observation *transactionObservation) finish() {
 			db.logObserverPanic()
 		}
 	}()
-	db.observeTransaction(event)
+	observer(event)
 }
 
 func (db *DB) logObserverPanic() {

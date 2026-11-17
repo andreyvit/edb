@@ -64,7 +64,7 @@ func (db *DB) newTx(metadata TxMetadata, stx storageTx, managed bool, memo map[s
 	}
 	db.lastSize.Store(stx.Size())
 	if stx.Writable() {
-		metadata = metadata.forWrite()
+		metadata = metadata.withDefaults()
 		WriterCount.Add(1)
 	} else {
 		ReaderCount.Add(1)
@@ -296,7 +296,13 @@ func safelyCall(fn func(*Tx) error, tx *Tx) (err error) {
 	return fn(tx)
 }
 
-func (db *DB) BeginRead(metadata TxMetadata) *Tx {
+func (db *DB) BeginRead(metadata TxMetadata) (tx *Tx) {
+	observation := db.startObservation(metadata, false)
+	defer func() {
+		if tx == nil {
+			observation.finish()
+		}
+	}()
 	if db.IsClosed() {
 		panic("database closed")
 	}
@@ -304,7 +310,9 @@ func (db *DB) BeginRead(metadata TxMetadata) *Tx {
 	if err != nil {
 		panic(fmt.Errorf("failed to start reading: %w", err))
 	}
-	return db.newTx(metadata, stx, false, nil, nil)
+	tx = db.newTx(metadata, stx, false, nil, nil)
+	tx.observation = observation
+	return tx
 }
 
 func (db *DB) Read(metadata TxMetadata, f func(tx *Tx)) {

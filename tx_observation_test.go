@@ -32,11 +32,18 @@ func (r *observationRecorder) take() []TxObservation {
 
 func observationOpen(t *testing.T, memory, reuse bool, observe func(TxObservation)) *DB {
 	t.Helper()
+	return observationOpenWithOptions(t, memory, reuse, Options{ObserveWriteTransaction: observe})
+}
+
+func observationOpenWithOptions(t *testing.T, memory, reuse bool, options Options) *DB {
+	t.Helper()
 	path := InMemory
 	if !memory {
 		path = filepath.Join(t.TempDir(), "observed.db")
 	}
-	db, err := Open(path, basicSchema, Options{IsTesting: true, ReuseTxBuffers: reuse, ObserveTransaction: observe})
+	options.IsTesting = true
+	options.ReuseTxBuffers = reuse
+	db, err := Open(path, basicSchema, options)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -326,7 +333,7 @@ func TestTransactionObservationObserverPanic(t *testing.T) {
 	var recorder observationRecorder
 	var logs atomic.Int32
 	db, err := Open(InMemory, basicSchema, Options{
-		ObserveTransaction: func(event TxObservation) {
+		ObserveWriteTransaction: func(event TxObservation) {
 			recorder.observe(event)
 			panic("observer")
 		},
@@ -541,7 +548,9 @@ func TestTransactionObservationInitializationFailure(t *testing.T) {
 			return wantErr
 		}}, err
 	}}
-	p := observationPanic(func() { _, _ = openWithStorage(storage, basicSchema, Options{ObserveTransaction: recorder.observe}) })
+	p := observationPanic(func() {
+		_, _ = openWithStorage(storage, basicSchema, Options{ObserveWriteTransaction: recorder.observe})
+	})
 	if err, ok := p.(error); !ok || !errors.Is(err, wantErr) {
 		t.Fatalf("initialization panic = %v", p)
 	}
