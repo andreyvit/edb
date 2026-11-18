@@ -135,7 +135,7 @@ type replicationBucketKey struct {
 }
 
 const (
-	replicationBucket               = "\x00edb.replication"
+	replicationBucket               = "edb.replication"
 	replicationCommittedProp uint64 = 1
 )
 
