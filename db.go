@@ -25,6 +25,8 @@ type DB struct {
 	reuseTxBuffers          bool
 	observeWriteTransaction func(TxObservation)
 	observeReadTransaction  func(TxObservation)
+	txObserveBatch          func(BatchObservation)
+	batchAttempt            batchAttempt
 	observerPanicLogged     atomic.Bool
 
 	tableStates []*tableState
@@ -66,6 +68,7 @@ type Options struct {
 	ReuseTxBuffers          bool
 	ObserveWriteTransaction func(TxObservation)
 	ObserveReadTransaction  func(TxObservation)
+	TxObserveBatch          func(BatchObservation)
 }
 
 const InMemory = "memory:"
@@ -126,6 +129,7 @@ func openWithStorage(storage storage, schema *Schema, opt Options) (*DB, error) 
 		reuseTxBuffers:          opt.ReuseTxBuffers,
 		observeWriteTransaction: opt.ObserveWriteTransaction,
 		observeReadTransaction:  opt.ObserveReadTransaction,
+		txObserveBatch:          opt.TxObserveBatch,
 		tableStates:             make([]*tableState, len(schema.tables)),
 		strict:                  opt.IsTesting,
 	}

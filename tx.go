@@ -245,7 +245,16 @@ func (db *DB) Tx(metadata TxMetadata, writable bool, f func(tx *Tx) error) error
 		if debugTrackTxns && db.captureTxStack {
 			stack = debug.Stack()
 		}
+		var aborted []BatchObservation
 		err := db.bdb.Batch(func(btx *bbolt.Tx) (attemptErr error) {
+			if db.txObserveBatch != nil {
+				count := db.batchCallbackEnter(btx)
+				defer func() {
+					if attemptErr != nil {
+						aborted = append(aborted, BatchObservation{Outcome: BatchCallbackAborted, CallbacksRun: count})
+					}
+				}()
+			}
 			if db.replication != nil {
 				defer func() {
 					if attemptErr != nil {
@@ -282,6 +291,10 @@ func (db *DB) Tx(metadata TxMetadata, writable bool, f func(tx *Tx) error) error
 				return funcErr
 			}
 		})
+		for _, event := range aborted {
+			db.batchObserve(event)
+		}
+
 		if err == nil && funcErr != nil {
 			err = funcErr
 		}
